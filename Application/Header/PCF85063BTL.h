@@ -42,3 +42,63 @@
 
 #define		Read_Mode					0xA0
 #define		Write_Mode				0x20
+
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+// FOR SPI INTERFACE
+///////////////////////////////////////////////////////////
+
+// Data for SPI control SPCTL register
+#define SSIG 		0x80
+#define SPIEN		0x40
+#define DORD 		0x20
+#define MSTR		0x10
+#define CPOL		0x08
+#define CPHA		0x04
+#define SPR1 		0x02
+#define SPR2 		0x01
+
+// SPI register
+/*sfr SPSTAT=0xcd;
+sfr SPCTL=0xce;
+sfr SPDAT=0xcf;*/
+sbit SPISS=P1^2;
+
+// SPI Status register possible value
+
+#define SPIF 0x80 // SPI transfer completion flag.
+#define WCOL 0x40 // SPI write collision flag.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
