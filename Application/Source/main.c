@@ -4,7 +4,7 @@
  #include <stdio.h>
 #include <stdlib.h>
  //#include "hc595.h"
- //#include "PCF85063BTL.h"
+ #include "PCF85063BTL.h"
 
  	 
 
@@ -15,11 +15,11 @@ void initUART1(void);
 unsigned char BCDtoDec(unsigned char BCD);
 unsigned char ten(unsigned char BCD);
 unsigned char unit(unsigned char BCD);
-
+unsigned char SPI_ReadTime(unsigned char addr);
 
 void main(void)
 {
-	unsigned char seconds;
+	unsigned char seconds,mins, hours;
 	int sec_decimal;
 	char numStr[5];
 	SPI_Init();
@@ -28,19 +28,8 @@ void main(void)
 
 	while(1)
 	{
-		seconds=SPI_ReadTime();
-		//sprintf(numStr, "%d", BCDtoDec(seconds&0x7f));
-		//puts(numStr);		
-		//SendString(numStr);		
-		P0=seconds;
-		SendUART1(ten(seconds&0x7f)+48);
-		SendUART1(unit(seconds&0x7f)+48);
-		/*sec_decimal=BCDtoDec(seconds&0x7f);
-		sprintf(numStr, "%d", sec_decimal);
-		puts(numStr);		
-		SendString(numStr);*/
-		//SendUART1(BCDtoDec(seconds&0x7f));
-		Delay_ms(1000);
+		Display_time();
+		Delay_ms(500);
 	}
 	
 } 

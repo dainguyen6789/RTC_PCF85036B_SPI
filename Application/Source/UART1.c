@@ -1,9 +1,13 @@
 #include "stc15f2k60s2.h"
+ #include "PCF85063BTL.h"
 #define TBAUD (65536-FOSC/4/BAUD)
 #define FOSC 18432000L
 #define BAUD 115200
+
+
 bit busy;
 
+unsigned char SPI_ReadTime(unsigned char addr);
 
 void Uart() interrupt 4 using 1
 {
@@ -69,6 +73,27 @@ unsigned char DectoBCD(unsigned char dec)
 unsigned char ASCII_Letter(unsigned char dat)
 {
 	return dat+48;
+}
+
+void Display_time(void)
+{
+		unsigned char seconds,mins, hours;
+
+		hours=SPI_ReadTime(Hours);
+		SendUART1(ten(hours)+48);
+		SendUART1(unit(hours)+48);		
+		SendUART1(0x3A);// ":" ASCII letter
+		
+		mins=SPI_ReadTime(Minutes);
+		SendUART1(ten(mins)+48);
+		SendUART1(unit(mins)+48);		
+		SendUART1(0x3A);// ":" ASCII letter
+		
+		seconds=SPI_ReadTime(Seconds);
+		P0=seconds;
+		SendUART1(ten(seconds&0x7f)+48);
+		SendUART1(unit(seconds&0x7f)+48);
+		SendUART1(10);			//new line
 }
 
  

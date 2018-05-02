@@ -58,15 +58,22 @@ unsigned char SPI_ReceiveByte(void)
   return dat;
 }
 ////////////////////////////////////////////////////////////
-unsigned char SPI_ReadTime(void)
+unsigned char SPI_ReadTime(unsigned char addr)
 {
 	unsigned char i;
   unsigned char dat = 0;
 	PCF85063BTL_CS_Set();
-	SPI_SendByte(Read_Mode|Seconds);//send Read_mode and Seconds register's address
+	SPI_SendByte(Read_Mode|addr);//send Read_mode and Seconds register's address
 	dat=SPI_ReceiveByte();
 	PCF85063BTL_CS_Clr();
   return dat;
+}
+void SPI_WriteTime(unsigned char val,unsigned char addr)
+{
+	PCF85063BTL_CS_Set();
+	SPI_SendByte(Write_Mode|addr);//send Read_mode and Seconds register's address
+	SPI_SendByte(val);
+	PCF85063BTL_CS_Clr();
 }
 /***********************************************
 ************************************************/
