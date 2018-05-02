@@ -3,7 +3,7 @@
 //The PCF85063BTL contains 18 8-bit registers with an auto-incrementing register address, 
  sbit 			PCF85063BTL_CS	=	P2^0;	   
  sbit 			PCF85063BTL_SCK	=	P2^1;	   
- sbit 			PCF85063BTL_SDI	=	P2^3;	   
+ sbit 			PCF85063BTL_SDI	=	P2^2;	   
  sbit 			PCF85063BTL_SDO	=	P2^2;	   
  
  #define		PCF85063BTL_CS_Clr()			{PCF85063BTL_CS=0;} // Clear CS signal

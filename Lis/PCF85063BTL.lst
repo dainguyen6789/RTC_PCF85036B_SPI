@@ -1,0 +1,111 @@
+C51 COMPILER V9.52.0.0   PCF85063BTL                                                       05/02/2018 13:18:38 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE PCF85063BTL
+OBJECT MODULE PLACED IN .\Obj\PCF85063BTL.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Application\Source\PCF85063BTL.c LARGE BROWSE INCDIR(.\Application\Heade
+                    -r) DEBUG OBJECTEXTEND PRINT(.\Lis\PCF85063BTL.lst) TABS(2) OBJECT(.\Obj\PCF85063BTL.obj)
+
+line level    source
+
+   1          #include "PCF85063BTL.h"
+   2          
+   3          #include <intrins.h>
+   4          
+   5          /***********************************************
+   6          
+   7          ************************************************/
+   8          void PCF85063BTL_Delay(unsigned int us)
+   9          {
+  10   1        while( us--)
+  11   1        {
+  12   2          _nop_(); 
+  13   2        }             
+  14   1      }
+  15          /***********************************************
+  16          ************************************************/
+  17          void SPI_SendByte(unsigned char dat)// Send dat to SPI device/Slave
+  18          {
+  19   1        unsigned char i;
+  20   1        for (i=0; i<8; i++)            //
+  21   1        {
+  22   2          PCF85063BTL_SCK_Clr();          //    
+  23   2          if( (dat&0x80)==0x80 )       //
+  24   2          {
+  25   3              PCF85063BTL_SDI_Set();
+  26   3          }
+  27   2          else
+  28   2          {
+  29   3              PCF85063BTL_SDI_Clr();
+  30   3          }
+  31   2          PCF85063BTL_Delay(1);           //
+  32   2          PCF85063BTL_SCK_Set();          //
+  33   2          PCF85063BTL_Delay(1);           //
+  34   2          dat <<= 1;                   //
+  35   2        }
+  36   1      }
+  37          /***********************************************
+  38          ************************************************/
+  39          unsigned char SPI_ReceiveByte(void)
+  40          {
+  41   1        unsigned char i;
+  42   1        unsigned char dat = 0;
+  43   1      
+  44   1        PCF85063BTL_SDO_Set();          //
+  45   1        for (i=0; i<8; i++)         //
+  46   1        {
+  47   2          dat <<= 1;                //
+  48   2          PCF85063BTL_SCK_Clr();       //
+  49   2          PCF85063BTL_Delay(1);        //
+  50   2              
+  51   2          if (PCF85063BTL_SDO)        //If  PCF85063BTL_SDO is HIGH, dat will be 1(one) 
+  52   2          {
+  53   3            dat |= 0x01;            //
+  54   3          }
+C51 COMPILER V9.52.0.0   PCF85063BTL                                                       05/02/2018 13:18:38 PAGE 2   
+
+  55   2          PCF85063BTL_SCK_Set();       //
+  56   2          PCF85063BTL_Delay(1);        // 
+  57   2        }
+  58   1        return dat;
+  59   1      }
+  60          ////////////////////////////////////////////////////////////
+  61          unsigned char SPI_ReadTime(void)
+  62          {
+  63   1        unsigned char i;
+  64   1        unsigned char dat = 0;
+  65   1        PCF85063BTL_CS_Set();
+  66   1        SPI_SendByte(Read_Mode|Seconds);//send Read_mode and Seconds register's address
+  67   1        dat=SPI_ReceiveByte();
+  68   1        PCF85063BTL_CS_Clr();
+  69   1        return dat;
+  70   1      }
+*** WARNING C280 IN LINE 63 OF Application\Source\PCF85063BTL.c: 'i': unreferenced local variable
+  71          /***********************************************
+  72          ************************************************/
+  73          
+  74          void SPI_Init(void)
+  75          {
+  76   1        //P20,P21,P22 P23 quasi-bidirectional
+  77   1        //P2M1 =0x00;  
+  78   1        //P2M0 =0x00;
+  79   1        
+  80   1        P2M1 &=~( (1<<0) | (1<<1) | (1<<2) );  //~ bitwise NOT
+  81   1        P2M0 &=~( (1<<0) | (1<<1) | (1<<2) );  
+  82   1        PCF85063BTL_CS_Set();
+  83   1        PCF85063BTL_SCK_Clr();
+  84   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    108    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----       1
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

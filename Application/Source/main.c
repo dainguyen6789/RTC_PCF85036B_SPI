@@ -20,12 +20,18 @@
  //文件包含
  #include "stc15f2k60s2.h"
  #include "a25lc040.h"
- #include "hc595.h"
+ //#include "hc595.h"
+ //#include "PCF85063BTL.h"
+
 
  //测试数据大小 25LC040A eeprom内部大小为512字节
  #define TESTSIZE 512
- 
+ #define TBAUD (65536-FOSC/4/BAUD)
+#define FOSC 18432000L
+#define BAUD 115200
+
  //测试数据，512个字节 
+ 
 unsigned char code TestData[TESTSIZE] =
 {
   0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,
@@ -62,65 +68,47 @@ unsigned char code TestData[TESTSIZE] =
 	0xf0,0xf1,0xf2,0xf3,0xf4,0xf5,0xf6,0xf7,0xf8,0xf9,0xfa,0xfb,0xfc,0xfd,0xfe,0xff,
 };     
 
- //数据缓冲区
+ 
  unsigned char  BufferData[TESTSIZE];
  	 
- //函数声明
- void Delay_ms(unsigned int ms);
 
- //主方法
+void Delay_ms(unsigned int ms);
+void SendString(char *s);
+void SendUART1(unsigned char dat);
+void initUART1(void);
+bit busy;
+
+
+void Uart() interrupt 4 using 1
+{
+	if(RI) 
+	{
+		RI=0;
+	}
+	if(TI)
+	{
+		TI=0;
+		busy=0;
+	}
+}
+
 void main(void)
 {
- 	unsigned int cnt;
+	unsigned char seconds;
+	SPI_Init();
+	initUART1();
+	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
 
-	HC595_Init();				    //HC595初始化
-	A25LC040_Init();				//25LC040A初始化
-
-	Delay_ms(10);				   	//等待上电稳定
-
-	//写入512个字节数据
-	for(cnt=0;cnt<TESTSIZE;cnt++)
+	while(1)
 	{
-		//逐个字节写入       地址       数据
-		A25LC040_WriteByte( (0x00+cnt),TestData[cnt]);
+		seconds=SPI_ReadTime();
+		P0=seconds;
+		SendUART1(seconds&0x7f);
+		Delay_ms(1000);
 	}
-
-	//读出512个字节数据
-	for(cnt=0;cnt<TESTSIZE;cnt++)
-	{
-		//逐个字节读出放入数据缓冲区       地址       
-		BufferData[cnt]=A25LC040_ReadByte(0x00+cnt);
-	}
-
-	//比较读出的数据
-	for(cnt=0;cnt<TESTSIZE;cnt++)
-	{
-		//如果读出的数据和写入的数据不一样，则错误。
-		if(BufferData[cnt]!=TestData[cnt])
-		{
-			//显示错误
-			ToDisplayError();
-			while(1)
-			{			
-				LED_Display();
-			} 	
-		}
-	}
-
-	//显示正确信息
-	ToDisplayCorrect();			   
- 	while(1)
-	{			
-		LED_Display();
-	} 
+	
 } 
-/***********************************************
-函数名称：Delay_ms
-功    能：STC 1T单片机1ms延时程序
-入口参数：ms:延时的毫秒数
-返 回 值：无	
-备    注：示波器实测1.05ms 内部时钟11.0592MHz
-************************************************/
+
 void Delay_ms(unsigned int ms)
 {
   unsigned int De_Cnt;
@@ -129,6 +117,32 @@ void Delay_ms(unsigned int ms)
     for(De_Cnt = 0; De_Cnt < 600; De_Cnt++); 
   }             
 }
+void initUART1(void)
+{
+	SCON=0x50; //0101 0000 8-bit uart,  baud rate variable
+	AUXR |=0x95;//10010101 Timer2 as Baud Rate generator
+	T2L=TBAUD;
+	T2H=TBAUD>>8;	
+	ES=1; 					// enable uart1 interrupt
+	EA=1;						// each interrupt source will be enable or disable by setting its interrupt bit
+	PS=0; 					// Serial Port 1 interrupt priority control bit, DS page 561
+}
+
+void SendUART1(unsigned char dat)
+{
+	while(busy);
+	busy=1;
+	ACC=dat;
+	SBUF=ACC;
+}
 
 
+
+ void SendString(char *s)
+{
+	while(*s)
+	{
+		SendUART1(*s++);
+	}
+}
  

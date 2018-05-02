@@ -74,8 +74,11 @@ unsigned char SPI_ReadTime(void)
 void SPI_Init(void)
 {
 	//P20,P21,P22 P23 quasi-bidirectional
-	P2M1 &=~( (1<<0) | (1<<1) | (1<<2) | (1<<3) );  //~ bitwise NOT
-	P2M0 &=~( (1<<0) | (1<<1) | (1<<2) | (1<<3) );  
+	//P2M1 =0x00;  
+	//P2M0 =0x00;
+	
+	P2M1 &=~( (1<<0) | (1<<1) | (1<<2) );  //~ bitwise NOT
+	P2M0 &=~( (1<<0) | (1<<1) | (1<<2) );  
 	PCF85063BTL_CS_Set();
 	PCF85063BTL_SCK_Clr();
 }
