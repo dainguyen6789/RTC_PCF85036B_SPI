@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   UART1                                                             05/02/2018 15:37:32 PAGE 1   
+C51 COMPILER V9.52.0.0   UART1                                                             05/03/2018 10:18:36 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE UART1
@@ -9,112 +9,146 @@ COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Application\Source\UART1.c LARGE
 line level    source
 
    1          #include "stc15f2k60s2.h"
-   2           #include "PCF85063BTL.h"
-   3          #define TBAUD (65536-FOSC/4/BAUD)
-   4          #define FOSC 18432000L
-   5          #define BAUD 115200
-   6          
+   2          #include "PCF85063BTL.h"
+   3          #include <stdlib.h>
+   4          #define TBAUD (65536-FOSC/4/BAUD)
+   5          #define FOSC 18432000L
+   6          #define BAUD 115200
    7          
-   8          bit busy;
-   9          
-  10          unsigned char SPI_ReadTime(unsigned char addr);
-  11          
-  12          void Uart() interrupt 4 using 1
-  13          {
-  14   1        if(RI) 
-  15   1        {
-  16   2          RI=0;
-  17   2        }
-  18   1        if(TI)
-  19   1        {
-  20   2          TI=0;
-  21   2          busy=0;
-  22   2        }
-  23   1      }
-  24          void initUART1(void)
-  25          {
-  26   1        SCON=0x50; //0101 0000 8-bit uart,  baud rate variable
-  27   1        AUXR |=0x95;//10010101 Timer2 as Baud Rate generator
-  28   1        T2L=TBAUD;
-  29   1        T2H=TBAUD>>8; 
-  30   1        ES=1;           // enable uart1 interrupt
-  31   1        EA=1;           // each interrupt source will be enable or disable by setting its interrupt bit
-  32   1        PS=0;           // Serial Port 1 interrupt priority control bit, DS page 561
-  33   1      }
-  34          
-  35          void SendUART1(unsigned char dat)
-  36          {
-  37   1        while(busy);
-  38   1        busy=1;
-  39   1        ACC=dat;
-  40   1        SBUF=ACC;
-  41   1      }
-  42          
-  43          
-  44          
-  45           void SendString(char *s)
-  46          {
-  47   1        while(*s)
-  48   1        {
-  49   2          SendUART1(*s++);
-  50   2        }
-  51   1      }
-  52          unsigned char ten(unsigned char BCD)
-  53          {
-  54   1        return (BCD)>>4;
-C51 COMPILER V9.52.0.0   UART1                                                             05/02/2018 15:37:32 PAGE 2   
+   8          
+   9          bit busy;
+  10          
+  11          unsigned char SPI_ReadTime(unsigned char addr);
+  12          void SPI_WriteTime(unsigned char val,unsigned char addr);
+  13          unsigned char ASCIItoBCD(unsigned char ascii[2]); // time format hh:mm:ss
+  14          
+  15          unsigned char RX_Data_Uart_Cnt,Rec_data_hour[2],Rec_data_min[2],hour_count,min_count;
+  16          
+  17          
+  18          
+  19          void Uart() interrupt 4 using 1
+  20          {
+  21   1        if(RI) 
+  22   1        {
+  23   2          RX_Data_Uart_Cnt++;
+  24   2          RI=0;
+  25   2          if (RX_Data_Uart_Cnt<=2)
+  26   2          Rec_data_hour[RX_Data_Uart_Cnt-1]=SBUF;
+  27   2          else if (RX_Data_Uart_Cnt>=3)
+  28   2          {
+  29   3            //RI=0; //SW clear
+  30   3            //P0=Rec_data;
+  31   3            Rec_data_min[RX_Data_Uart_Cnt-3]=SBUF;
+  32   3            if (RX_Data_Uart_Cnt==4)
+  33   3            {
+  34   4              RX_Data_Uart_Cnt=0;
+  35   4              hour_count=ASCIItoBCD(Rec_data_hour);
+  36   4              min_count=ASCIItoBCD(Rec_data_min);
+  37   4              SPI_WriteTime(hour_count,Hours);    // data , register address
+  38   4              SPI_WriteTime(min_count,Minutes);
+  39   4            }
+  40   3          }
+  41   2      
+  42   2          
+  43   2        }
+  44   1        if(TI)
+  45   1        {
+  46   2          TI=0;
+  47   2          busy=0;
+  48   2        }
+  49   1      }
+  50          void initUART1(void)
+  51          {
+  52   1        SCON=0x50; //0101 0000 8-bit uart,  baud rate variable
+  53   1        AUXR |=0x95;//10010101 Timer2 as Baud Rate generator
+  54   1        T2L=TBAUD;
+C51 COMPILER V9.52.0.0   UART1                                                             05/03/2018 10:18:36 PAGE 2   
 
-  55   1      }
-  56          unsigned char unit(unsigned char BCD)
-  57          {
-  58   1      
-  59   1        //unit=BCD&0x0f;
-  60   1        //dec=ten*10+unit;
-  61   1        return BCD&0x0f;
-  62   1      }
-  63          unsigned char DectoBCD(unsigned char dec)
-  64          {
-  65   1      /*  unsigned char ten,unit;
-  66   1        ten=BCD>>4;
-  67   1        unit=BCD&0x0f;
-  68   1        //dec=ten*10+unit;
-  69   1        return ten*10+unit;*/
-  70   1        return dec;
-  71   1      }
-  72          //if dat=1, we need to use ASCII value to display "1" on UART1
-  73          unsigned char ASCII_Letter(unsigned char dat)
-  74          {
-  75   1        return dat+48;
-  76   1      }
-  77          
-  78          void Display_time(void)
+  55   1        T2H=TBAUD>>8; 
+  56   1        ES=1;           // enable uart1 interrupt
+  57   1        EA=1;           // each interrupt source will be enable or disable by setting its interrupt bit
+  58   1        PS=0;           // Serial Port 1 interrupt priority control bit, DS page 561
+  59   1      }
+  60          
+  61          void SendUART1(unsigned char dat)
+  62          {
+  63   1        while(busy);
+  64   1        busy=1;
+  65   1        ACC=dat;
+  66   1        SBUF=ACC;
+  67   1      }
+  68          
+  69          
+  70          
+  71           void SendString(char *s)
+  72          {
+  73   1        while(*s)
+  74   1        {
+  75   2          SendUART1(*s++);
+  76   2        }
+  77   1      }
+  78          unsigned char ten(unsigned char BCD)
   79          {
-  80   1          unsigned char seconds,mins, hours;
-  81   1      
-  82   1          hours=SPI_ReadTime(Hours);
-  83   1          SendUART1(ten(hours)+48);
-  84   1          SendUART1(unit(hours)+48);    
-  85   1          SendUART1(0x3A);// ":" ASCII letter
-  86   1          
-  87   1          mins=SPI_ReadTime(Minutes);
-  88   1          SendUART1(ten(mins)+48);
-  89   1          SendUART1(unit(mins)+48);   
-  90   1          SendUART1(0x3A);// ":" ASCII letter
-  91   1          
-  92   1          seconds=SPI_ReadTime(Seconds);
-  93   1          P0=seconds;
-  94   1          SendUART1(ten(seconds&0x7f)+48);
-  95   1          SendUART1(unit(seconds&0x7f)+48);
-  96   1          SendUART1(10);      //new line
-  97   1      }
-  98          
-  99           
+  80   1        return (BCD)>>4;
+  81   1      }
+  82          unsigned char unit(unsigned char BCD)
+  83          {
+  84   1      
+  85   1        //unit=BCD&0x0f;
+  86   1        //dec=ten*10+unit;
+  87   1        return BCD&0x0f;
+  88   1      }
+  89          unsigned char DectoBCD(unsigned char dec)
+  90          {
+  91   1        
+  92   1        return dec;
+  93   1      }
+  94          //if dat=1, we need to use ASCII value to display "1" on UART1
+  95          unsigned char ASCII_Letter(unsigned char dat)
+  96          {
+  97   1        
+  98   1        return dat+48;
+  99   1      }
+ 100          
+ 101          unsigned char ASCIItoBCD(unsigned char ascii[2]) // time format hh:mm:ss
+ 102          {
+ 103   1        unsigned char dec_val,ten, unit;
+ 104   1        dec_val=atoi(ascii);
+ 105   1        ten=dec_val/10;
+ 106   1        unit=dec_val%10;
+ 107   1        return ten<<4|unit;
+ 108   1        
+ 109   1      }
+ 110          void Display_time(void)
+ 111          {
+ 112   1          unsigned char seconds,mins, hours;
+ 113   1      
+ 114   1          hours=SPI_ReadTime(Hours);
+ 115   1          SendUART1(ten(hours)+48);
+ 116   1          SendUART1(unit(hours)+48);    
+C51 COMPILER V9.52.0.0   UART1                                                             05/03/2018 10:18:36 PAGE 3   
+
+ 117   1          SendUART1(0x3A);// ":" ASCII letter
+ 118   1          
+ 119   1          mins=SPI_ReadTime(Minutes);
+ 120   1          SendUART1(ten(mins)+48);
+ 121   1          SendUART1(unit(mins)+48);   
+ 122   1          SendUART1(0x3A);// ":" ASCII letter
+ 123   1          
+ 124   1          seconds=SPI_ReadTime(Seconds);
+ 125   1          P0=seconds;
+ 126   1          SendUART1(ten(seconds&0x7f)+48);
+ 127   1          SendUART1(unit(seconds&0x7f)+48);
+ 128   1          SendUART1(10);      //new line
+ 129   1      }
+ 130          
+ 131           
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    187    ----
+   CODE SIZE        =    337    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----       3
+   XDATA SIZE       =      7       3
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

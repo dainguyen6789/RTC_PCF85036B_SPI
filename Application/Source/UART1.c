@@ -1,5 +1,6 @@
 #include "stc15f2k60s2.h"
- #include "PCF85063BTL.h"
+#include "PCF85063BTL.h"
+#include <stdlib.h>
 #define TBAUD (65536-FOSC/4/BAUD)
 #define FOSC 18432000L
 #define BAUD 115200
@@ -8,12 +9,37 @@
 bit busy;
 
 unsigned char SPI_ReadTime(unsigned char addr);
+void SPI_WriteTime(unsigned char val,unsigned char addr);
+unsigned char ASCIItoBCD(unsigned char ascii[2]); // time format hh:mm:ss
+
+unsigned char RX_Data_Uart_Cnt,Rec_data_hour[2],Rec_data_min[2],hour_count,min_count;
+
+
 
 void Uart() interrupt 4 using 1
 {
 	if(RI) 
 	{
+		RX_Data_Uart_Cnt++;
 		RI=0;
+		if (RX_Data_Uart_Cnt<=2)
+		Rec_data_hour[RX_Data_Uart_Cnt-1]=SBUF;
+		else if (RX_Data_Uart_Cnt>=3)
+		{
+			//RI=0; //SW clear
+			//P0=Rec_data;
+			Rec_data_min[RX_Data_Uart_Cnt-3]=SBUF;
+			if (RX_Data_Uart_Cnt==4)
+			{
+				RX_Data_Uart_Cnt=0;
+				hour_count=ASCIItoBCD(Rec_data_hour);
+				min_count=ASCIItoBCD(Rec_data_min);
+				SPI_WriteTime(hour_count,Hours);		// data , register address
+				SPI_WriteTime(min_count,Minutes);
+			}
+		}
+
+		
 	}
 	if(TI)
 	{
@@ -62,19 +88,25 @@ unsigned char unit(unsigned char BCD)
 }
 unsigned char DectoBCD(unsigned char dec)
 {
-/*	unsigned char ten,unit;
-	ten=BCD>>4;
-	unit=BCD&0x0f;
-	//dec=ten*10+unit;
-	return ten*10+unit;*/
+	
 	return dec;
 }
 //if dat=1, we need to use ASCII value to display "1" on UART1
 unsigned char ASCII_Letter(unsigned char dat)
 {
+	
 	return dat+48;
 }
 
+unsigned char ASCIItoBCD(unsigned char ascii[2]) // time format hh:mm:ss
+{
+	unsigned char dec_val,ten, unit;
+	dec_val=atoi(ascii);
+	ten=dec_val/10;
+	unit=dec_val%10;
+	return ten<<4|unit;
+	
+}
 void Display_time(void)
 {
 		unsigned char seconds,mins, hours;
