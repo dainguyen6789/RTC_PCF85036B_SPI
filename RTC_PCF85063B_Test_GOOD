@@ -48,8 +48,8 @@ void main(void)
 			SPI_WriteTime(hour_count,Hours);		// data , register address
 			SPI_WriteTime(min_count,Minutes);
 			st_time=0;
-			SendUART1(hour_count);
-			SendUART1(min_count);
+			//SendUART1(hour_count);
+			//SendUART1(min_count);
 		}	
 		else
 		{
@@ -105,7 +105,6 @@ void Uart() interrupt 4 using 1
 	}
 }
 
-
 void SendUART1(unsigned char dat)
 {
 	while(busy);
@@ -113,3 +112,4 @@ void SendUART1(unsigned char dat)
 	ACC=dat;
 	SBUF=ACC;
 }
+

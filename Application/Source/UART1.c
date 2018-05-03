@@ -1,7 +1,7 @@
 #include "stc15f2k60s2.h"
 #include "PCF85063BTL.h"
 #include <stdlib.h>
-#include "UART1.h"
+//#include "UART1.h"
 #define TBAUD (65536-FOSC/4/BAUD)
 #define FOSC 18432000L
 #define BAUD 115200
@@ -39,13 +39,7 @@ void initUART1(void)
 		SendUART1(*s++);
 	}
 }
-void SendUART1(unsigned char dat)
-{
-	while(busy);
-	busy=1;
-	ACC=dat;
-	SBUF=ACC;
-}
+
 unsigned char ten(unsigned char BCD)
 {
 	return (BCD)>>4;
