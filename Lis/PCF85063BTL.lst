@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   PCF85063BTL                                                       05/03/2018 10:18:36 PAGE 1   
+C51 COMPILER V9.52.0.0   PCF85063BTL                                                       05/03/2018 14:56:30 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE PCF85063BTL
@@ -62,7 +62,7 @@ line level    source
   52   2          {
   53   3            dat |= 0x01;            //
   54   3          }
-C51 COMPILER V9.52.0.0   PCF85063BTL                                                       05/03/2018 10:18:36 PAGE 2   
+C51 COMPILER V9.52.0.0   PCF85063BTL                                                       05/03/2018 14:56:30 PAGE 2   
 
   55   2          PCF85063BTL_SCK_Set();       //
   56   2          PCF85063BTL_Delay(1);        // 
@@ -72,7 +72,7 @@ line level    source
   60          ////////////////////////////////////////////////////////////
   61          unsigned char SPI_ReadTime(unsigned char addr)
   62          {
-  63   1        unsigned char i;
+  63   1        //unsigned char i;
   64   1        unsigned char dat = 0;
   65   1        PCF85063BTL_CS_Set();
   66   1        SPI_SendByte(Read_Mode|addr);//send Read_mode and Seconds register's address
@@ -80,34 +80,36 @@ line level    source
   68   1        PCF85063BTL_CS_Clr();
   69   1        return dat;
   70   1      }
-*** WARNING C280 IN LINE 63 OF Application\Source\PCF85063BTL.c: 'i': unreferenced local variable
   71          void SPI_WriteTime(unsigned char val,unsigned char addr)
   72          {
-  73   1        PCF85063BTL_CS_Set();
-  74   1        SPI_SendByte(Write_Mode|addr);//send Read_mode and Seconds register's address
-  75   1        SPI_SendByte(val);
-  76   1        PCF85063BTL_CS_Clr();
-  77   1      }
-  78          /***********************************************
-  79          ************************************************/
-  80          
-  81          void SPI_Init(void)
-  82          {
-  83   1        //P20,P21,P22 P23 quasi-bidirectional
-  84   1        //P2M1 =0x00;  
-  85   1        //P2M0 =0x00;
-  86   1        
-  87   1        P2M1 &=~( (1<<0) | (1<<1) | (1<<2) );  //~ bitwise NOT
-  88   1        P2M0 &=~( (1<<0) | (1<<1) | (1<<2) );  
-  89   1        PCF85063BTL_CS_Set();
-  90   1        PCF85063BTL_SCK_Clr();
-  91   1      }
+  73   1        //PCF85063BTL_CS_Clr();
+  74   1        PCF85063BTL_CS_Set();
+  75   1        SPI_SendByte(Write_Mode|addr);//send Read_mode and Seconds register's address
+  76   1        SPI_SendByte(val);
+  77   1        SPI_SendByte(val);
+  78   1        PCF85063BTL_CS_Clr();
+  79   1      }
+  80          /***********************************************
+  81          ************************************************/
+  82          
+  83          void SPI_Init(void)
+  84          {
+  85   1        //P20,P21,P22 P23 quasi-bidirectional
+  86   1        //P2M1 =0x00;  
+  87   1        //P2M0 =0x00;
+  88   1        
+  89   1        P2M1 &=~( (1<<0) | (1<<1) | (1<<2) );  //~ bitwise NOT
+  90   1        P2M0 &=~( (1<<0) | (1<<1) | (1<<2) );  
+  91   1        PCF85063BTL_CS_Set();
+  92   1        PCF85063BTL_CS_Clr();
+  93   1        PCF85063BTL_SCK_Clr();
+  94   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    131    ----
+   CODE SIZE        =    138    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----       1
+   XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
@@ -115,4 +117,4 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
 END OF MODULE INFORMATION.
 
 
-C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

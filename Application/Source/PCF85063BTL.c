@@ -60,7 +60,7 @@ unsigned char SPI_ReceiveByte(void)
 ////////////////////////////////////////////////////////////
 unsigned char SPI_ReadTime(unsigned char addr)
 {
-	unsigned char i;
+	//unsigned char i;
   unsigned char dat = 0;
 	PCF85063BTL_CS_Set();
 	SPI_SendByte(Read_Mode|addr);//send Read_mode and Seconds register's address
@@ -70,8 +70,10 @@ unsigned char SPI_ReadTime(unsigned char addr)
 }
 void SPI_WriteTime(unsigned char val,unsigned char addr)
 {
+	//PCF85063BTL_CS_Clr();
 	PCF85063BTL_CS_Set();
 	SPI_SendByte(Write_Mode|addr);//send Read_mode and Seconds register's address
+	SPI_SendByte(val);
 	SPI_SendByte(val);
 	PCF85063BTL_CS_Clr();
 }
@@ -87,5 +89,6 @@ void SPI_Init(void)
 	P2M1 &=~( (1<<0) | (1<<1) | (1<<2) );  //~ bitwise NOT
 	P2M0 &=~( (1<<0) | (1<<1) | (1<<2) );  
 	PCF85063BTL_CS_Set();
+	PCF85063BTL_CS_Clr();
 	PCF85063BTL_SCK_Clr();
 }

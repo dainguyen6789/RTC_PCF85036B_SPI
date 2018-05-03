@@ -1,52 +1,23 @@
 #include "stc15f2k60s2.h"
 #include "PCF85063BTL.h"
 #include <stdlib.h>
+#include "UART1.h"
 #define TBAUD (65536-FOSC/4/BAUD)
 #define FOSC 18432000L
 #define BAUD 115200
 
 
-bit busy;
+
 
 unsigned char SPI_ReadTime(unsigned char addr);
 void SPI_WriteTime(unsigned char val,unsigned char addr);
 unsigned char ASCIItoBCD(unsigned char ascii[2]); // time format hh:mm:ss
-
-unsigned char RX_Data_Uart_Cnt,Rec_data_hour[2],Rec_data_min[2],hour_count,min_count;
-
+void SendUART1(unsigned char dat);
 
 
-void Uart() interrupt 4 using 1
-{
-	if(RI) 
-	{
-		RX_Data_Uart_Cnt++;
-		RI=0;
-		if (RX_Data_Uart_Cnt<=2)
-		Rec_data_hour[RX_Data_Uart_Cnt-1]=SBUF;
-		else if (RX_Data_Uart_Cnt>=3)
-		{
-			//RI=0; //SW clear
-			//P0=Rec_data;
-			Rec_data_min[RX_Data_Uart_Cnt-3]=SBUF;
-			if (RX_Data_Uart_Cnt==4)
-			{
-				RX_Data_Uart_Cnt=0;
-				hour_count=ASCIItoBCD(Rec_data_hour);
-				min_count=ASCIItoBCD(Rec_data_min);
-				SPI_WriteTime(hour_count,Hours);		// data , register address
-				SPI_WriteTime(min_count,Minutes);
-			}
-		}
 
-		
-	}
-	if(TI)
-	{
-		TI=0;
-		busy=0;
-	}
-}
+
+
 void initUART1(void)
 {
 	SCON=0x50; //0101 0000 8-bit uart,  baud rate variable
@@ -55,16 +26,9 @@ void initUART1(void)
 	T2H=TBAUD>>8;	
 	ES=1; 					// enable uart1 interrupt
 	EA=1;						// each interrupt source will be enable or disable by setting its interrupt bit
-	PS=0; 					// Serial Port 1 interrupt priority control bit, DS page 561
+	//PS=0; 					// Serial Port 1 interrupt priority control bit, DS page 561
 }
 
-void SendUART1(unsigned char dat)
-{
-	while(busy);
-	busy=1;
-	ACC=dat;
-	SBUF=ACC;
-}
 
 
 
@@ -74,6 +38,13 @@ void SendUART1(unsigned char dat)
 	{
 		SendUART1(*s++);
 	}
+}
+void SendUART1(unsigned char dat)
+{
+	while(busy);
+	busy=1;
+	ACC=dat;
+	SBUF=ACC;
 }
 unsigned char ten(unsigned char BCD)
 {
