@@ -1,0 +1,123 @@
+C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               05/07/2018 16:58:03 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE LCD_DRIVER_SPLC780D
+OBJECT MODULE PLACED IN .\Obj\LCd_Driver_SPLC780D.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Application\Source\LCd_Driver_SPLC780D.c LARGE BROWSE INCDIR(.\Applicati
+                    -on\Header) DEBUG OBJECTEXTEND PRINT(.\Lis\LCd_Driver_SPLC780D.lst) TABS(2) OBJECT(.\Obj\LCd_Driver_SPLC780D.obj)
+
+line level    source
+
+   1          #include "LCD_Driver_SPLC780D.h"
+   2          #include "stc15f2k60s2.h"
+   3          
+   4          
+   5          void Wait_ms(int ms);
+   6          void Command(unsigned char dat);
+   7          void WriteData(unsigned char dat);
+   8          
+   9          void LCD_Init(void)
+  10          {
+  11   1      
+  12   1        Wait_ms(100);
+  13   1        Command(0x03);
+  14   1        
+  15   1        Wait_ms(10);
+  16   1        Command(0x03);
+  17   1        
+  18   1        Wait_ms(150);
+  19   1        Command(0x03);
+  20   1        
+  21   1        Wait_ms(20);
+  22   1        Command(0x02);
+  23   1        
+  24   1        Wait_ms(20);
+  25   1        Command(0x02);
+  26   1        
+  27   1        Wait_ms(20);
+  28   1        Command(0x08);
+  29   1        
+  30   1        Wait_ms(20);  
+  31   1        Command(0x00);
+  32   1        
+  33   1        Wait_ms(20);
+  34   1        Command(0x08);
+  35   1        
+  36   1        Wait_ms(20);  
+  37   1        Command(0x00);
+  38   1        
+  39   1        Wait_ms(20);
+  40   1        Command(0x01);
+  41   1        
+  42   1        Wait_ms(20);  
+  43   1      // entry mode, the display has no shift
+  44   1        Command(0x00);
+  45   1        
+  46   1        Wait_ms(20);  
+  47   1        Command(0x06);
+  48   1        Wait_ms(20);
+  49   1        
+  50   1      }
+  51          void WriteData(unsigned char dat)
+  52          { 
+  53   1        LCD_RS=1;
+  54   1        LCD_RW=0;
+C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               05/07/2018 16:58:03 PAGE 2   
+
+  55   1        LCD_E=1;
+  56   1        Wait_ms(1);
+  57   1        LCD_E=0;
+  58   1        // 4 high bits
+  59   1        LCD_D7=dat&(1<<7) >>7;
+  60   1        LCD_D6=dat&(1<<6) >>6;
+  61   1        LCD_D5=dat&(1<<5) >>5;
+  62   1        LCD_D4=dat&(1<<4) >>4;
+  63   1        //Wai_ms(10);
+  64   1        LCD_E=1;
+  65   1        Wait_ms(1);
+  66   1        LCD_E=0;
+  67   1        // 4 low bits
+  68   1        LCD_D7=dat&(1<<3) >>3;
+  69   1        LCD_D6=dat&(1<<2) >>2;
+  70   1        LCD_D5=dat&(1<<1) >>1;
+  71   1        LCD_D4=dat&1;   
+  72   1      }
+  73          
+  74          void Command(unsigned char dat)//dat=0x0X
+  75          { 
+  76   1        LCD_RS=0;
+  77   1        LCD_RW=0;
+  78   1        LCD_E=1;
+  79   1        Wait_ms(1);
+  80   1        LCD_E=0;
+  81   1        //we only consider 4 low bits
+  82   1        LCD_D7=dat&(1<<3) >>3;
+  83   1        LCD_D6=dat&(1<<2) >>2;
+  84   1        LCD_D5=dat&(1<<1) >>1;
+  85   1        LCD_D4=dat&1;   
+  86   1      }
+  87          
+  88          void Wait_ms(int ms)
+  89          {
+  90   1        unsigned int De_Cnt;
+  91   1        while( (ms--) != 0)
+  92   1        {
+  93   2          for(De_Cnt = 0; De_Cnt < 600; De_Cnt++); 
+  94   2        }   
+  95   1      }
+  96          
+  97          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    241    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----       2
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
