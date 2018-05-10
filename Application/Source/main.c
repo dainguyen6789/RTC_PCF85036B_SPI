@@ -21,6 +21,8 @@ void SPI_WriteTime(unsigned char val,unsigned char addr);
 unsigned char ASCIItoBCD(unsigned char ascii[2]); // time format hh:mm:ss
 void SendUART1(unsigned char dat);
 void SPI_Init(void);
+void WriteData(unsigned char dat);
+void LCD_Init(void);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -40,7 +42,11 @@ void main(void)
 	Delay_ms(500);
 	SPI_WriteTime(0x12,Minutes);
 	Delay_ms(500);
-
+	LCD_Init();
+	Delay_ms(500);
+	WriteData(0x33);
+	Delay_ms(500);
+	//WriteData(0x32);	
 	while(1)
 	{
 		if(st_time)

@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               05/07/2018 16:58:03 PAGE 1   
+C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               05/10/2018 16:55:17 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE LCD_DRIVER_SPLC780D
@@ -19,22 +19,22 @@ line level    source
    9          void LCD_Init(void)
   10          {
   11   1      
-  12   1        Wait_ms(100);
-  13   1        Command(0x03);
+  12   1        Wait_ms(150);
+  13   1        Command(0x02);
   14   1        
-  15   1        Wait_ms(10);
-  16   1        Command(0x03);
+  15   1        Wait_ms(50);
+  16   1        Command(0x02);
   17   1        
   18   1        Wait_ms(150);
-  19   1        Command(0x03);
+  19   1        Command(0x02);
   20   1        
-  21   1        Wait_ms(20);
+  21   1        Wait_ms(50);
   22   1        Command(0x02);
   23   1        
-  24   1        Wait_ms(20);
+  24   1        Wait_ms(50);
   25   1        Command(0x02);
   26   1        
-  27   1        Wait_ms(20);
+  27   1        Wait_ms(50);
   28   1        Command(0x08);
   29   1        
   30   1        Wait_ms(20);  
@@ -62,57 +62,77 @@ line level    source
   52          { 
   53   1        LCD_RS=1;
   54   1        LCD_RW=0;
-C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               05/07/2018 16:58:03 PAGE 2   
+C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               05/10/2018 16:55:17 PAGE 2   
 
   55   1        LCD_E=1;
-  56   1        Wait_ms(1);
+  56   1        Wait_ms(10);
   57   1        LCD_E=0;
   58   1        // 4 high bits
-  59   1        LCD_D7=dat&(1<<7) >>7;
-  60   1        LCD_D6=dat&(1<<6) >>6;
-  61   1        LCD_D5=dat&(1<<5) >>5;
-  62   1        LCD_D4=dat&(1<<4) >>4;
-  63   1        //Wai_ms(10);
-  64   1        LCD_E=1;
-  65   1        Wait_ms(1);
-  66   1        LCD_E=0;
+  59   1        LCD_D7=(dat&(1<<7)) >>7;
+  60   1        LCD_D6=(dat&(1<<6)) >>6;
+  61   1        LCD_D5=(dat&(1<<5)) >>5;
+  62   1        LCD_D4=(dat&(1<<4)) >>4;
+  63   1        Wait_ms(10);
+  64   1        /*LCD_E=1;
+  65   1        Wait_ms(100);
+  66   1        LCD_E=0;*/
   67   1        // 4 low bits
-  68   1        LCD_D7=dat&(1<<3) >>3;
-  69   1        LCD_D6=dat&(1<<2) >>2;
-  70   1        LCD_D5=dat&(1<<1) >>1;
-  71   1        LCD_D4=dat&1;   
-  72   1      }
-  73          
-  74          void Command(unsigned char dat)//dat=0x0X
-  75          { 
-  76   1        LCD_RS=0;
-  77   1        LCD_RW=0;
-  78   1        LCD_E=1;
-  79   1        Wait_ms(1);
-  80   1        LCD_E=0;
-  81   1        //we only consider 4 low bits
-  82   1        LCD_D7=dat&(1<<3) >>3;
-  83   1        LCD_D6=dat&(1<<2) >>2;
-  84   1        LCD_D5=dat&(1<<1) >>1;
-  85   1        LCD_D4=dat&1;   
-  86   1      }
-  87          
-  88          void Wait_ms(int ms)
-  89          {
-  90   1        unsigned int De_Cnt;
-  91   1        while( (ms--) != 0)
-  92   1        {
-  93   2          for(De_Cnt = 0; De_Cnt < 600; De_Cnt++); 
-  94   2        }   
-  95   1      }
-  96          
-  97          
+  68   1        LCD_D7=0;//(dat&(1<<3)) >>3;
+  69   1        LCD_D6=0;//(dat&(1<<2)) >>2;
+  70   1        LCD_D5=1;//(dat&(1<<1)) >>1;
+  71   1        LCD_D4=1;//dat&1; 
+  72   1        LCD_E=1;
+  73   1        Wait_ms(10);
+  74   1        LCD_E=0;  
+  75   1        LCD_RS=0; 
+  76   1      }
+  77          
+  78          void Command(unsigned char dat)//dat=0x0X
+  79          { 
+  80   1        LCD_RS=0;
+  81   1        LCD_RW=0;
+  82   1        LCD_E=1;
+  83   1        Wait_ms(10);
+  84   1        LCD_E=0;
+  85   1        //we only consider 4 low bits
+  86   1        LCD_D7=dat&(1<<3) >>3;
+  87   1        LCD_D6=dat&(1<<2) >>2;
+  88   1        LCD_D5=dat&(1<<1) >>1;
+  89   1        LCD_D4=dat&0x01;  
+  90   1        /*LCD_E=1;
+  91   1        Wait_ms(10);
+  92   1        LCD_E=0;  */
+  93   1      }
+  94          
+  95          void Wait_ms(int ms)
+  96          {
+  97   1        unsigned int De_Cnt;
+  98   1        while( (ms--) != 0)
+  99   1        {
+ 100   2          for(De_Cnt = 0; De_Cnt < 500; De_Cnt++); 
+ 101   2        }   
+ 102   1      }
+ 103           void DisplayLCD(unsigned char BCD)
+ 104          {
+ 105   1        unsigned char first_digit, second_digit;
+ 106   1        first_digit=BCD>>4 | 0x30;
+ 107   1        second_digit=BCD&0x0F | 0x30;
+ 108   1        //write 1st letter 
+ 109   1        WriteData(first_digit);
+ 110   1        // write second letter
+ 111   1        WriteData(second_digit);
+ 112   1      
+ 113   1      }
+ 114          
+ 115          
+
+C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               05/10/2018 16:55:17 PAGE 3   
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    241    ----
+   CODE SIZE        =    324    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----       2
+   XDATA SIZE       =   ----       3
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

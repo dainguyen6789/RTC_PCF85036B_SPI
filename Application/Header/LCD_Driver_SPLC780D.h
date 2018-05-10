@@ -5,9 +5,9 @@
 #define Entry_Mode_Set 0x06
 #define Function_Set_8bit 0x38
 #define Function_Set_4bit	0x18
- sbit 			LCD_E	=	P1^1;	 
- sbit 			LCD_RS	=	P1^2;	   
- sbit 			LCD_RW	=	P1^3;	   
+ sbit 			LCD_E	=	P1^3;	 
+ sbit 			LCD_RS	=	P1^1;	   
+ sbit 			LCD_RW	=	P1^2;	   
  sbit 			LCD_D4	=	P1^4;	   
  sbit 			LCD_D5	=	P1^5;	
  sbit 			LCD_D6	=	P1^6;	
