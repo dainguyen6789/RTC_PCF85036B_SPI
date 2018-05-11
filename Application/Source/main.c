@@ -35,6 +35,7 @@ void main(void)
 	unsigned char seconds,mins, hours;
 	int sec_decimal;
 	char numStr[5];
+	LCD_Init();
 	SPI_Init();
 	initUART1();
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
@@ -42,11 +43,11 @@ void main(void)
 	Delay_ms(500);
 	SPI_WriteTime(0x12,Minutes);
 	Delay_ms(500);
-	LCD_Init();
+	
+	//Delay_ms(500);
+	WriteData(0x54);
 	Delay_ms(500);
-	WriteData(0x33);
-	Delay_ms(500);
-	//WriteData(0x32);	
+	WriteData(0x32);	
 	while(1)
 	{
 		if(st_time)
