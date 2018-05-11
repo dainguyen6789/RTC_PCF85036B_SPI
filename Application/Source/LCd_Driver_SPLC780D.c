@@ -11,46 +11,25 @@ void LCD_Init(void)
 
 	Wait_ms(150);
 	Command(0x03);
+
+	Wait_ms(50);
+	Command(0x03);	
 	
-	Wait_ms(30);
+	Wait_ms(50);
 	Command(0x03);
-	
+
 	Wait_ms(10);
-	Command(0x03);
-	
-	Wait_ms(10);
-	Command(0x03);
-	Wait_ms(10);
-	
-	//Wait_ms(50);
 	Command(0x02);
-	Command(0x00);
+	//Command(0x00);
 	
-	//Wait_ms(50);
 	Command(0x02);
-	
-	//Wait_ms(50);
 	Command(0x08);
-	
-	//Wait_ms(20);	
-	Command(0x00);
-	
-	//Wait_ms(20);
-	Command(0x08);
-	
-	//Wait_ms(20);	
-	Command(0x00);
-	
-	//Wait_ms(20);
 	Command(0x01);
-	
-	//Wait_ms(20);	
-// entry mode, the display has no shift
 	Command(0x00);
-	
-	Wait_ms(20);	
+	Command(0x00);
+	Command(0x0F);
+	Command(0x00);
 	Command(0x06);
-	Wait_ms(20);
 	
 }
 void WriteData(unsigned char dat)
@@ -95,15 +74,15 @@ void Command(unsigned char dat)//dat=0x0X
 	Wait_ms(10);
 	LCD_E=0;*/
 	//we only consider 4 low bits
-	if(dat&(1<<3) >>3)
+	if((dat&(1<<3)) >>3)
 		LCD_D7=1;
 	else
 		LCD_D7=0;
-	if(dat&(1<<2) >>2)
+	if((dat&(1<<2)) >>2)
 		LCD_D6=1;
 	else
 		LCD_D6=0;	
-	if(dat&(1<<1) >>1)
+	if((dat&(1<<1)) >>1)
 		LCD_D5=1;
 	else
 		LCD_D5=0;	
