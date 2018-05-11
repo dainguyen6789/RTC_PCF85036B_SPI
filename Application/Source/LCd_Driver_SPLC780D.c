@@ -44,23 +44,18 @@ void WriteData(unsigned char dat)
 	LCD_RS=1;
 	LCD_RW=0;
 	// 4 high bits
-	/*LCD_D7=dat&(1<<7) >>7;
-	LCD_D6=dat&(1<<6) >>6;
-	LCD_D5=dat&(1<<5) >>5;
-	LCD_D4=dat&(1<<4) >>4;*/
-	LCD_D7=0;//(dat&(1<<3)) >>3;
-	LCD_D6=0;//(dat&(1<<2)) >>2;
-	LCD_D5=1;//(dat&(1<<1)) >>1;
-	LCD_D4=1;//dat&1;		
-	//Wait_ms(10);
+	LCD_D7=(dat&(1<<7)) >>7;
+	LCD_D6=(dat&(1<<6)) >>6;
+	LCD_D5=(dat&(1<<5)) >>5;
+	LCD_D4=(dat&(1<<4)) >>4;
 	LCD_E=1;
 	Wait_ms(1);
 	LCD_E=0;
 	// 4 low bits
-	LCD_D7=0;//(dat&(1<<3)) >>3;
-	LCD_D6=0;//(dat&(1<<2)) >>2;
-	LCD_D5=0;//(dat&(1<<1)) >>1;
-	LCD_D4=1;//dat&1;	
+	LCD_D7=(dat&(1<<3)) >>3;
+	LCD_D6=(dat&(1<<2)) >>2;
+	LCD_D5=(dat&(1<<1)) >>1;
+	LCD_D4=dat&1;	
 	//LCD_RS=0;
 	LCD_E=1;
 	Wait_ms(10);
@@ -120,5 +115,19 @@ void Wait_ms(int ms)
 	WriteData(second_digit);
 
 }
+
+void LCD_return_home(void)
+{
+	Command(0x00);
+	Command(0x02);
+	
+}
+void LCD_clear(void)
+{
+	Command(0x00);
+	Command(0x01);
+	
+}
+
 
 

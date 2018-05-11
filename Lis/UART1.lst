@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   UART1                                                             05/11/2018 12:07:35 PAGE 1   
+C51 COMPILER V9.52.0.0   UART1                                                             05/11/2018 12:44:10 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE UART1
@@ -62,7 +62,7 @@ line level    source
   52   1        return BCD&0x0f;
   53   1      }
   54          unsigned char DectoBCD(unsigned char dec)
-C51 COMPILER V9.52.0.0   UART1                                                             05/11/2018 12:07:35 PAGE 2   
+C51 COMPILER V9.52.0.0   UART1                                                             05/11/2018 12:44:10 PAGE 2   
 
   55          {
   56   1        
@@ -84,24 +84,24 @@ line level    source
   72   1        return ten<<4|unit;
   73   1        
   74   1      }
-  75          void Display_time(void)
+  75          void Display_time(unsigned char *hours,unsigned char *mins,unsigned char *seconds)
   76          {
-  77   1          unsigned char seconds,mins, hours;
+  77   1          //unsigned char seconds,mins, hours;
   78   1      
-  79   1          hours=SPI_ReadTime(Hours);
-  80   1          SendUART1(ten(hours)+48);
-  81   1          SendUART1(unit(hours)+48);    
+  79   1          *hours=SPI_ReadTime(Hours);
+  80   1          SendUART1(ten(*hours)+48);
+  81   1          SendUART1(unit(*hours)+48);   
   82   1          SendUART1(0x3A);// ":" ASCII letter
   83   1          
-  84   1          mins=SPI_ReadTime(Minutes);
-  85   1          SendUART1(ten(mins)+48);
-  86   1          SendUART1(unit(mins)+48);   
+  84   1          *mins=SPI_ReadTime(Minutes);
+  85   1          SendUART1(ten(*mins)+48);
+  86   1          SendUART1(unit(*mins)+48);    
   87   1          SendUART1(0x3A);// ":" ASCII letter
   88   1          
-  89   1          seconds=SPI_ReadTime(Seconds);
-  90   1          P0=seconds;
-  91   1          SendUART1(ten(seconds&0x7f)+48);
-  92   1          SendUART1(unit(seconds&0x7f)+48);
+  89   1          *seconds=SPI_ReadTime(Seconds);
+  90   1          P0=*seconds;
+  91   1          SendUART1(ten(*seconds&0x7f)+48);
+  92   1          SendUART1(unit(*seconds&0x7f)+48);
   93   1          SendUART1(10);      //new line
   94   1      }
   95          
@@ -109,9 +109,9 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    236    ----
+   CODE SIZE        =    326    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----       6
+   XDATA SIZE       =   ----      12
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

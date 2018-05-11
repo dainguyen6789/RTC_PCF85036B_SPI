@@ -23,6 +23,9 @@ void SendUART1(unsigned char dat);
 void SPI_Init(void);
 void WriteData(unsigned char dat);
 void LCD_Init(void);
+void DisplayLCD(unsigned char BCD);
+void Display_time(unsigned char *hours,unsigned char *mins,unsigned char *seconds);
+void LCD_return_home(void);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -42,14 +45,17 @@ void main(void)
 	SPI_WriteTime(0x12,Hours);		// data , register address
 	Delay_ms(500);
 	SPI_WriteTime(0x12,Minutes);
-	Delay_ms(500);
-	
-	//Delay_ms(500);
-	WriteData(0x54);
-	Delay_ms(500);
-	WriteData(0x32);	
+	Delay_ms(500);	
 	while(1)
 	{
+		DisplayLCD(hours);
+		WriteData(0x3A);//display ":"
+		DisplayLCD(mins);
+		WriteData(0x3A);//display ":"
+		DisplayLCD(seconds&0x7f);
+		//LCD_clear();
+		//WriteData(0x20);
+		LCD_return_home();
 		if(st_time)
 		{
 			SPI_WriteTime(hour_count,Hours);		// data , register address
@@ -60,7 +66,7 @@ void main(void)
 		}	
 		else
 		{
-			Display_time();
+			Display_time(&hours,&mins,&seconds);
 			Delay_ms(1200);
 		}
 	}
