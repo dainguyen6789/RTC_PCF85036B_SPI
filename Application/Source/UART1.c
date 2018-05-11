@@ -72,10 +72,13 @@ unsigned char ASCIItoBCD(unsigned char ascii[2]) // time format hh:mm:ss
 	return ten<<4|unit;
 	
 }
-void Display_time(unsigned char *hours,unsigned char *mins,unsigned char *seconds)
+void Display_time(unsigned char *months,unsigned char *days,unsigned char *hours,unsigned char *mins,unsigned char *seconds)
 {
 		//unsigned char seconds,mins, hours;
-
+		*months=SPI_ReadTime(Months);
+	
+		*days=SPI_ReadTime(Days);
+	
 		*hours=SPI_ReadTime(Hours);
 		SendUART1(ten(*hours)+48);
 		SendUART1(unit(*hours)+48);		

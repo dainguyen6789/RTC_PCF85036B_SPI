@@ -24,7 +24,7 @@ void SPI_Init(void);
 void WriteData(unsigned char dat);
 void LCD_Init(void);
 void DisplayLCD(unsigned char BCD);
-void Display_time(unsigned char *hours,unsigned char *mins,unsigned char *seconds);
+void Display_time(unsigned char *months,unsigned char *days,unsigned char *hours,unsigned char *mins,unsigned char *seconds);
 void LCD_return_home(void);
 
 bit busy;
@@ -35,7 +35,7 @@ int st_time=0;
 
 void main(void)
 {
-	unsigned char seconds,mins, hours;
+	unsigned char seconds,mins, hours,days,months;
 	int sec_decimal;
 	char numStr[5];
 	LCD_Init();
@@ -53,6 +53,10 @@ void main(void)
 		DisplayLCD(mins);
 		WriteData(0x3A);//display ":"
 		DisplayLCD(seconds&0x7f);
+		WriteData(0x3B);//display ";"
+		DisplayLCD(months);
+		WriteData(0x2D);//display "-"
+		DisplayLCD(days);		
 		//LCD_clear();
 		//WriteData(0x20);
 		LCD_return_home();
@@ -66,8 +70,8 @@ void main(void)
 		}	
 		else
 		{
-			Display_time(&hours,&mins,&seconds);
-			Delay_ms(1200);
+			Display_time(&months,&days,&hours,&mins,&seconds);//UART
+			//Delay_ms(1200);
 		}
 	}
 	
