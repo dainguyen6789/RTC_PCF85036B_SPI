@@ -42,6 +42,7 @@ void main(void)
 	char numStr[5];
 	LCD_Init();
 	SPI_Init();
+	KeyPad_IO_Init();
 	initUART1();
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
 	SPI_WriteTime(0x12,Hours);		// data , register address

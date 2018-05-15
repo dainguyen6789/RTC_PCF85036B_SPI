@@ -153,7 +153,7 @@ unsigned char Key_Scan(void)
 }
 void Key_Process(void)
 {
-	unsigned char KeyNum_Old,KeyNum,PressedKey[4];
+	static unsigned char KeyNum_Old,KeyNum,PressedKey[4];
 	KeyNum_Old=KeyNum;
 	KeyNum=Key_Scan();
 	//if( (KeyNum=Key_Scan())!=0 )  	//检测是否有键按下
@@ -173,7 +173,7 @@ void Key_Process(void)
 }
 /***********************************************
 ************************************************/
-void KeyPad_O_Init(void)
+void KeyPad_IO_Init(void)
 {	
 	P0M1 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );  
 	P0M0 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );    

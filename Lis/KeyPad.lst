@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/15/2018 14:44:07 PAGE 1   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/15/2018 15:18:34 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE KEYPAD
@@ -62,7 +62,7 @@ line level    source
   47   4              {
   48   5                case ~(1<<Line1):     //S6°
   49   5                {
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/15/2018 14:44:07 PAGE 2   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/15/2018 15:18:34 PAGE 2   
 
   50   6                  KeyValue=KEY1;
   51   6                
@@ -126,7 +126,7 @@ line level    source
  109   3            KEYPORT |= (1<<Column1)|(1<<Column2);
  110   3            KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));     //
  111   3            if(KeyTemp1!=0xff)      //
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/15/2018 14:44:07 PAGE 3   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/15/2018 15:18:34 PAGE 3   
 
  112   3            {
  113   4              while(KeyTemp1!=0xff) // if pressed any key of COL3
@@ -172,7 +172,7 @@ line level    source
  153   1      }
  154          void Key_Process(void)
  155          {
- 156   1        unsigned char KeyNum_Old,KeyNum,PressedKey[4];
+ 156   1        static unsigned char KeyNum_Old,KeyNum,PressedKey[4];
  157   1        KeyNum_Old=KeyNum;
  158   1        KeyNum=Key_Scan();
  159   1        //if( (KeyNum=Key_Scan())!=0 )    //¼ì²âÊÇ·ñÓÐ¼ü°´ÏÂ
@@ -190,11 +190,11 @@ line level    source
  171   2        }
  172   1        
  173   1      }
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/15/2018 14:44:07 PAGE 4   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/15/2018 15:18:34 PAGE 4   
 
  174          /***********************************************
  175          ************************************************/
- 176          void KeyPad_O_Init(void)
+ 176          void KeyPad_IO_Init(void)
  177          { 
  178   1        P0M1 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );  
  179   1        P0M0 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );    
@@ -210,9 +210,9 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    459    ----
+   CODE SIZE        =    466    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =      2       8
+   XDATA SIZE       =      8       3
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
