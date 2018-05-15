@@ -6,7 +6,7 @@
  //#include "hc595.h"
 #include "PCF85063BTL.h"
 //#include "UART1.h"
-
+#include "KeyPad.h"
  	 
 
 void Delay_ms(unsigned int ms);
@@ -26,6 +26,7 @@ void LCD_Init(void);
 void DisplayLCD(unsigned char BCD);
 void Display_time(unsigned char *months,unsigned char *days,unsigned char *hours,unsigned char *mins,unsigned char *seconds);
 void LCD_return_home(void);
+void Key_Process(void);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -36,6 +37,7 @@ int st_time=0;
 void main(void)
 {
 	unsigned char seconds,mins, hours,days,months;
+	unsigned char KeyNum;
 	int sec_decimal;
 	char numStr[5];
 	LCD_Init();
@@ -60,6 +62,7 @@ void main(void)
 		//LCD_clear();
 		//WriteData(0x20);
 		LCD_return_home();
+		Key_Process();
 		if(st_time)
 		{
 			SPI_WriteTime(hour_count,Hours);		// data , register address
@@ -77,14 +80,7 @@ void main(void)
 	
 } 
 
-void Delay_ms(unsigned int ms)
-{
-  unsigned int De_Cnt;
-  while( (ms--) != 0)
-  {
-    for(De_Cnt = 0; De_Cnt < 600; De_Cnt++); 
-  }             
-}
+
 
 
 void Uart() interrupt 4 using 1
