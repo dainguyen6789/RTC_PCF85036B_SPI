@@ -92,3 +92,27 @@ void SPI_Init(void)
 	PCF85063BTL_CS_Clr();
 	PCF85063BTL_SCK_Clr();
 }
+
+void Read_time(unsigned char *months,unsigned char *days,unsigned char *hours,unsigned char *mins,unsigned char *seconds)
+{
+		//unsigned char seconds,mins, hours;
+		*months=SPI_ReadTime(Months);
+	
+		*days=SPI_ReadTime(Days);
+	
+		*hours=SPI_ReadTime(Hours);
+		/*SendUART1(ten(*hours)+48);
+		SendUART1(unit(*hours)+48);		
+		SendUART1(0x3A);// ":" ASCII letter*/
+		
+		*mins=SPI_ReadTime(Minutes);
+		/*SendUART1(ten(*mins)+48);
+		SendUART1(unit(*mins)+48);		
+		SendUART1(0x3A);// ":" ASCII letter*/
+		
+		*seconds=SPI_ReadTime(Seconds);
+		//P0=*seconds;
+		/*SendUART1(ten(*seconds&0x7f)+48);
+		SendUART1(unit(*seconds&0x7f)+48);
+		SendUART1(10);			//new line*/
+}

@@ -28,7 +28,7 @@ void SPI_Init(void);
 void WriteData(unsigned char dat);
 void LCD_Init(void);
 void DisplayLCD(unsigned char BCD);
-void Display_time(unsigned char *months,unsigned char *days,unsigned char *hours,unsigned char *mins,unsigned char *seconds);
+void Read_time(unsigned char *months,unsigned char *days,unsigned char *hours,unsigned char *mins,unsigned char *seconds);
 void LCD_return_home(void);
 void Key_Process(void);
 void Display_Line(int line);
@@ -100,7 +100,7 @@ void main(void)
 			LCD_return_home();
 			
 		}
-		Display_time(&months,&days,&hours,&mins,&seconds);
+		Read_time(&months,&days,&hours,&mins,&seconds);
 		//==================================================		
 		// This is for UART to set the time		
 		//==================================================				
