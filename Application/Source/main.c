@@ -82,12 +82,8 @@ void main(void)
 	WriteData(0x23);//display "#" SETTIME_KEY
 	while(1)
 	{
-
-		
-		//Delay_ms(300);
 		Key_Process();
-		/*KeyNum_Old=KeyNum;
-		
+
 		KeyNum=Key_Scan();
 		//if( (KeyNum=Key_Scan())!=0 )  	//检测是否有键按下
 		if(KeyNum_Old==Unpress && KeyNum!=Unpress)
@@ -117,12 +113,8 @@ void main(void)
 			DisplayLCD(months);
 			WriteData(0x2D);//display "-"
 			DisplayLCD(days);				
-			
 			count=0;
-			//LCD_clear();
-		//WriteData(0x20);
 			LCD_return_home();
-			
 			
 		}
 		Display_time(&months,&days,&hours,&mins,&seconds);
