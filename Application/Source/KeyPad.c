@@ -7,6 +7,7 @@ void DisplayLCD(unsigned char BCD);
 void WriteData(unsigned char dat);
 
 void SPI_WriteTime(unsigned char val,unsigned char addr);
+void Command(unsigned char dat);
 
 void Delay_ms(unsigned int ms)
 {
@@ -138,7 +139,7 @@ unsigned char Key_Scan(void)
 					}break;		
 					case ~(1<<Line4):			//
 					{
-						KeyValue=KEY0;
+						KeyValue=SETTIME_KEY;
 					
 					}break;					
 				}
@@ -158,7 +159,8 @@ unsigned char Key_Scan(void)
 void Key_Process(void)
 {
 	static int KeyCount=0;
-	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
+	static unsigned char KeyNum_Old,KeyNum,PressedKey[5]="hhmms";
+	int d;
 	KeyNum_Old=KeyNum;
 	KeyNum=Key_Scan();
 	//if( (KeyNum=Key_Scan())!=0 )  	//
@@ -166,20 +168,32 @@ void Key_Process(void)
 	{
 		PressedKey[KeyCount]=KeyNum;
 		KeyCount++;
-		if(KeyCount==4)
+		if(KeyCount==5 && PressedKey[4]==SETTIME_KEY)
 		{
 			//PressedKey[]="";
 			KeyCount=0;
 			SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);
 			SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);
+			LCD_Clear();
+			Command(0x08);
+			Command(0x00);			
+			WriteData(0x68);//display "h"
+			WriteData(0x68);//display "h"
+			WriteData(0x6D);//display "m"
+			WriteData(0x6D);//display "m"
 		}
 	}
 	//LCD Display
-	/*WriteData(PressedKey[0]|0x30);
-	WriteData(PressedKey[1]|0x30);
-	WriteData(0x3A);//display ":"	
-	WriteData(PressedKey[2]|0x30);
-	WriteData(PressedKey[3]|0x30);*/
+	for(d=0;d<KeyCount;d++)
+	{
+		if(KeyCount<=4)
+		{
+			Command(0x08);
+			Command(0x00+d);
+			WriteData(PressedKey[d]|0x30);
+		}
+	}
+	
 }
 /***********************************************
 ************************************************/

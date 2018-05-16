@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 14:13:30 PAGE 1   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 14:39:39 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE KEYPAD
@@ -17,212 +17,227 @@ line level    source
    7          void WriteData(unsigned char dat);
    8          
    9          void SPI_WriteTime(unsigned char val,unsigned char addr);
-  10          
-  11          void Delay_ms(unsigned int ms)
-  12          {
-  13   1        unsigned int De_Cnt;
-  14   1        while( (ms--) != 0)
-  15   1        {
-  16   2          for(De_Cnt = 0; De_Cnt < 600; De_Cnt++); 
-  17   2        }             
-  18   1      }
-  19          unsigned char Key_Scan(void)
-  20          {
-  21   1        unsigned char KeyTemp1,KeyTemp2;
-  22   1        unsigned char KeyValue;
-  23   1      
-  24   1        //
-  25   1        KEYPORT &=(~((1<<Column1)|(1<<Column2)|(1<<Column3))); // ~(00000010 | 00000100 | 00001000)=1111*000*1: s
+  10          void Command(unsigned char dat);
+  11          
+  12          void Delay_ms(unsigned int ms)
+  13          {
+  14   1        unsigned int De_Cnt;
+  15   1        while( (ms--) != 0)
+  16   1        {
+  17   2          for(De_Cnt = 0; De_Cnt < 600; De_Cnt++); 
+  18   2        }             
+  19   1      }
+  20          unsigned char Key_Scan(void)
+  21          {
+  22   1        unsigned char KeyTemp1,KeyTemp2;
+  23   1        unsigned char KeyValue;
+  24   1      
+  25   1        //
+  26   1        KEYPORT &=(~((1<<Column1)|(1<<Column2)|(1<<Column3))); // ~(00000010 | 00000100 | 00001000)=1111*000*1: s
              -et three columns equal to Zero
-  26   1        //
-  27   1        //0010 0000
-  28   1        KEYPORT |= (1<<Line1) | (1<<Line2) | (1<<Line3) | (1<<Line4) ;  //10000000 | 01000000 | 00100000=*111*000
+  27   1        //
+  28   1        //0010 0000
+  29   1        KEYPORT |= (1<<Line1) | (1<<Line2) | (1<<Line3) | (1<<Line4) ;  //10000000 | 01000000 | 00100000=*111*000
              -00: Set three columns equal to 1
-  29   1        //    
-  30   1        KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));  //~(10000000 | 01000000 | 00100000)=
+  30   1        //    
+  31   1        KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));  //~(10000000 | 01000000 | 00100000)=
              -00011111
-  31   1        if(KeyTemp1!=0xff)      //
-  32   1        { 
-  33   2          Delay_ms(10);         //
-  34   2          KeyTemp1=KEYPORT | ( ~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)) );  //~(10000000 | 01000000 | 0010000
+  32   1        if(KeyTemp1!=0xff)      //
+  33   1        { 
+  34   2          Delay_ms(10);         //
+  35   2          KeyTemp1=KEYPORT | ( ~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)) );  //~(10000000 | 01000000 | 0010000
              -0)=00011111
-  35   2          if(KeyTemp1!=0xff)      //
-  36   2          {
-  37   3            //COL1 COL2 COL3
-  38   3            //0     1     1
-  39   3            KEYPORT &=(~(1<<Column1)); //0 1 1
-  40   3            KEYPORT |= (1<<Column2)|(1<<Column3);//
-  41   3            KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));//  KEYPORT | 00011111
-  42   3            if(KeyTemp1!=0xff)      //
-  43   3            {
-  44   4              while(KeyTemp1!=0xff) // if pressed any key on COL1
-  45   4              { 
-  46   5                KeyTemp2=KeyTemp1;  
-  47   5                KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));  // read the data, KEYPORT is the
+  36   2          if(KeyTemp1!=0xff)      //
+  37   2          {
+  38   3            //COL1 COL2 COL3
+  39   3            //0     1     1
+  40   3            KEYPORT &=(~(1<<Column1)); //0 1 1
+  41   3            KEYPORT |= (1<<Column2)|(1<<Column3);//
+  42   3            KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));//  KEYPORT | 00011111
+  43   3            if(KeyTemp1!=0xff)      //
+  44   3            {
+  45   4              while(KeyTemp1!=0xff) // if pressed any key on COL1
+  46   4              { 
+  47   5                KeyTemp2=KeyTemp1;  
+  48   5                KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));  // read the data, KEYPORT is the
              - instantaneous value of the PORT.
-  48   5              }
-  49   4              // run when unpress
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 14:13:30 PAGE 2   
+  49   5              }
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 14:39:39 PAGE 2   
 
-  50   4              switch(KeyTemp2)
-  51   4              {
-  52   5                case ~(1<<Line1):     //S6°
-  53   5                {
-  54   6                  KeyValue=KEY1;
-  55   6                
-  56   6                }break;
-  57   5                case ~(1<<Line2):     //S9°
-  58   5                {
-  59   6                  KeyValue=KEY4;
-  60   6                
-  61   6                }break;
-  62   5                case ~(1<<Line3):     //S9°
-  63   5                {
-  64   6                  KeyValue=KEY7;
-  65   6                
-  66   6                }break; 
-  67   5                case ~(1<<Line4):     //
-  68   5                {
-  69   6                  KeyValue=KEY0;
-  70   6                
-  71   6                }break;         
-  72   5              }
-  73   4            }   
-  74   3            //COL1 COL2 COL3
-  75   3            //1     0     1
-  76   3            KEYPORT &=(~(1<<Column2)); 
-  77   3            KEYPORT |= (1<<Column1)|(1<<Column3);
-  78   3            KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));      //
-  79   3            if(KeyTemp1!=0xff)      //
-  80   3            {
-  81   4              while(KeyTemp1!=0xff) //
-  82   4              { 
-  83   5                KeyTemp2=KeyTemp1;  
-  84   5                KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4))); //
-  85   5              }
-  86   4              switch(KeyTemp2)
-  87   4              {
-  88   5                case ~(1<<Line1):     //
-  89   5                {
-  90   6                  KeyValue=KEY2;
-  91   6                
-  92   6                }break;
-  93   5                case ~(1<<Line2):     //
-  94   5                {
-  95   6                  KeyValue=KEY5;
-  96   6                
-  97   6                }break;
-  98   5                case ~(1<<Line3):     //
-  99   5                {
- 100   6                  KeyValue=KEY8;
- 101   6                
- 102   6                }break;   
- 103   5                case ~(1<<Line4):     //
- 104   5                {
- 105   6                  KeyValue=KEY0;
- 106   6                
- 107   6                }break;           
- 108   5              }
- 109   4            }
- 110   3            //COL1 COL2 COL3
- 111   3            //1     1     0
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 14:13:30 PAGE 3   
+  50   4              // run when unpress
+  51   4              switch(KeyTemp2)
+  52   4              {
+  53   5                case ~(1<<Line1):     //S6°
+  54   5                {
+  55   6                  KeyValue=KEY1;
+  56   6                
+  57   6                }break;
+  58   5                case ~(1<<Line2):     //S9°
+  59   5                {
+  60   6                  KeyValue=KEY4;
+  61   6                
+  62   6                }break;
+  63   5                case ~(1<<Line3):     //S9°
+  64   5                {
+  65   6                  KeyValue=KEY7;
+  66   6                
+  67   6                }break; 
+  68   5                case ~(1<<Line4):     //
+  69   5                {
+  70   6                  KeyValue=KEY0;
+  71   6                
+  72   6                }break;         
+  73   5              }
+  74   4            }   
+  75   3            //COL1 COL2 COL3
+  76   3            //1     0     1
+  77   3            KEYPORT &=(~(1<<Column2)); 
+  78   3            KEYPORT |= (1<<Column1)|(1<<Column3);
+  79   3            KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));      //
+  80   3            if(KeyTemp1!=0xff)      //
+  81   3            {
+  82   4              while(KeyTemp1!=0xff) //
+  83   4              { 
+  84   5                KeyTemp2=KeyTemp1;  
+  85   5                KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4))); //
+  86   5              }
+  87   4              switch(KeyTemp2)
+  88   4              {
+  89   5                case ~(1<<Line1):     //
+  90   5                {
+  91   6                  KeyValue=KEY2;
+  92   6                
+  93   6                }break;
+  94   5                case ~(1<<Line2):     //
+  95   5                {
+  96   6                  KeyValue=KEY5;
+  97   6                
+  98   6                }break;
+  99   5                case ~(1<<Line3):     //
+ 100   5                {
+ 101   6                  KeyValue=KEY8;
+ 102   6                
+ 103   6                }break;   
+ 104   5                case ~(1<<Line4):     //
+ 105   5                {
+ 106   6                  KeyValue=KEY0;
+ 107   6                
+ 108   6                }break;           
+ 109   5              }
+ 110   4            }
+ 111   3            //COL1 COL2 COL3
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 14:39:39 PAGE 3   
 
- 112   3            KEYPORT &=(~(1<<Column3)); //1 1 0
- 113   3            KEYPORT |= (1<<Column1)|(1<<Column2);
- 114   3            KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));     //
- 115   3            if(KeyTemp1!=0xff)      //
- 116   3            {
- 117   4              while(KeyTemp1!=0xff) // if pressed any key of COL3
- 118   4              { 
- 119   5                KeyTemp2=KeyTemp1;  
- 120   5                KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));//
- 121   5              }
- 122   4              switch(KeyTemp2)
- 123   4              {
- 124   5                case ~(1<<Line1):     //S8°
- 125   5                {
- 126   6                  KeyValue=KEY3;
- 127   6                
- 128   6                }break;
- 129   5                case ~(1<<Line2):     //S11°
- 130   5                {
- 131   6                  KeyValue=KEY6;
- 132   6                
- 133   6                }break;
- 134   5                case ~(1<<Line3):     //S11°
- 135   5                {
- 136   6                  KeyValue=KEY9;
- 137   6                
- 138   6                }break;   
- 139   5                case ~(1<<Line4):     //
- 140   5                {
- 141   6                  KeyValue=KEY0;
- 142   6                
- 143   6                }break;         
- 144   5              }
- 145   4            } 
- 146   3            return  KeyValue; 
- 147   3          }             
- 148   2          else
- 149   2          {
- 150   3            return Unpress;       
- 151   3          }
- 152   2        }
- 153   1        else
- 154   1        {
- 155   2          return Unpress; 
- 156   2        }     
- 157   1      }
- 158          void Key_Process(void)
- 159          {
- 160   1        static int KeyCount=0;
- 161   1        static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
- 162   1        KeyNum_Old=KeyNum;
- 163   1        KeyNum=Key_Scan();
- 164   1        //if( (KeyNum=Key_Scan())!=0 )    //
- 165   1        if(KeyNum_Old==Unpress && KeyNum!=Unpress)
- 166   1        {
- 167   2          PressedKey[KeyCount]=KeyNum;
- 168   2          KeyCount++;
- 169   2          if(KeyCount==4)
- 170   2          {
- 171   3            //PressedKey[]="";
- 172   3            KeyCount=0;
- 173   3            SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 14:13:30 PAGE 4   
+ 112   3            //1     1     0
+ 113   3            KEYPORT &=(~(1<<Column3)); //1 1 0
+ 114   3            KEYPORT |= (1<<Column1)|(1<<Column2);
+ 115   3            KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));     //
+ 116   3            if(KeyTemp1!=0xff)      //
+ 117   3            {
+ 118   4              while(KeyTemp1!=0xff) // if pressed any key of COL3
+ 119   4              { 
+ 120   5                KeyTemp2=KeyTemp1;  
+ 121   5                KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));//
+ 122   5              }
+ 123   4              switch(KeyTemp2)
+ 124   4              {
+ 125   5                case ~(1<<Line1):     //S8°
+ 126   5                {
+ 127   6                  KeyValue=KEY3;
+ 128   6                
+ 129   6                }break;
+ 130   5                case ~(1<<Line2):     //S11°
+ 131   5                {
+ 132   6                  KeyValue=KEY6;
+ 133   6                
+ 134   6                }break;
+ 135   5                case ~(1<<Line3):     //S11°
+ 136   5                {
+ 137   6                  KeyValue=KEY9;
+ 138   6                
+ 139   6                }break;   
+ 140   5                case ~(1<<Line4):     //
+ 141   5                {
+ 142   6                  KeyValue=SETTIME_KEY;
+ 143   6                
+ 144   6                }break;         
+ 145   5              }
+ 146   4            } 
+ 147   3            return  KeyValue; 
+ 148   3          }             
+ 149   2          else
+ 150   2          {
+ 151   3            return Unpress;       
+ 152   3          }
+ 153   2        }
+ 154   1        else
+ 155   1        {
+ 156   2          return Unpress; 
+ 157   2        }     
+ 158   1      }
+ 159          void Key_Process(void)
+ 160          {
+ 161   1        static int KeyCount=0;
+ 162   1        static unsigned char KeyNum_Old,KeyNum,PressedKey[5]="hhmms";
+ 163   1        int d;
+ 164   1        KeyNum_Old=KeyNum;
+ 165   1        KeyNum=Key_Scan();
+ 166   1        //if( (KeyNum=Key_Scan())!=0 )    //
+ 167   1        if(KeyNum_Old==Unpress && KeyNum!=Unpress)
+ 168   1        {
+ 169   2          PressedKey[KeyCount]=KeyNum;
+ 170   2          KeyCount++;
+ 171   2          if(KeyCount==5 && PressedKey[4]==SETTIME_KEY)
+ 172   2          {
+ 173   3            //PressedKey[]="";
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 14:39:39 PAGE 4   
 
- 174   3            SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);
- 175   3          }
- 176   2        }
- 177   1        //LCD Display
- 178   1        /*WriteData(PressedKey[0]|0x30);
- 179   1        WriteData(PressedKey[1]|0x30);
- 180   1        WriteData(0x3A);//display ":" 
- 181   1        WriteData(PressedKey[2]|0x30);
- 182   1        WriteData(PressedKey[3]|0x30);*/
- 183   1      }
- 184          /***********************************************
- 185          ************************************************/
- 186          void KeyPad_IO_Init(void)
- 187          { 
- 188   1        P0M1 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );  
- 189   1        P0M0 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );    
- 190   1         
- 191   1      }
- 192          
- 193          
- 194          
- 195          
- 196          
- 197          
- 198          
+ 174   3            KeyCount=0;
+ 175   3            SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);
+ 176   3            SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);
+ 177   3            LCD_Clear();
+*** WARNING C206 IN LINE 177 OF Application\Source\KeyPad.c: 'LCD_Clear': missing function-prototype
+ 178   3            Command(0x08);
+ 179   3            Command(0x00);      
+ 180   3            WriteData(0x68);//display "h"
+ 181   3            WriteData(0x68);//display "h"
+ 182   3            WriteData(0x6D);//display "m"
+ 183   3            WriteData(0x6D);//display "m"
+ 184   3          }
+ 185   2        }
+ 186   1        //LCD Display
+ 187   1        for(d=0;d<KeyCount;d++)
+ 188   1        {
+ 189   2          if(KeyCount<=4)
+ 190   2          {
+ 191   3            Command(0x08);
+ 192   3            Command(0x00+d);
+ 193   3            WriteData(PressedKey[d]|0x30);
+ 194   3          }
+ 195   2        }
+ 196   1        
+ 197   1      }
+ 198          /***********************************************
+ 199          ************************************************/
+ 200          void KeyPad_IO_Init(void)
+ 201          { 
+ 202   1        P0M1 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );  
+ 203   1        P0M0 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );    
+ 204   1         
+ 205   1      }
+ 206          
+ 207          
+ 208          
+ 209          
+ 210          
+ 211          
+ 212          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    466    ----
+   CODE SIZE        =    611    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =      8       3
+   XDATA SIZE       =      9       5
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
@@ -230,4 +245,4 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
 END OF MODULE INFORMATION.
 
 
-C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
