@@ -90,8 +90,8 @@ void Display_time(unsigned char *months,unsigned char *days,unsigned char *hours
 		SendUART1(0x3A);// ":" ASCII letter*/
 		
 		*seconds=SPI_ReadTime(Seconds);
-		/*P0=*seconds;
-		SendUART1(ten(*seconds&0x7f)+48);
+		//P0=*seconds;
+		/*SendUART1(ten(*seconds&0x7f)+48);
 		SendUART1(unit(*seconds&0x7f)+48);
 		SendUART1(10);			//new line*/
 }
