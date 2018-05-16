@@ -80,20 +80,20 @@ void Display_time(unsigned char *months,unsigned char *days,unsigned char *hours
 		*days=SPI_ReadTime(Days);
 	
 		*hours=SPI_ReadTime(Hours);
-		SendUART1(ten(*hours)+48);
+		/*SendUART1(ten(*hours)+48);
 		SendUART1(unit(*hours)+48);		
-		SendUART1(0x3A);// ":" ASCII letter
+		SendUART1(0x3A);// ":" ASCII letter*/
 		
 		*mins=SPI_ReadTime(Minutes);
-		SendUART1(ten(*mins)+48);
+		/*SendUART1(ten(*mins)+48);
 		SendUART1(unit(*mins)+48);		
-		SendUART1(0x3A);// ":" ASCII letter
+		SendUART1(0x3A);// ":" ASCII letter*/
 		
 		*seconds=SPI_ReadTime(Seconds);
-		P0=*seconds;
+		/*P0=*seconds;
 		SendUART1(ten(*seconds&0x7f)+48);
 		SendUART1(unit(*seconds&0x7f)+48);
-		SendUART1(10);			//new line
+		SendUART1(10);			//new line*/
 }
 
  

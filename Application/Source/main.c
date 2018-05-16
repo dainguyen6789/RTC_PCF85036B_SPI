@@ -7,7 +7,10 @@
 #include "PCF85063BTL.h"
 //#include "UART1.h"
 #include "KeyPad.h"
- 	 
+#include <REG51F.H>
+
+#define FOSC 18432000L 	 
+#define T1MS (65536-FOSC/1000)
 
 void Delay_ms(unsigned int ms);
 void SendString(char *s);
@@ -32,18 +35,34 @@ bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
 int RX_Data_Uart_Cnt=0;
 int st_time=0;
+static int KeyCount=0;
+static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 
+void tm0_isr() interrupt 1 using 1
+{
+
+}
 
 void main(void)
 {
 	unsigned char seconds,mins, hours,days,months;
-	unsigned char KeyNum;
+	static int KeyCount=0;
+	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
+//	unsigned char KeyNum;
 	int sec_decimal;
 	char numStr[5];
 	LCD_Init();
 	SPI_Init();
 	KeyPad_IO_Init();
 	initUART1();
+	//Timer0===================================
+	AUXR |=0x80;
+	TL0=T1MS;
+	TH0=T1MS>>8;
+	TMOD=0x00;
+	TR0=1;
+	ET0=1;
+	//========================================
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
 	SPI_WriteTime(0x12,Hours);		// data , register address
 	Delay_ms(500);
@@ -56,14 +75,31 @@ void main(void)
 		DisplayLCD(mins);
 		WriteData(0x3A);//display ":"
 		DisplayLCD(seconds&0x7f);
-		WriteData(0x3B);//display ";"
+		/*WriteData(0x3B);//display ";"
 		DisplayLCD(months);
 		WriteData(0x2D);//display "-"
-		DisplayLCD(days);		
+		DisplayLCD(days);	*/	
 		//LCD_clear();
 		//WriteData(0x20);
 		LCD_return_home();
-		Key_Process();
+		//Delay_ms(300);
+		KeyNum_Old=KeyNum;
+		KeyNum=Key_Scan();
+		//if( (KeyNum=Key_Scan())!=0 )  	//检测是否有键按下
+		if(KeyNum_Old==Unpress && KeyNum!=Unpress)
+		{
+			PressedKey[KeyCount]=KeyNum;
+			KeyCount++;
+			if(KeyCount==4)
+			{
+				KeyCount=0;
+				hour_count=(PressedKey[0]<<4)|PressedKey[1];
+				min_count=(PressedKey[2]<<4)|PressedKey[3];
+				SPI_WriteTime(hour_count,Hours);
+				SPI_WriteTime(min_count,Minutes);
+			}
+			
+		}
 		if(st_time)
 		{
 			SPI_WriteTime(hour_count,Hours);		// data , register address

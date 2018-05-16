@@ -1,7 +1,9 @@
 #include "stc15f2k60s2.h"
 #include "KeyPad.h"
 #include "PCF85063BTL.h"
-int KeyCount=0;
+
+
+
 void SPI_WriteTime(unsigned char val,unsigned char addr);
 
 void Delay_ms(unsigned int ms)
@@ -153,7 +155,8 @@ unsigned char Key_Scan(void)
 }
 void Key_Process(void)
 {
-	static unsigned char KeyNum_Old,KeyNum,PressedKey[4];
+	static int KeyCount=0;
+	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 	KeyNum_Old=KeyNum;
 	KeyNum=Key_Scan();
 	//if( (KeyNum=Key_Scan())!=0 )  	//检测是否有键按下
@@ -164,8 +167,8 @@ void Key_Process(void)
 		if(KeyCount==4)
 		{
 			KeyCount=0;
-			SPI_WriteTime(PressedKey[0]<<4|PressedKey[1],Hours);
-			SPI_WriteTime(PressedKey[2]<<4|PressedKey[3],Minutes);
+			SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);
+			SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);
 		}
 		
 	}
