@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 15:25:42 PAGE 1   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 16:36:01 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE KEYPAD
@@ -62,7 +62,7 @@ line level    source
   48   5                KeyTemp2=KeyTemp1;  
   49   5                KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));  // read the data, KEYPORT is the
              - instantaneous value of the PORT.
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 15:25:42 PAGE 2   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 16:36:01 PAGE 2   
 
   50   5              }
   51   4              // run when unpress
@@ -126,7 +126,7 @@ line level    source
  109   6                }break;           
  110   5              }
  111   4            }
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 15:25:42 PAGE 3   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 16:36:01 PAGE 3   
 
  112   3            //COL1 COL2 COL3
  113   3            //1     1     0
@@ -190,55 +190,54 @@ line level    source
  171   2          KeyCount++;
  172   2          if(KeyCount==5)
  173   2          {
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 15:25:42 PAGE 4   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/16/2018 16:36:01 PAGE 4   
 
  174   3            //PressedKey[]="";
  175   3            KeyCount=0;
  176   3            hours=PressedKey[0]*10+PressedKey[1];
  177   3            mins=PressedKey[2]*10+PressedKey[3];
  178   3            if(PressedKey[4]==SETTIME_KEY && hours<=24 && mins<=59)
- 179   3            {
- 180   4              
- 181   4              SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);//BCD value
- 182   4              SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);//BCD value
- 183   4            }
- 184   3            LCD_clear();
- 185   3            Command(0x08);
- 186   3            Command(0x00);      
+ 179   3            { 
+ 180   4              SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);//Write BCD value
+ 181   4              SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);//Write BCD value
+ 182   4            }
+ 183   3            LCD_clear();
+ 184   3            Command(0x08);
+ 185   3            Command(0x00);      
+ 186   3            WriteData(0x68);//display "h"
  187   3            WriteData(0x68);//display "h"
- 188   3            WriteData(0x68);//display "h"
+ 188   3            WriteData(0x6D);//display "m"
  189   3            WriteData(0x6D);//display "m"
- 190   3            WriteData(0x6D);//display "m"
- 191   3            WriteData(0x23);//display "#" SETTIME_KEY
- 192   3          }
- 193   2        }
- 194   1        //LCD Display
- 195   1        for(d=0;d<KeyCount;d++)
- 196   1        {
- 197   2          if(KeyCount<=4)
- 198   2          {
- 199   3            Command(0x08);
- 200   3            Command(0x00+d);
- 201   3            WriteData(PressedKey[d]|0x30);
- 202   3          }
- 203   2        }
- 204   1        
- 205   1      }
- 206          /***********************************************
- 207          ************************************************/
- 208          void KeyPad_IO_Init(void)
- 209          { 
- 210   1        P0M1 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );  
- 211   1        P0M0 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );    
- 212   1         
- 213   1      }
+ 190   3            WriteData(0x23);//display "#" SETTIME_KEY
+ 191   3          }
+ 192   2        }
+ 193   1        //LCD Display
+ 194   1        for(d=0;d<KeyCount;d++)
+ 195   1        {
+ 196   2          if(KeyCount<=4)
+ 197   2          {
+ 198   3            Command(0x08);
+ 199   3            Command(0x00+d);
+ 200   3            WriteData(PressedKey[d]|0x30);
+ 201   3          }
+ 202   2        }
+ 203   1        
+ 204   1      }
+ 205          /***********************************************
+ 206          ************************************************/
+ 207          void KeyPad_IO_Init(void)
+ 208          { 
+ 209   1        P0M1 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );  
+ 210   1        P0M0 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );    
+ 211   1         
+ 212   1      }
+ 213          
  214          
  215          
  216          
  217          
  218          
  219          
- 220          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

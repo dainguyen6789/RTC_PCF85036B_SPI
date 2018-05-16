@@ -68,9 +68,6 @@ void Command(unsigned char dat)//dat=0x0X
 {	
 	LCD_RS=0;
 	LCD_RW=0;
-	/*LCD_E=1;
-	Wait_ms(10);
-	LCD_E=0;*/
 	//we only consider 4 low bits
 	if((dat&(1<<3)) >>3)
 		LCD_D7=1;
@@ -88,9 +85,6 @@ void Command(unsigned char dat)//dat=0x0X
 		LCD_D4=1;
 	else
 		LCD_D4=0;	
-	/*LCD_D6=dat&(1<<2) >>2;
-	LCD_D5=dat&(1<<1) >>1;
-	LCD_D4=dat&0x01;	*/
 	LCD_E=1;
 	Wait_ms(10);
 	LCD_E=0;	

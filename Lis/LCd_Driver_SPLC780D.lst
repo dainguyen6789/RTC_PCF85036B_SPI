@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               05/16/2018 15:25:42 PAGE 1   
+C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               05/16/2018 16:36:01 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE LCD_DRIVER_SPLC780D
@@ -62,7 +62,7 @@ line level    source
   52   1        Wait_ms(1);
   53   1        LCD_E=0;
   54   1        // 4 low bits
-C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               05/16/2018 15:25:42 PAGE 2   
+C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               05/16/2018 16:36:01 PAGE 2   
 
   55   1        LCD_D7=(dat&(1<<3)) >>3;
   56   1        LCD_D6=(dat&(1<<2)) >>2;
@@ -80,84 +80,78 @@ line level    source
   68          { 
   69   1        LCD_RS=0;
   70   1        LCD_RW=0;
-  71   1        /*LCD_E=1;
-  72   1        Wait_ms(10);
-  73   1        LCD_E=0;*/
-  74   1        //we only consider 4 low bits
-  75   1        if((dat&(1<<3)) >>3)
-  76   1          LCD_D7=1;
-  77   1        else
-  78   1          LCD_D7=0;
-  79   1        if((dat&(1<<2)) >>2)
-  80   1          LCD_D6=1;
-  81   1        else
-  82   1          LCD_D6=0; 
-  83   1        if((dat&(1<<1)) >>1)
-  84   1          LCD_D5=1;
-  85   1        else
-  86   1          LCD_D5=0; 
-  87   1        if(dat&0x01)
-  88   1          LCD_D4=1;
-  89   1        else
-  90   1          LCD_D4=0; 
-  91   1        /*LCD_D6=dat&(1<<2) >>2;
-  92   1        LCD_D5=dat&(1<<1) >>1;
-  93   1        LCD_D4=dat&0x01;  */
-  94   1        LCD_E=1;
-  95   1        Wait_ms(10);
-  96   1        LCD_E=0;  
-  97   1      }
-  98          
-  99          void Wait_ms(int ms)
- 100          {
- 101   1        unsigned int De_Cnt;
- 102   1        while( (ms--) != 0)
- 103   1        {
- 104   2          for(De_Cnt = 0; De_Cnt < 600; De_Cnt++); 
- 105   2        }   
- 106   1      }
- 107           void DisplayLCD(unsigned char BCD)
- 108          {
- 109   1        unsigned char first_digit, second_digit;
- 110   1        first_digit=BCD>>4 | 0x30;
- 111   1        second_digit=BCD&0x0F | 0x30;
- 112   1        //write 1st letter 
- 113   1        WriteData(first_digit);
- 114   1        // write second letter
- 115   1        WriteData(second_digit);
- 116   1      
-C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               05/16/2018 15:25:42 PAGE 3   
+  71   1        //we only consider 4 low bits
+  72   1        if((dat&(1<<3)) >>3)
+  73   1          LCD_D7=1;
+  74   1        else
+  75   1          LCD_D7=0;
+  76   1        if((dat&(1<<2)) >>2)
+  77   1          LCD_D6=1;
+  78   1        else
+  79   1          LCD_D6=0; 
+  80   1        if((dat&(1<<1)) >>1)
+  81   1          LCD_D5=1;
+  82   1        else
+  83   1          LCD_D5=0; 
+  84   1        if(dat&0x01)
+  85   1          LCD_D4=1;
+  86   1        else
+  87   1          LCD_D4=0; 
+  88   1        LCD_E=1;
+  89   1        Wait_ms(10);
+  90   1        LCD_E=0;  
+  91   1      }
+  92          
+  93          void Wait_ms(int ms)
+  94          {
+  95   1        unsigned int De_Cnt;
+  96   1        while( (ms--) != 0)
+  97   1        {
+  98   2          for(De_Cnt = 0; De_Cnt < 600; De_Cnt++); 
+  99   2        }   
+ 100   1      }
+ 101           void DisplayLCD(unsigned char BCD)
+ 102          {
+ 103   1        unsigned char first_digit, second_digit;
+ 104   1        first_digit=BCD>>4 | 0x30;
+ 105   1        second_digit=BCD&0x0F | 0x30;
+ 106   1        //write 1st letter 
+ 107   1        WriteData(first_digit);
+ 108   1        // write second letter
+ 109   1        WriteData(second_digit);
+ 110   1      
+ 111   1      }
+ 112          
+ 113          void LCD_return_home(void)
+ 114          {
+ 115   1        Command(0x00);
+ 116   1        Command(0x02);
+C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               05/16/2018 16:36:01 PAGE 3   
 
- 117   1      }
- 118          
- 119          void LCD_return_home(void)
+ 117   1        
+ 118   1      }
+ 119          void LCD_clear(void)
  120          {
  121   1        Command(0x00);
- 122   1        Command(0x02);
+ 122   1        Command(0x01);
  123   1        
  124   1      }
- 125          void LCD_clear(void)
- 126          {
- 127   1        Command(0x00);
- 128   1        Command(0x01);
- 129   1        
- 130   1      }
- 131          
- 132          void Display_Line(int line)
- 133          {
- 134   1        if (line==1)
- 135   1        { 
- 136   2          Command(0x08);
- 137   2          Command(0x00);
- 138   2        }
- 139   1        else
- 140   1        {
- 141   2          Command(0x0C);
- 142   2          Command(0x00);
- 143   2        }
- 144   1      }
- 145          
- 146          
+ 125          
+ 126          void Display_Line(int line)
+ 127          {
+ 128   1        if (line==1)
+ 129   1        { 
+ 130   2          Command(0x08);
+ 131   2          Command(0x00);
+ 132   2        }
+ 133   1        else
+ 134   1        {
+ 135   2          Command(0x0C);
+ 136   2          Command(0x00);
+ 137   2        }
+ 138   1      }
+ 139          
+ 140          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

@@ -71,9 +71,9 @@ void main(void)
 	Delay_ms(500);
 	SPI_WriteTime(0x12,Minutes);
 	Delay_ms(500);
-	//=============================
-	// INIT LCD DISPLAY
-	//=============================
+	//==============================================================
+	// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
+	//==============================================================
 	Display_Line(1);		
 	WriteData(0x68);//display "h"
 	WriteData(0x68);//display "h"
@@ -83,23 +83,6 @@ void main(void)
 	while(1)
 	{
 		Key_Process();
-
-		KeyNum=Key_Scan();
-		//if( (KeyNum=Key_Scan())!=0 )  	//检测是否有键按下
-		if(KeyNum_Old==Unpress && KeyNum!=Unpress)
-		{
-			PressedKey[KeyCount]=KeyNum;
-			KeyCount++;
-			if(KeyCount==4)
-			{
-				KeyCount=0;
-				hour_count=(PressedKey[0]<<4)|PressedKey[1];
-				min_count=(PressedKey[2]<<4)|PressedKey[3];
-				SPI_WriteTime(hour_count,Hours);
-				SPI_WriteTime(min_count,Minutes);
-			}
-			
-		}*/
 		count++;
 		if (count==500)
 		{
