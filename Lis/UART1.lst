@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   UART1                                                             05/16/2018 10:22:30 PAGE 1   
+C51 COMPILER V9.52.0.0   UART1                                                             05/16/2018 14:13:29 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE UART1
@@ -62,7 +62,7 @@ line level    source
   52   1        return BCD&0x0f;
   53   1      }
   54          unsigned char DectoBCD(unsigned char dec)
-C51 COMPILER V9.52.0.0   UART1                                                             05/16/2018 10:22:30 PAGE 2   
+C51 COMPILER V9.52.0.0   UART1                                                             05/16/2018 14:13:29 PAGE 2   
 
   55          {
   56   1        
@@ -103,8 +103,8 @@ line level    source
   90   1          SendUART1(0x3A);// ":" ASCII letter*/
   91   1          
   92   1          *seconds=SPI_ReadTime(Seconds);
-  93   1          /*P0=*seconds;
-  94   1          SendUART1(ten(*seconds&0x7f)+48);
+  93   1          //P0=*seconds;
+  94   1          /*SendUART1(ten(*seconds&0x7f)+48);
   95   1          SendUART1(unit(*seconds&0x7f)+48);
   96   1          SendUART1(10);      //new line*/
   97   1      }

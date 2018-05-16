@@ -1,8 +1,10 @@
 #include "stc15f2k60s2.h"
 #include "KeyPad.h"
 #include "PCF85063BTL.h"
+#include "LCD_Driver_SPLC780D.h"
 
-
+void DisplayLCD(unsigned char BCD);
+void WriteData(unsigned char dat);
 
 void SPI_WriteTime(unsigned char val,unsigned char addr);
 
@@ -159,20 +161,25 @@ void Key_Process(void)
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 	KeyNum_Old=KeyNum;
 	KeyNum=Key_Scan();
-	//if( (KeyNum=Key_Scan())!=0 )  	//检测是否有键按下
+	//if( (KeyNum=Key_Scan())!=0 )  	//
 	if(KeyNum_Old==Unpress && KeyNum!=Unpress)
 	{
 		PressedKey[KeyCount]=KeyNum;
 		KeyCount++;
 		if(KeyCount==4)
 		{
+			//PressedKey[]="";
 			KeyCount=0;
 			SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);
 			SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);
 		}
-		
 	}
-	
+	//LCD Display
+	/*WriteData(PressedKey[0]|0x30);
+	WriteData(PressedKey[1]|0x30);
+	WriteData(0x3A);//display ":"	
+	WriteData(PressedKey[2]|0x30);
+	WriteData(PressedKey[3]|0x30);*/
 }
 /***********************************************
 ************************************************/

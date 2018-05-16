@@ -30,6 +30,7 @@ void DisplayLCD(unsigned char BCD);
 void Display_time(unsigned char *months,unsigned char *days,unsigned char *hours,unsigned char *mins,unsigned char *seconds);
 void LCD_return_home(void);
 void Key_Process(void);
+void Display_Line(int line);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -40,7 +41,7 @@ static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 
 void tm0_isr() interrupt 1 using 1
 {
-
+	//Display_time(&months,&days,&hours,&mins,&seconds);
 }
 
 void main(void)
@@ -49,7 +50,7 @@ void main(void)
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 //	unsigned char KeyNum;
-	int sec_decimal;
+	int count=0;
 	char numStr[5];
 	LCD_Init();
 	SPI_Init();
@@ -67,23 +68,16 @@ void main(void)
 	SPI_WriteTime(0x12,Hours);		// data , register address
 	Delay_ms(500);
 	SPI_WriteTime(0x12,Minutes);
-	Delay_ms(500);	
+	Delay_ms(500);
+	//LCD_clear();
 	while(1)
 	{
-		DisplayLCD(hours);
-		WriteData(0x3A);//display ":"
-		DisplayLCD(mins);
-		WriteData(0x3A);//display ":"
-		DisplayLCD(seconds&0x7f);
-		/*WriteData(0x3B);//display ";"
-		DisplayLCD(months);
-		WriteData(0x2D);//display "-"
-		DisplayLCD(days);	*/	
-		//LCD_clear();
-		//WriteData(0x20);
-		LCD_return_home();
+
+		
 		//Delay_ms(300);
-		KeyNum_Old=KeyNum;
+		Key_Process();
+		/*KeyNum_Old=KeyNum;
+		
 		KeyNum=Key_Scan();
 		//if( (KeyNum=Key_Scan())!=0 )  	//检测是否有键按下
 		if(KeyNum_Old==Unpress && KeyNum!=Unpress)
@@ -99,7 +93,32 @@ void main(void)
 				SPI_WriteTime(min_count,Minutes);
 			}
 			
+		}*/
+		count++;
+		if (count==500)
+		{
+			Display_Line(2);
+			DisplayLCD(hours);
+			WriteData(0x3A);//display ":"
+			DisplayLCD(mins);
+			WriteData(0x3A);//display ":"
+			DisplayLCD(seconds&0x7f);
+			WriteData(0x3B);//display ";"
+			DisplayLCD(months);
+			WriteData(0x2D);//display "-"
+			DisplayLCD(days);				
+			
+			count=0;
+			//LCD_clear();
+		//WriteData(0x20);
+			LCD_return_home();
+			
+			
 		}
+		Display_time(&months,&days,&hours,&mins,&seconds);
+		//==================================================		
+		// This is for UART to set the time		
+		//==================================================				
 		if(st_time)
 		{
 			SPI_WriteTime(hour_count,Hours);		// data , register address
@@ -110,7 +129,7 @@ void main(void)
 		}	
 		else
 		{
-			Display_time(&months,&days,&hours,&mins,&seconds);//UART
+			//UART
 			//Delay_ms(1200);
 		}
 	}

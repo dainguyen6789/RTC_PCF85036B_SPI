@@ -20,17 +20,17 @@ void LCD_Init(void)
 	
 	Wait_ms(10);
 	Command(0x02);
-	//Wait_ms(10);
+	//Command(0x08);	
+	Wait_ms(1);
 	
 	//Wait_ms(50);
 	Command(0x02);	
-	Command(0x00);
-//	Command(0x01);
-//	Command(0x00);
+	Command(0x08);
+	
 	Command(0x00);
 	Command(0x0E);
+	
 	Command(0x00);	
-	Wait_ms(2);	
 	Command(0x06);
 	Wait_ms(20);
 	
@@ -129,5 +129,18 @@ void LCD_clear(void)
 	
 }
 
+void Display_Line(int line)
+{
+	if (line==1)
+	{	
+		Command(0x08);
+		Command(0x00);
+	}
+	else
+	{
+		Command(0x0C);
+		Command(0x00);
+	}
+}
 
 
