@@ -176,8 +176,7 @@ void Key_Process(void)//
 			hours=PressedKey[0]*10+PressedKey[1];
 			mins=PressedKey[2]*10+PressedKey[3];
 			if(PressedKey[4]==SETTIME_KEY && hours<=24 && mins<=59)
-			{
-				
+			{	
 				SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);//BCD value
 				SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);//BCD value
 			}
