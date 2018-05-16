@@ -157,7 +157,7 @@ unsigned char Key_Scan(void)
 		return Unpress;	
 	}			
 }
-void Key_Process(void)
+void Key_Process(void)//
 {
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[5]="hhmms";
