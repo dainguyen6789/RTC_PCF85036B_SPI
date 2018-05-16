@@ -8,6 +8,7 @@
 //#include "UART1.h"
 #include "KeyPad.h"
 #include <REG51F.H>
+#include "LCD_Driver_SPLC780D.h"
 
 #define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000)
@@ -31,6 +32,7 @@ void Display_time(unsigned char *months,unsigned char *days,unsigned char *hours
 void LCD_return_home(void);
 void Key_Process(void);
 void Display_Line(int line);
+void Command(unsigned char dat);//LCD command
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -69,7 +71,15 @@ void main(void)
 	Delay_ms(500);
 	SPI_WriteTime(0x12,Minutes);
 	Delay_ms(500);
-	//LCD_clear();
+	//=============================
+	// INIT LCD DISPLAY
+	//=============================
+	Display_Line(1);		
+	WriteData(0x68);//display "h"
+	WriteData(0x68);//display "h"
+	WriteData(0x6D);//display "m"
+	WriteData(0x6D);//display "m"
+	WriteData(0x23);//display "#" SETTIME_KEY
 	while(1)
 	{
 
