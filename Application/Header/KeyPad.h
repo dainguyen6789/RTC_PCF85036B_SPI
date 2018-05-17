@@ -22,4 +22,5 @@
  #define  KEY9			9
  #define  KEY0			0
  #define  Unpress		100
- #define  SETTIME_KEY 11
+ #define  KEY_SHARP 11
+ #define  KEY_Star 	12

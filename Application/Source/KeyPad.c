@@ -68,7 +68,7 @@ unsigned char Key_Scan(void)
 					}break;	
 					case ~(1<<Line4):			//
 					{
-						KeyValue=KEY0;
+						KeyValue=KEY_Star;
 					
 					}break;					
 				}
@@ -140,7 +140,7 @@ unsigned char Key_Scan(void)
 					}break;		
 					case ~(1<<Line4):			//
 					{
-						KeyValue=SETTIME_KEY;
+						KeyValue=KEY_SHARP;
 					
 					}break;					
 				}
@@ -161,7 +161,7 @@ void Key_Process(void)//
 {
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[5]="hhmms";
-	int d,hours,mins;
+	int d,hours,mins,months,days;
 	KeyNum_Old=KeyNum;
 	KeyNum=Key_Scan();
 	//if( (KeyNum=Key_Scan())!=0 )  	//
@@ -173,13 +173,72 @@ void Key_Process(void)//
 		{
 			//PressedKey[]="";
 			KeyCount=0;
+			//=========================================================================
 			hours=PressedKey[0]*10+PressedKey[1];
 			mins=PressedKey[2]*10+PressedKey[3];
-			if(PressedKey[4]==SETTIME_KEY && hours<=24 && mins<=59)
+			if(PressedKey[4]==KEY_SHARP && hours<=24 && mins<=59)// set hour, minute
 			{	
 				SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);//Write BCD value
 				SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);//Write BCD value
 			}
+			//=========================================================================
+			months=PressedKey[0]*10+PressedKey[1];
+			days=PressedKey[2]*10+PressedKey[3];			
+			if (PressedKey[4]==KEY_Star && months<=12 )//Set month and day
+			{
+				if(months<=7)//1..7
+				{
+					if(months%2)//month has 31 days,1 3 5 7 
+					{
+						if(days<=31)
+						{
+							SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
+							SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value							
+						}
+					}
+					else //2 4 6 
+					{
+						if (months==2)//February
+						{
+							if(days<=28)
+							{
+								SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
+								SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value							
+							}							
+							
+						}
+						else //4 6 
+						{
+							if(days<=30)
+							{
+								SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
+								SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value							
+							}									
+							
+						}
+								
+					}
+				}
+				else	//8..12
+				{
+					if(!(months%2))//month has 31 days,8 10 12
+					{
+						if(days<=31)
+						{
+							SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
+							SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value							
+						}
+					}
+					else //9 11
+					{
+							if(days<=30)
+							{
+								SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
+								SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value							
+							}									
+					}
+				}
+			}		
 			LCD_clear();
 			Command(0x08);
 			Command(0x00);			
@@ -187,10 +246,13 @@ void Key_Process(void)//
 			WriteData(0x68);//display "h"
 			WriteData(0x6D);//display "m"
 			WriteData(0x6D);//display "m"
-			WriteData(0x23);//display "#" SETTIME_KEY
+			WriteData(0x23);//display "#" SETTIME_KEY			
 		}
-	}
-	//LCD Display
+		
+
+		}
+	
+	//LCD Display the pressed button
 	for(d=0;d<KeyCount;d++)
 	{
 		if(KeyCount<=4)

@@ -84,7 +84,7 @@ void main(void)
 	{
 		Key_Process();
 		count++;
-		if (count==500)
+		//if (count==20)
 		{
 			Display_Line(2);
 			DisplayLCD(hours);
