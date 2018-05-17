@@ -173,6 +173,8 @@ void Key_Process(void)//
 		{
 			//PressedKey[]="";
 			KeyCount=0;
+			//=========================================================================			
+			// Set Hour,Minute
 			//=========================================================================
 			hours=PressedKey[0]*10+PressedKey[1];
 			mins=PressedKey[2]*10+PressedKey[3];
@@ -181,6 +183,8 @@ void Key_Process(void)//
 				SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);//Write BCD value
 				SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);//Write BCD value
 			}
+			//=========================================================================			
+			// Set Month,Day			
 			//=========================================================================
 			months=PressedKey[0]*10+PressedKey[1];
 			days=PressedKey[2]*10+PressedKey[3];			
@@ -248,11 +252,7 @@ void Key_Process(void)//
 			WriteData(0x6D);//display "m"
 			WriteData(0x23);//display "#" SETTIME_KEY			
 		}
-		
-
-		}
-	
-	//LCD Display the pressed button
+		//LCD Display the pressed buttons
 	for(d=0;d<KeyCount;d++)
 	{
 		if(KeyCount<=4)
@@ -261,7 +261,11 @@ void Key_Process(void)//
 			Command(0x00+d);
 			WriteData(PressedKey[d]|0x30);
 		}
+	}	
+
 	}
+	
+
 	
 }
 /***********************************************
@@ -270,7 +274,6 @@ void KeyPad_IO_Init(void)
 {	
 	P0M1 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );  
 	P0M0 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );    
-   
 }
 
 
