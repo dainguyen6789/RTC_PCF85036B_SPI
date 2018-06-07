@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/17/2018 11:40:09 PAGE 1   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/23/2018 16:09:57 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE KEYPAD
@@ -62,7 +62,7 @@ line level    source
   48   5                KeyTemp2=KeyTemp1;  
   49   5                KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));  // read the data, KEYPORT is the
              - instantaneous value of the PORT.
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/17/2018 11:40:09 PAGE 2   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/23/2018 16:09:57 PAGE 2   
 
   50   5              }
   51   4              // run when unpress
@@ -126,7 +126,7 @@ line level    source
  109   6                }break;           
  110   5              }
  111   4            }
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/17/2018 11:40:09 PAGE 3   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/23/2018 16:09:57 PAGE 3   
 
  112   3            //COL1 COL2 COL3
  113   3            //1     1     0
@@ -190,117 +190,121 @@ line level    source
  171   2          KeyCount++;
  172   2          if(KeyCount==5)
  173   2          {
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/17/2018 11:40:09 PAGE 4   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/23/2018 16:09:57 PAGE 4   
 
  174   3            //PressedKey[]="";
  175   3            KeyCount=0;
- 176   3            //=========================================================================
- 177   3            hours=PressedKey[0]*10+PressedKey[1];
- 178   3            mins=PressedKey[2]*10+PressedKey[3];
- 179   3            if(PressedKey[4]==KEY_SHARP && hours<=24 && mins<=59)// set hour, minute
- 180   3            { 
- 181   4              SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);//Write BCD value
- 182   4              SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);//Write BCD value
- 183   4            }
- 184   3            //=========================================================================
- 185   3            months=PressedKey[0]*10+PressedKey[1];
- 186   3            days=PressedKey[2]*10+PressedKey[3];      
- 187   3            if (PressedKey[4]==KEY_Star && months<=12 )//Set month and day
- 188   3            {
- 189   4              if(months<=7)//1..7
- 190   4              {
- 191   5                if(months%2)//month has 31 days,1 3 5 7 
- 192   5                {
- 193   6                  if(days<=31)
- 194   6                  {
- 195   7                    SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
- 196   7                    SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value              
- 197   7                  }
- 198   6                }
- 199   5                else //2 4 6 
- 200   5                {
- 201   6                  if (months==2)//February
- 202   6                  {
- 203   7                    if(days<=28)
- 204   7                    {
- 205   8                      SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
- 206   8                      SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value              
- 207   8                    }             
- 208   7                    
- 209   7                  }
- 210   6                  else //4 6 
- 211   6                  {
- 212   7                    if(days<=30)
- 213   7                    {
- 214   8                      SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
- 215   8                      SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value              
- 216   8                    }                 
- 217   7                    
- 218   7                  }
- 219   6                      
- 220   6                }
- 221   5              }
- 222   4              else  //8..12
- 223   4              {
- 224   5                if(!(months%2))//month has 31 days,8 10 12
- 225   5                {
- 226   6                  if(days<=31)
- 227   6                  {
- 228   7                    SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
- 229   7                    SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value              
- 230   7                  }
- 231   6                }
- 232   5                else //9 11
- 233   5                {
- 234   6                    if(days<=30)
- 235   6                    {
-C51 COMPILER V9.52.0.0   KEYPAD                                                            05/17/2018 11:40:09 PAGE 5   
+ 176   3            //=========================================================================     
+ 177   3            // Set Hour,Minute
+ 178   3            //=========================================================================
+ 179   3            hours=PressedKey[0]*10+PressedKey[1];
+ 180   3            mins=PressedKey[2]*10+PressedKey[3];
+ 181   3            if(PressedKey[4]==KEY_SHARP && hours<=24 && mins<=59)// set hour, minute
+ 182   3            { 
+ 183   4              SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);//Write BCD value
+ 184   4              SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);//Write BCD value
+ 185   4            }
+ 186   3            //=========================================================================     
+ 187   3            // Set Month,Day      
+ 188   3            //=========================================================================
+ 189   3            months=PressedKey[0]*10+PressedKey[1];
+ 190   3            days=PressedKey[2]*10+PressedKey[3];      
+ 191   3            if (PressedKey[4]==KEY_Star && months<=12 )//Set month and day
+ 192   3            {
+ 193   4              if(months<=7)//1..7
+ 194   4              {
+ 195   5                if(months%2)//month has 31 days,1 3 5 7 
+ 196   5                {
+ 197   6                  if(days<=31)
+ 198   6                  {
+ 199   7                    SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
+ 200   7                    SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value              
+ 201   7                  }
+ 202   6                }
+ 203   5                else //2 4 6 
+ 204   5                {
+ 205   6                  if (months==2)//February
+ 206   6                  {
+ 207   7                    if(days<=28)
+ 208   7                    {
+ 209   8                      SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
+ 210   8                      SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value              
+ 211   8                    }             
+ 212   7                    
+ 213   7                  }
+ 214   6                  else //4 6 
+ 215   6                  {
+ 216   7                    if(days<=30)
+ 217   7                    {
+ 218   8                      SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
+ 219   8                      SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value              
+ 220   8                    }                 
+ 221   7                    
+ 222   7                  }
+ 223   6                      
+ 224   6                }
+ 225   5              }
+ 226   4              else  //8..12
+ 227   4              {
+ 228   5                if(!(months%2))//month has 31 days,8 10 12
+ 229   5                {
+ 230   6                  if(days<=31)
+ 231   6                  {
+ 232   7                    SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
+ 233   7                    SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value              
+ 234   7                  }
+ 235   6                }
+C51 COMPILER V9.52.0.0   KEYPAD                                                            05/23/2018 16:09:57 PAGE 5   
 
- 236   7                      SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
- 237   7                      SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value              
- 238   7                    }                 
- 239   6                }
- 240   5              }
- 241   4            }   
- 242   3            LCD_clear();
- 243   3            Command(0x08);
- 244   3            Command(0x00);      
- 245   3            WriteData(0x68);//display "h"
- 246   3            WriteData(0x68);//display "h"
- 247   3            WriteData(0x6D);//display "m"
- 248   3            WriteData(0x6D);//display "m"
- 249   3            WriteData(0x23);//display "#" SETTIME_KEY     
- 250   3          }
- 251   2          //LCD Display the pressed button
- 252   2        for(d=0;d<KeyCount;d++)
- 253   2        {
- 254   3          if(KeyCount<=4)
- 255   3          {
- 256   4            Command(0x08);
- 257   4            Command(0x00+d);
- 258   4            WriteData(PressedKey[d]|0x30);
- 259   4          }
- 260   3        } 
- 261   2      
- 262   2        }
- 263   1        
- 264   1      
- 265   1        
- 266   1      }
- 267          /***********************************************
- 268          ************************************************/
- 269          void KeyPad_IO_Init(void)
- 270          { 
- 271   1        P0M1 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );  
- 272   1        P0M0 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );    
- 273   1      }
- 274          
- 275          
- 276          
- 277          
+ 236   5                else //9 11
+ 237   5                {
+ 238   6                    if(days<=30)
+ 239   6                    {
+ 240   7                      SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
+ 241   7                      SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value              
+ 242   7                    }                 
+ 243   6                }
+ 244   5              }
+ 245   4            }   
+ 246   3            LCD_clear();
+ 247   3            Command(0x08);
+ 248   3            Command(0x00);      
+ 249   3            WriteData(0x68);//display "h"
+ 250   3            WriteData(0x68);//display "h"
+ 251   3            WriteData(0x6D);//display "m"
+ 252   3            WriteData(0x6D);//display "m"
+ 253   3            WriteData(0x23);//display "#" SETTIME_KEY     
+ 254   3          }
+ 255   2          //LCD Display the pressed buttons
+ 256   2        for(d=0;d<KeyCount;d++)
+ 257   2        {
+ 258   3          if(KeyCount<=4)
+ 259   3          {
+ 260   4            Command(0x08);
+ 261   4            Command(0x00+d);
+ 262   4            WriteData(PressedKey[d]|0x30);
+ 263   4          }
+ 264   3        } 
+ 265   2      
+ 266   2        }
+ 267   1        
+ 268   1      
+ 269   1        
+ 270   1      }
+ 271          /***********************************************
+ 272          ************************************************/
+ 273          void KeyPad_IO_Init(void)
+ 274          { 
+ 275   1        P0M1 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );  
+ 276   1        P0M0 &=~( (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );    
+ 277   1      }
  278          
  279          
  280          
+ 281          
+ 282          
+ 283          
+ 284          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
