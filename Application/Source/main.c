@@ -9,6 +9,7 @@
 #include "KeyPad.h"
 #include <REG51F.H>
 #include "LCD_Driver_SPLC780D.h"
+#include "VCNL4035X01.h"
 
 #define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000)
@@ -33,6 +34,8 @@ void LCD_return_home(void);
 void Key_Process(void);
 void Display_Line(int line);
 void Command(unsigned char dat);//LCD command
+unsigned char Read_VCNL4035(unsigned char command_code);
+void I2C_Init();
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -58,6 +61,7 @@ void main(void)
 	SPI_Init();
 	KeyPad_IO_Init();
 	initUART1();
+	I2C_Init();
 	//Timer0===================================
 	AUXR |=0x80;
 	TL0=T1MS;
@@ -80,6 +84,7 @@ void main(void)
 	WriteData(0x6D);//display "m"
 	WriteData(0x6D);//display "m"
 	WriteData(0x23);//display "#" SETTIME_KEY
+	//WriteData(Read_VCNL4035(PS_CONF1));
 	while(1)
 	{
 		Key_Process();
@@ -97,6 +102,8 @@ void main(void)
 			WriteData(0x2D);//display "-"
 			DisplayLCD(days);				
 			count=0;
+			WriteData(Read_VCNL4035(PS1_Data_L));
+			//WriteData(Read_VCNL4035(PS3_Data_L));
 			LCD_return_home();
 			
 		}
