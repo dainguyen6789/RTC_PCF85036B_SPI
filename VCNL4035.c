@@ -228,11 +228,11 @@ unsigned char Read_VCNL4035(unsigned char command_code)
 	
 	uC_ACK();
 	Wait_ms_i2c(2);
-	P3M1 |=0x02;  //~ bitwise NOT
-	P3M0 &=~( (1<<1) | (1<<2) ); 	
+	P3M1 |=0x02;  //~ bitwise NOT// KEy to work
+	P3M0 &=~( (1<<1) | (1<<2) ); 	KEy to work
 	temp_dat_h|=I2C_ReceiveByte();
-	P3M1 &=~( (1<<1) | (1<<2) );  //~ bitwise NOT
-	P3M0 &=~( (1<<1) | (1<<2) ); 
+	P3M1 &=~( (1<<1) | (1<<2) );  //~ bitwise NOT//KEy to work
+	P3M0 &=~( (1<<1) | (1<<2) ); //KEy to work
 	uC_NACK();
 	Wait_ms_i2c(2);
 	I2C_Stop();
