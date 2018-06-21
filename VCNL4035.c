@@ -45,6 +45,7 @@ void I2C_Stop()
 	I2C_SDA=0;
 	Wait_ms_i2c(4);
 	I2C_SDA=1;
+	//Wait_ms_i2c(2);
 
 }
 
@@ -78,18 +79,19 @@ void uC_ACK()
 	
   //for (i=0; i<1; i++)            //
   {
-    I2C_SCK_Clr(); 
+    //I2C_SCK_Clr(); 
 		//Wait_ms_i2c(1);//		
 		//if( (dat&0x80)==0x80 )	  	 //
 	 	{
-	   		I2C_SDA_Clr();
+	   		//I2C_SDA_Clr();
 	 	}
 
 		Wait_ms_i2c(2);           //
     I2C_SCK_Set();          //
 		        //
 		//dat <<= 1;                   //
-		Wait_ms_i2c(2);      
+		Wait_ms_i2c(2); 
+		I2C_SCK_Clr();		
   }
 
 
@@ -112,9 +114,12 @@ void uC_NACK()
 
 		Wait_ms_i2c(2);           //
     I2C_SCK_Set();          //
-		        //
+		        
 		//dat <<= 1;                   //
-		Wait_ms_i2c(2);      
+		Wait_ms_i2c(2); 
+		I2C_SCK_Clr();
+		Wait_ms_i2c(2);
+		I2C_SDA_Clr();		
   }
 
 
@@ -129,8 +134,8 @@ void I2C_Init()
 	P3M0 &=~( (1<<1) | (1<<2) );  
 	//P4M1 |=0x04;// SCK OPen Drain output
 	//P4M0 |=0x04;
-	Write_VCNL4035X(PS_CONF1,0xFF,0x30);
-	Write_VCNL4035X(PS_CONF3,0x00,0x07);
+	Write_VCNL4035X(PS_CONF1,0x00,0x00);
+	Write_VCNL4035X(PS_CONF3,0x00,0x00);
 }
 
 
@@ -182,7 +187,7 @@ unsigned char I2C_ReceiveByte(void)
 		if (i==7)
 		{
 			I2C_SCK_Clr();
-			//I2C_SDA_Clr(); 			
+			I2C_SDA_Clr(); 			
 		}
 		//	
 	}
@@ -210,39 +215,48 @@ void Write_VCNL4035X(unsigned char  command_code,unsigned char dat_h,unsigned ch
 unsigned char Read_VCNL4035(unsigned char command_code)
 {
 	unsigned int temp_dat=0,temp_dat_l=0,temp_dat_h=0;
-	I2C_Start();
-	Wait_ms_i2c(2);
-	I2C_SendByte((VCNL4035_addr)|I2C_WRITE);
-	if(I2C_ACK()==0)
-	{
-		I2C_SendByte(command_code);
-	}	
-	if(I2C_ACK()==0)
-	{
-		Wait_ms_iic(2);
-		I2C_SCK=0;
-		Wait_ms_iic(1);		
+	
 		I2C_Start();
 		Wait_ms_i2c(2);
 		I2C_SendByte((VCNL4035_addr)|I2C_READ);
-	}		
+		
 	if(I2C_ACK()==0)
 	{
 		temp_dat_l|=I2C_ReceiveByte(); // data from proximity sensor
 	}
 	//Wait_ms_i2c(1); 
 	
-	uC_NACK();
-	//Wait_ms_i2c(6);
-	//P3M1 |=0x02;  //~ bitwise NOT
-	//P3M0 &=~( (1<<1) | (1<<2) ); 	
+	uC_ACK();
+	Wait_ms_i2c(2);
+	P3M1 |=0x02;  //~ bitwise NOT
+	P3M0 &=~( (1<<1) | (1<<2) ); 	
 	temp_dat_h|=I2C_ReceiveByte();
-	//P3M1 &=~( (1<<1) | (1<<2) );  //~ bitwise NOT
-	//P3M0 &=~( (1<<1) | (1<<2) ); 
+	P3M1 &=~( (1<<1) | (1<<2) );  //~ bitwise NOT
+	P3M0 &=~( (1<<1) | (1<<2) ); 
 	uC_NACK();
-	//Wait_ms_i2c(2);
+	Wait_ms_i2c(2);
 	I2C_Stop();
 	Wait_ms_i2c(2);
+		I2C_Start();
+	Wait_ms_i2c(2);
+	I2C_SendByte((VCNL4035_addr)|I2C_WRITE);
+	if(I2C_ACK()==0)
+	{
+		I2C_SendByte(command_code);
+		
+	}	
+	if(I2C_ACK()==0)
+	{
+		//Wait_ms_iic(2);
+		I2C_SCK=0;
+		Wait_ms_iic(1);	
+		I2C_Stop();	
+		Wait_ms_iic(2);
+	}	
 	return temp_dat_l;
 }
 
+void DisplayLCD_VCNL4035(unsigned char dat)
+{
+
+}

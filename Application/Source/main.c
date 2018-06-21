@@ -36,6 +36,7 @@ void Display_Line(int line);
 void Command(unsigned char dat);//LCD command
 unsigned char Read_VCNL4035(unsigned char command_code);
 void I2C_Init();
+void Display_Prox(unsigned char prox_data);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -52,6 +53,7 @@ void tm0_isr() interrupt 1 using 1
 void main(void)
 {
 	unsigned char seconds,mins, hours,days,months;
+	unsigned char prox_data;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 //	unsigned char KeyNum;
@@ -99,10 +101,12 @@ void main(void)
 			DisplayLCD(seconds&0x7f);
 			WriteData(0x3B);//display ";"
 			DisplayLCD(months);
-			WriteData(0x2D);//display "-"
+			//WriteData(0x2D);//display "-"
 			DisplayLCD(days);				
 			count=0;
-			WriteData(Read_VCNL4035(PS1_Data_L));
+			prox_data=Read_VCNL4035(PS1_Data_L);
+			Display_Prox(prox_data);
+			
 			//WriteData(Read_VCNL4035(PS3_Data_L));
 			LCD_return_home();
 			
@@ -173,4 +177,17 @@ void SendUART1(unsigned char dat)
 	busy=1;
 	ACC=dat;
 	SBUF=ACC;
+}
+
+
+void Display_Prox(unsigned char dat)
+{
+	unsigned char unit, ten, hundred;
+	unit =dat%10;// remainder after division
+	hundred=dat/100;
+	ten=(dat-hundred*100-unit)/10;
+	WriteData(hundred|0x30);
+	WriteData(ten|0x30);
+	WriteData(unit|0x30);
+	return;
 }
