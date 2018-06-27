@@ -1,6 +1,6 @@
 #include "VCNL4035X01.h"
 
-unsigned int Read_VCNL4035X(unsigned char command_code);
+unsigned int Read_VCNL4035X(unsigned int command_code);
 void Write_VCNL4035X(unsigned char  command_code,unsigned char dat_h,unsigned char  dat_l);
 void Wait_ms_iic(int ms)
 {
@@ -134,8 +134,11 @@ void I2C_Init()
 	P3M0 &=~( (1<<1) | (1<<2) );  
 	//P4M1 |=0x04;// SCK OPen Drain output
 	//P4M0 |=0x04;
-	Write_VCNL4035X(PS_CONF1,0x00,0x00);
-	Write_VCNL4035X(PS_CONF3,0x00,0x00);
+	//Write_VCNL4035X(PS_CONF1,0x20,0x00);
+	
+	Write_VCNL4035X(PS_CONF1,0x00,0x00);//  1 = typical sensitivity mode (two step mode)
+	//Write_VCNL4035X(PS_CONF3,0x0F,0x80);
+	Write_VCNL4035X(PS_CONF3,0x07,0x80);// 20mA
 }
 
 
@@ -212,7 +215,7 @@ void Write_VCNL4035X(unsigned char  command_code,unsigned char dat_h,unsigned ch
 		I2C_Stop();
 }
 
-unsigned char Read_VCNL4035(unsigned char command_code)
+unsigned int Read_VCNL4035(unsigned int command_code)
 {
 	unsigned int temp_dat=0,temp_dat_l=0,temp_dat_h=0;
 	
@@ -222,15 +225,20 @@ unsigned char Read_VCNL4035(unsigned char command_code)
 		
 	if(I2C_ACK()==0)
 	{
-		temp_dat_l|=I2C_ReceiveByte(); // data from proximity sensor
+		P3M1 |=0x02;  //~ bitwise NOT// KEy to work
+		P3M0 &=~( (1<<1) | (1<<2) ); //	KEy to work
+		temp_dat_l=I2C_ReceiveByte(); // data from proximity sensor
+		P3M1 &=~( (1<<1) | (1<<2) );  //~ bitwise NOT//KEy to work
+		P3M0 &=~( (1<<1) | (1<<2) ); //KEy to work
 	}
 	//Wait_ms_i2c(1); 
 	
 	uC_ACK();
-	Wait_ms_i2c(2);
+	
+	Wait_ms_i2c(4);
 	P3M1 |=0x02;  //~ bitwise NOT// KEy to work
-	P3M0 &=~( (1<<1) | (1<<2) ); 	KEy to work
-	temp_dat_h|=I2C_ReceiveByte();
+	P3M0 &=~( (1<<1) | (1<<2) ); 	//KEy to work	
+	temp_dat_h=I2C_ReceiveByte();
 	P3M1 &=~( (1<<1) | (1<<2) );  //~ bitwise NOT//KEy to work
 	P3M0 &=~( (1<<1) | (1<<2) ); //KEy to work
 	uC_NACK();
@@ -253,7 +261,7 @@ unsigned char Read_VCNL4035(unsigned char command_code)
 		I2C_Stop();	
 		Wait_ms_iic(2);
 	}	
-	return temp_dat_l;
+	return ((temp_dat_h<<8)|temp_dat_l);
 }
 
 void DisplayLCD_VCNL4035(unsigned char dat)
