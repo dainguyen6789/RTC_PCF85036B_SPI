@@ -10,6 +10,8 @@
 #include <REG51F.H>
 #include "LCD_Driver_SPLC780D.h"
 #include "VCNL4035X01.h"
+#include <math.h>// to use power function
+#include "Receiver_Position_Data.h"
 
 #define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000)
@@ -34,9 +36,10 @@ void LCD_return_home(void);
 void Key_Process(void);
 void Display_Line(int line);
 void Command(unsigned char dat);//LCD command
-unsigned char Read_VCNL4035(unsigned char command_code);
+unsigned int Read_VCNL4035(unsigned int command_code);
 void I2C_Init();
-void Display_Prox(unsigned char prox_data);
+void Display_Prox(unsigned int prox_data);
+void Move(unsigned int step, int direction);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -53,12 +56,20 @@ void tm0_isr() interrupt 1 using 1
 void main(void)
 {
 	unsigned char seconds,mins, hours,days,months;
-	unsigned char prox_data;
+	unsigned int prox_data;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 //	unsigned char KeyNum;
 	int count=0;
 	char numStr[5];
+	//=======================================
+	float a=-7.0014e-5;
+	float b=1.1071e-2;
+	float c=2.1989;
+	float d=-2.0858e2;
+	float dd=138;
+	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
+	//=======================================
 	LCD_Init();
 	SPI_Init();
 	KeyPad_IO_Init();
@@ -86,7 +97,8 @@ void main(void)
 	WriteData(0x6D);//display "m"
 	WriteData(0x6D);//display "m"
 	WriteData(0x23);//display "#" SETTIME_KEY
-	//WriteData(Read_VCNL4035(PS_CONF1));
+	WriteData((int) rx_pos_12h);
+	Move(200, 1);// 1.8* step angle, 200 steps ~ 1 round
 	while(1)
 	{
 		Key_Process();
@@ -99,14 +111,19 @@ void main(void)
 			DisplayLCD(mins);
 			WriteData(0x3A);//display ":"
 			DisplayLCD(seconds&0x7f);
-			WriteData(0x3B);//display ";"
+			//WriteData(0x3B);//display ";"
 			DisplayLCD(months);
 			//WriteData(0x2D);//display "-"
 			DisplayLCD(days);				
 			count=0;
 			prox_data=Read_VCNL4035(PS1_Data_L);
-			Display_Prox(prox_data);
-			
+			Display_Prox(prox_data);// this is RAW data from the Prox Sensor
+			// 	y = 12.051x2 - 546.97x + 7153.8;   	 	x in [1015:2880] 	=> 	distance: 	10-20mm
+			// 	y = 2.4242x2 - 174.89x + 3545.5;			x in [473:941] 		=> 	distance:		20-30mm
+			// 	y = 0.5038x2 - 54.417x + 1651.1; 		  x in [277:455] 		=> 	distance:		30-40mm
+			//	y = 0.303x2 - 37.642x + 1302.4; 		  x in [177:269]	 	=> 	distance:		40-50mm
+		
+			//Delay_ms(1);
 			//WriteData(Read_VCNL4035(PS3_Data_L));
 			LCD_return_home();
 			
@@ -180,12 +197,14 @@ void SendUART1(unsigned char dat)
 }
 
 
-void Display_Prox(unsigned char dat)
+void Display_Prox(unsigned int dat)
 {
-	unsigned char unit, ten, hundred;
+	unsigned char unit, ten, hundred,thousand;
 	unit =dat%10;// remainder after division
-	hundred=dat/100;
-	ten=(dat-hundred*100-unit)/10;
+	thousand=dat/1000;
+	hundred=(dat-thousand*1000)/100;
+	ten=(dat-thousand*1000-hundred*100)/10;
+	WriteData(thousand|0x30);
 	WriteData(hundred|0x30);
 	WriteData(ten|0x30);
 	WriteData(unit|0x30);

@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   VCNL4035                                                          06/21/2018 10:57:30 PAGE 1   
+C51 COMPILER V9.52.0.0   VCNL4035                                                          07/05/2018 10:05:35 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE VCNL4035
@@ -10,7 +10,7 @@ line level    source
 
    1          #include "VCNL4035X01.h"
    2          
-   3          unsigned int Read_VCNL4035X(unsigned char command_code);
+   3          unsigned int Read_VCNL4035X(unsigned int command_code);
    4          void Write_VCNL4035X(unsigned char  command_code,unsigned char dat_h,unsigned char  dat_l);
    5          void Wait_ms_iic(int ms)
    6          {
@@ -62,7 +62,7 @@ line level    source
   52          unsigned char I2C_ACK(void)
   53          {
   54   1        unsigned char i;
-C51 COMPILER V9.52.0.0   VCNL4035                                                          06/21/2018 10:57:30 PAGE 2   
+C51 COMPILER V9.52.0.0   VCNL4035                                                          07/05/2018 10:05:35 PAGE 2   
 
   55   1        unsigned char dat = 0;
   56   1      
@@ -126,7 +126,7 @@ line level    source
  112   3              I2C_SDA_Set();
  113   3          }
  114   2      
-C51 COMPILER V9.52.0.0   VCNL4035                                                          06/21/2018 10:57:30 PAGE 3   
+C51 COMPILER V9.52.0.0   VCNL4035                                                          07/05/2018 10:05:35 PAGE 3   
 
  115   2          Wait_ms_i2c(2);           //
  116   2          I2C_SCK_Set();          //
@@ -151,143 +151,151 @@ line level    source
  134   1        P3M0 &=~( (1<<1) | (1<<2) );  
  135   1        //P4M1 |=0x04;// SCK OPen Drain output
  136   1        //P4M0 |=0x04;
- 137   1        Write_VCNL4035X(PS_CONF1,0x00,0x00);
- 138   1        Write_VCNL4035X(PS_CONF3,0x00,0x00);
- 139   1      }
- 140          
- 141          
- 142          void I2C_SendByte(unsigned char dat)// Send dat to SPI device/Slave
- 143          {
- 144   1        unsigned char i;
- 145   1        
- 146   1        for (i=0; i<8; i++)            //
- 147   1        {
- 148   2          I2C_SCK_Clr(); 
- 149   2          //Wait_ms_i2c(1);//   
- 150   2          if( (dat&0x80)==0x80 )       //
- 151   2          {
- 152   3              I2C_SDA_Set();
- 153   3          }
- 154   2          else
- 155   2          {
- 156   3              I2C_SDA_Clr();
- 157   3          }
- 158   2          Wait_ms_i2c(2);           //
- 159   2          I2C_SCK_Set();          //
- 160   2                  //
- 161   2          dat <<= 1;                   //
- 162   2          Wait_ms_i2c(2);      
- 163   2        }
- 164   1      }
- 165          
- 166          
- 167          
- 168          unsigned char I2C_ReceiveByte(void)
- 169          {
- 170   1        unsigned char i;
- 171   1        unsigned char dat = 0;
- 172   1        
- 173   1      
- 174   1        //I2C_SDA_Set();          //
- 175   1        for (i=0; i<8; i++)         //
-C51 COMPILER V9.52.0.0   VCNL4035                                                          06/21/2018 10:57:30 PAGE 4   
+ 137   1        //Write_VCNL4035X(PS_CONF1,0x20,0x00);
+ 138   1        
+ 139   1        Write_VCNL4035X(PS_CONF1,0x00,0x00);//  1 = typical sensitivity mode (two step mode)
+ 140   1        //Write_VCNL4035X(PS_CONF3,0x0F,0x80);
+ 141   1        Write_VCNL4035X(PS_CONF3,0x07,0x80);// 20mA
+ 142   1      }
+ 143          
+ 144          
+ 145          void I2C_SendByte(unsigned char dat)// Send dat to SPI device/Slave
+ 146          {
+ 147   1        unsigned char i;
+ 148   1        
+ 149   1        for (i=0; i<8; i++)            //
+ 150   1        {
+ 151   2          I2C_SCK_Clr(); 
+ 152   2          //Wait_ms_i2c(1);//   
+ 153   2          if( (dat&0x80)==0x80 )       //
+ 154   2          {
+ 155   3              I2C_SDA_Set();
+ 156   3          }
+ 157   2          else
+ 158   2          {
+ 159   3              I2C_SDA_Clr();
+ 160   3          }
+ 161   2          Wait_ms_i2c(2);           //
+ 162   2          I2C_SCK_Set();          //
+ 163   2                  //
+ 164   2          dat <<= 1;                   //
+ 165   2          Wait_ms_i2c(2);      
+ 166   2        }
+ 167   1      }
+ 168          
+ 169          
+ 170          
+ 171          unsigned char I2C_ReceiveByte(void)
+ 172          {
+ 173   1        unsigned char i;
+ 174   1        unsigned char dat = 0;
+ 175   1        
+C51 COMPILER V9.52.0.0   VCNL4035                                                          07/05/2018 10:05:35 PAGE 4   
 
- 176   1        {
- 177   2          dat <<= 1;                //
- 178   2          I2C_SCK_Clr();       //
- 179   2          Wait_ms_i2c(2);        //
- 180   2              
- 181   2          if (I2C_SDA)        //If  I2C_SDO is HIGH, dat will be 1(one) , I2C_SDO is defined in .h file
- 182   2          {
- 183   3            dat |= 0x01;            //
- 184   3          }
- 185   2          I2C_SCK_Set();       //
- 186   2          Wait_ms_i2c(2);
- 187   2          if (i==7)
- 188   2          {
- 189   3            I2C_SCK_Clr();
- 190   3            I2C_SDA_Clr();      
- 191   3          }
- 192   2          //  
- 193   2        }
- 194   1        return dat;
- 195   1      }
- 196          void Write_VCNL4035X(unsigned char  command_code,unsigned char dat_h,unsigned char  dat_l)
- 197          {
- 198   1        I2C_Start();
- 199   1        Wait_ms_i2c(1);
- 200   1        I2C_SendByte(VCNL4035_addr);
- 201   1        if(I2C_ACK()==0)
- 202   1        {
- 203   2          I2C_SendByte(command_code);
- 204   2        }
- 205   1        if(I2C_ACK()==0)
- 206   1          I2C_SendByte(dat_l);
- 207   1      
+ 176   1      
+ 177   1        //I2C_SDA_Set();          //
+ 178   1        for (i=0; i<8; i++)         //
+ 179   1        {
+ 180   2          dat <<= 1;                //
+ 181   2          I2C_SCK_Clr();       //
+ 182   2          Wait_ms_i2c(2);        //
+ 183   2              
+ 184   2          if (I2C_SDA)        //If  I2C_SDO is HIGH, dat will be 1(one) , I2C_SDO is defined in .h file
+ 185   2          {
+ 186   3            dat |= 0x01;            //
+ 187   3          }
+ 188   2          I2C_SCK_Set();       //
+ 189   2          Wait_ms_i2c(2);
+ 190   2          if (i==7)
+ 191   2          {
+ 192   3            I2C_SCK_Clr();
+ 193   3            I2C_SDA_Clr();      
+ 194   3          }
+ 195   2          //  
+ 196   2        }
+ 197   1        return dat;
+ 198   1      }
+ 199          void Write_VCNL4035X(unsigned char  command_code,unsigned char dat_h,unsigned char  dat_l)
+ 200          {
+ 201   1        I2C_Start();
+ 202   1        Wait_ms_i2c(1);
+ 203   1        I2C_SendByte(VCNL4035_addr);
+ 204   1        if(I2C_ACK()==0)
+ 205   1        {
+ 206   2          I2C_SendByte(command_code);
+ 207   2        }
  208   1        if(I2C_ACK()==0)
- 209   1          I2C_SendByte(dat_h);
- 210   1        
- 211   1        if(I2C_ACK()==0)  
- 212   1          I2C_Stop();
- 213   1      }
- 214          
- 215          unsigned char Read_VCNL4035(unsigned char command_code)
- 216          {
- 217   1        unsigned int temp_dat=0,temp_dat_l=0,temp_dat_h=0;
- 218   1        
- 219   1          I2C_Start();
- 220   1          Wait_ms_i2c(2);
- 221   1          I2C_SendByte((VCNL4035_addr)|I2C_READ);
- 222   1          
- 223   1        if(I2C_ACK()==0)
- 224   1        {
- 225   2          temp_dat_l|=I2C_ReceiveByte(); // data from proximity sensor
- 226   2        }
- 227   1        //Wait_ms_i2c(1); 
- 228   1        
- 229   1        uC_ACK();
- 230   1        Wait_ms_i2c(2);
- 231   1        P3M1 |=0x02;  //~ bitwise NOT
- 232   1        P3M0 &=~( (1<<1) | (1<<2) );  
- 233   1        temp_dat_h|=I2C_ReceiveByte();
- 234   1        P3M1 &=~( (1<<1) | (1<<2) );  //~ bitwise NOT
- 235   1        P3M0 &=~( (1<<1) | (1<<2) ); 
- 236   1        uC_NACK();
- 237   1        Wait_ms_i2c(2);
-C51 COMPILER V9.52.0.0   VCNL4035                                                          06/21/2018 10:57:30 PAGE 5   
+ 209   1          I2C_SendByte(dat_l);
+ 210   1      
+ 211   1        if(I2C_ACK()==0)
+ 212   1          I2C_SendByte(dat_h);
+ 213   1        
+ 214   1        if(I2C_ACK()==0)  
+ 215   1          I2C_Stop();
+ 216   1      }
+ 217          
+ 218          unsigned int Read_VCNL4035(unsigned int command_code)
+ 219          {
+ 220   1        unsigned int temp_dat=0,temp_dat_l=0,temp_dat_h=0;
+ 221   1        
+ 222   1          I2C_Start();
+ 223   1          Wait_ms_i2c(2);
+ 224   1          I2C_SendByte((VCNL4035_addr)|I2C_READ);
+ 225   1          
+ 226   1        if(I2C_ACK()==0)
+ 227   1        {
+ 228   2          P3M1 |=0x02;  //~ bitwise NOT// KEy to work
+ 229   2          P3M0 &=~( (1<<1) | (1<<2) ); // KEy to work
+ 230   2          temp_dat_l=I2C_ReceiveByte(); // data from proximity sensor
+ 231   2          P3M1 &=~( (1<<1) | (1<<2) );  //~ bitwise NOT//KEy to work
+ 232   2          P3M0 &=~( (1<<1) | (1<<2) ); //KEy to work
+ 233   2        }
+ 234   1        //Wait_ms_i2c(1); 
+ 235   1        
+ 236   1        uC_ACK();
+ 237   1        
+C51 COMPILER V9.52.0.0   VCNL4035                                                          07/05/2018 10:05:35 PAGE 5   
 
- 238   1        I2C_Stop();
- 239   1        Wait_ms_i2c(2);
- 240   1          I2C_Start();
- 241   1        Wait_ms_i2c(2);
- 242   1        I2C_SendByte((VCNL4035_addr)|I2C_WRITE);
- 243   1        if(I2C_ACK()==0)
- 244   1        {
- 245   2          I2C_SendByte(command_code);
- 246   2          
- 247   2        } 
- 248   1        if(I2C_ACK()==0)
- 249   1        {
- 250   2          //Wait_ms_iic(2);
- 251   2          I2C_SCK=0;
- 252   2          Wait_ms_iic(1); 
- 253   2          I2C_Stop(); 
- 254   2          Wait_ms_iic(2);
+ 238   1        Wait_ms_i2c(4);
+ 239   1        P3M1 |=0x02;  //~ bitwise NOT// KEy to work
+ 240   1        P3M0 &=~( (1<<1) | (1<<2) );  //KEy to work 
+ 241   1        temp_dat_h=I2C_ReceiveByte();
+ 242   1        P3M1 &=~( (1<<1) | (1<<2) );  //~ bitwise NOT//KEy to work
+ 243   1        P3M0 &=~( (1<<1) | (1<<2) ); //KEy to work
+ 244   1        uC_NACK();
+ 245   1        Wait_ms_i2c(2);
+ 246   1        I2C_Stop();
+ 247   1        Wait_ms_i2c(2);
+ 248   1          I2C_Start();
+ 249   1        Wait_ms_i2c(2);
+ 250   1        I2C_SendByte((VCNL4035_addr)|I2C_WRITE);
+ 251   1        if(I2C_ACK()==0)
+ 252   1        {
+ 253   2          I2C_SendByte(command_code);
+ 254   2          
  255   2        } 
- 256   1        return temp_dat_l;
- 257   1      }
- 258          
- 259          void DisplayLCD_VCNL4035(unsigned char dat)
- 260          {
- 261   1      
- 262   1      }
-*** WARNING C280 IN LINE 259 OF VCNL4035.c: 'dat': unreferenced local variable
+ 256   1        if(I2C_ACK()==0)
+ 257   1        {
+ 258   2          //Wait_ms_iic(2);
+ 259   2          I2C_SCK=0;
+ 260   2          Wait_ms_iic(1); 
+ 261   2          I2C_Stop(); 
+ 262   2          Wait_ms_iic(2);
+ 263   2        } 
+ 264   1        return ((temp_dat_h<<8)|temp_dat_l);
+ 265   1      }
+ 266          
+ 267          void DisplayLCD_VCNL4035(unsigned char dat)
+ 268          {
+ 269   1      
+ 270   1      }
+*** WARNING C280 IN LINE 267 OF VCNL4035.c: 'dat': unreferenced local variable
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    475    ----
+   CODE SIZE        =    496    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----      14
+   XDATA SIZE       =   ----      15
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
