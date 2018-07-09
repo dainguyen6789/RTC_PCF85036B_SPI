@@ -11,7 +11,7 @@
 #include "LCD_Driver_SPLC780D.h"
 #include "VCNL4035X01.h"
 #include <math.h>// to use power function
-#include "Receiver_Position_Data.h"
+//#include "Receiver_Position_Data.h"
 
 #define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000)
@@ -40,6 +40,7 @@ unsigned int Read_VCNL4035(unsigned int command_code);
 void I2C_Init();
 void Display_Prox(unsigned int prox_data);
 void Move(unsigned int step, int direction);
+void Update_position(unsigned char months,unsigned char days,unsigned char hours,unsigned char mins,unsigned char seconds,int direction);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -63,12 +64,12 @@ void main(void)
 	int count=0;
 	char numStr[5];
 	//=======================================
-	float a=-7.0014e-5;
+	/*float a=-7.0014e-5;
 	float b=1.1071e-2;
 	float c=2.1989;
 	float d=-2.0858e2;
-	float dd=138;
-	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
+	float dd=138;*/
+//	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
 	//=======================================
 	LCD_Init();
 	SPI_Init();
@@ -97,8 +98,8 @@ void main(void)
 	WriteData(0x6D);//display "m"
 	WriteData(0x6D);//display "m"
 	WriteData(0x23);//display "#" SETTIME_KEY
-	WriteData((int) rx_pos_12h);
-	Move(200, 1);// 1.8* step angle, 200 steps ~ 1 round
+	//WriteData((int) rx_pos_12h);
+	//Move(200, 1);// 1.8* step angle, 200 steps ~ 1 round
 	while(1)
 	{
 		Key_Process();
@@ -129,6 +130,7 @@ void main(void)
 			
 		}
 		Read_time(&months,&days,&hours,&mins,&seconds);
+		Update_position(months,days,hours,mins,seconds,1);
 		//==================================================		
 		// This is for UART to set the time		
 		//==================================================				
