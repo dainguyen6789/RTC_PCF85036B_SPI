@@ -4,7 +4,7 @@
 #include "math.h"
 void Delay_ms(unsigned int ms);
 int Day_Of_Year(unsigned char months,unsigned char days);
-void Step_move(unsigned int step, int direction)
+/*void Step_move(unsigned int step, int direction)
 {
 			unsigned int i=0;
 			for( i=0;i<step;i++)

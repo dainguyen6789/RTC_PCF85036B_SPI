@@ -116,7 +116,7 @@ void main(void)
 			DisplayLCD(months);
 			//WriteData(0x2D);//display "-"
 			DisplayLCD(days);				
-			count=0;
+			//count=0;
 			prox_data=Read_VCNL4035(PS1_Data_L);
 			Display_Prox(prox_data);// this is RAW data from the Prox Sensor
 			// 	y = 12.051x2 - 546.97x + 7153.8;   	 	x in [1015:2880] 	=> 	distance: 	10-20mm
