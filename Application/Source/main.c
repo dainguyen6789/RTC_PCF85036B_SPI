@@ -130,7 +130,7 @@ void main(void)
 			
 		}
 		Read_time(&months,&days,&hours,&mins,&seconds);
-		Update_position(months,days,hours,mins,seconds,1);
+		//Update_position(months,days,hours,mins,seconds,1);
 		//==================================================		
 		// This is for UART to set the time		
 		//==================================================				

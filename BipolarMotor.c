@@ -34,9 +34,9 @@ void Update_position(unsigned char months,unsigned char days,unsigned char hours
 	
 	for(i=0;i<192;i++)
 	{
-		if (hours==Time_stamp[0][i] && mins== Time_stamp[1][i]&& seconds==Time_stamp[2][i])
+		if (hours==Time_stamp_PM[0][i] && mins== Time_stamp_PM[1][i]&& seconds==Time_stamp_PM[2][i])
 		{
-			distance=degree3_function[0][i]*pow(date,3)+degree3_function[1][i]*pow(date,2)+degree3_function[2][i]*date+degree3_function[3][i];
+			distance=degree3_function[i][0]*pow(date,3)+degree3_function[i][1]*pow(date,2)+degree3_function[i][2]*date+degree3_function[i][3];
 			Move(distance,direction);
 			break;
 		}
