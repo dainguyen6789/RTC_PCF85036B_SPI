@@ -9,7 +9,7 @@ void WriteData(unsigned char dat);
 void SPI_WriteTime(unsigned char val,unsigned char addr);
 void Command(unsigned char dat);
 void LCD_clear(void);
-
+bit move=0;
 void Delay_ms(unsigned int ms)
 {
   unsigned int De_Cnt;
@@ -24,7 +24,7 @@ unsigned char Key_Scan(void)
 	unsigned char KeyValue;
 
 	//
-	KEYPORT &=(~((1<<Column1)|(1<<Column2)|(1<<Column3))); // ~(00000010 | 00000100 | 00001000)=1111*000*1: set three columns equal to Zero
+	KEYPORT &=(~((1<<Column1)|(1<<Column2)|(1<<Column3)|(1<<Column4))); // ~(00000010 | 00000100 | 00001000)=1111*000*1: set three columns equal to Zero
 	//
 	//0010 0000
 	KEYPORT |= (1<<Line1) | (1<<Line2) | (1<<Line3) | (1<<Line4) ;  //10000000 | 01000000 | 00100000=*111*00000: Set three columns equal to 1
@@ -38,8 +38,8 @@ unsigned char Key_Scan(void)
 		{
 			//COL1 COL2 COL3
 			//0 		1 		1
-			KEYPORT &=(~(1<<Column1)); //0 1 1
-			KEYPORT |= (1<<Column2)|(1<<Column3);//
+			KEYPORT &=(~(1<<Column1)); //0 1 1 1
+			KEYPORT |= (1<<Column2)|(1<<Column3)|(1<<Column4);//
 			KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));//	KEYPORT | 00011111
 			if(KeyTemp1!=0xff)	 		//
 			{
@@ -76,7 +76,7 @@ unsigned char Key_Scan(void)
 			//COL1 COL2 COL3
 			//1 		0 		1
 			KEYPORT &=(~(1<<Column2)); 
-			KEYPORT |= (1<<Column1)|(1<<Column3);
+			KEYPORT |= (1<<Column1)|(1<<Column3)|(1<<Column4);
 			KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));			//
 			if(KeyTemp1!=0xff)	 		//
 			{
@@ -112,7 +112,7 @@ unsigned char Key_Scan(void)
 			//COL1 COL2 COL3
 			//1 		1 		0
 			KEYPORT &=(~(1<<Column3)); //1 1 0
-			KEYPORT |= (1<<Column1)|(1<<Column2);
+			KEYPORT |= (1<<Column1)|(1<<Column2)|(1<<Column4);
 			KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));		 //
 			if(KeyTemp1!=0xff)	 		//
 			{
@@ -145,6 +145,44 @@ unsigned char Key_Scan(void)
 					}break;					
 				}
 			}	
+
+			//COL1 COL2 COL3 COL4
+			//1 		1 		1		0
+			KEYPORT &=(~(1<<Column4)); //1 1 1 0
+			KEYPORT |= (1<<Column1)|(1<<Column2)|(1<<Column3);
+			KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));		 //
+			if(KeyTemp1!=0xff)	 		//
+			{
+				while(KeyTemp1!=0xff)	// if pressed any key of COL3
+				{	
+					KeyTemp2=KeyTemp1;	
+					KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));//
+				}
+				switch(KeyTemp2)
+				{
+					case ~(1<<Line1):			//S8°
+					{
+						KeyValue=KEY_A;
+					
+					}break;
+					case ~(1<<Line2):			//S11°
+					{
+						KeyValue=KEY_B;
+					
+					}break;
+					case ~(1<<Line3):			//S11°
+					{
+						KeyValue=KEY_C;
+					
+					}break;		
+					case ~(1<<Line4):			//
+					{
+						KeyValue=KEY_D;
+					
+					}break;					
+				}
+			}	
+			
 			return 	KeyValue;	
 		}							
 		else
@@ -165,6 +203,21 @@ void Key_Process(void)//
 	KeyNum_Old=KeyNum;
 	KeyNum=Key_Scan();
 	//if( (KeyNum=Key_Scan())!=0 )  	//
+	if (KeyNum_Old==Unpress && KeyNum==KEY_C)
+	{
+		P4^=(1<<2);
+		return;
+	}
+	if (KeyNum==KEY_D && !move)
+	{
+		move =1;
+		return;
+	}	
+	if (KeyNum==KEY_D && move)
+	{
+		move =0;
+		return;
+	}
 	if(KeyNum_Old==Unpress && KeyNum!=Unpress)
 	{
 		PressedKey[KeyCount]=KeyNum;
