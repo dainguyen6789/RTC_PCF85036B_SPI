@@ -1577,8 +1577,8 @@ int receiver_pos[383][365]=
 };*/
 
 //Time stamp from 12PM to 15PM, not enough storage to store the whole data
-extern bit direction;
-/*int Time_stamp_PM[47][3]={
+//extern bit direction;
+int Time_stamp_PM[47][3]={
 	{12,0,0},
 	{12,30,0},
 	{12,40,0},
@@ -1630,7 +1630,7 @@ extern bit direction;
 
 
 // this is the receiver position from date 79 to date 83, 12PM to 15PM
-extern int receiver_pos[47][5]=
+int receiver_pos[47][5]=
 {
 {1,3,6,9,11},
 {0,3,5,8,11},
@@ -1680,4 +1680,3 @@ extern int receiver_pos[47][5]=
 {0,4,8,11,15},
 {0,4,8,12,15}
 };
-*/

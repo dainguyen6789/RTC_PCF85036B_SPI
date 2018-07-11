@@ -31,3 +31,4 @@
  #define  KEY_D 		16
  
  extern bit move;
+ extern bit direction;// motor direction
