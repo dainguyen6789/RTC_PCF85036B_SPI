@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/11/2018 09:45:20 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/11/2018 18:31:59 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -15,62 +15,100 @@ line level    source
    5          void Delay_ms(unsigned int ms);
    6          int Day_Of_Year(unsigned char months,unsigned char days);
    7          float degree;
-   8          void Step_move(unsigned int step, int direction)
-   9          {
-  10   1            unsigned int i=0;
-  11   1            for( i=0;i<step;i++)
-  12   1            {
-  13   2                P4 |=1<<1;// P41=1 // moving distance (mm)=pi^2*step*4/675
-  14   2                Wait_ms(2);
-  15   2                P4 &= (~1<<1);
-  16   2                Wait_ms(2);
-  17   2            }
-  18   1      }
-*** WARNING C280 IN LINE 8 OF BipolarMotor.c: 'direction': unreferenced local variable
-  19          
-  20          void Move(float distance, int direction)
-  21          {
-  22   1          unsigned int step;
-  23   1          step= distance*675/(4*3.14159*3.14159);
-  24   1          Step_move(step,direction);
-  25   1      }
-  26          
-  27          
-  28          
-  29          
-  30          /*void Update_position(unsigned char months,unsigned char days,unsigned char hours,unsigned char mins,unsi
-             -gned char seconds,int direction)
-  31          {
-  32            int date,i;
-  33            float distance;
-  34            date=Day_Of_Year(months,days);
-  35            
-  36            for(i=0;i<192;i++)
-  37            {
-  38              if (hours==Time_stamp_PM[0][i] && mins== Time_stamp_PM[1][i]&& seconds==Time_stamp_PM[2][i])
-  39              {
-  40                distance=degree3_function[i][0]*pow(date,3)+degree3_function[i][1]*pow(date,2)+degree3_function[i][2]*d
-             -ate+degree3_function[i][3];
-  41                Move(distance,direction);
-  42                break;
-  43              }
-  44            }
-  45          }
-  46          
-  47          //int Day_Of_Year(unsigned char months,unsigned char days)*/
+   8          
+   9          
+  10          
+  11          
+  12          
+  13          
+  14          
+  15          void Step_move(unsigned int step, bit dir)
+  16          {
+  17   1            unsigned int i=0;
+  18   1            if(dir)
+  19   1              P4 |=(1<<2);// set bit P4.2
+  20   1            else
+  21   1              P4 &=~(1<<2);// clear bit P4.2
+  22   1            
+  23   1            for( i=0;i<step;i++)
+  24   1            {
+  25   2                P4 |=1<<1;// P41=1 // moving distance (mm)=pi^2*step*4/675
+  26   2                Wait_ms(2);
+  27   2                P4 &= ~(1<<1);
+  28   2                Wait_ms(2);
+  29   2            }
+  30   1      }
+  31          
+  32          void Move(float distance, bit direction)
+  33          {
+  34   1          unsigned int step;
+  35   1          step= distance*675/(4*3.14159*3.14159);
+  36   1          Step_move(step,direction);
+  37   1      }
+  38          
+  39          
+  40          
+  41          
+  42          void Update_position(unsigned char months,unsigned char days,unsigned char hours,unsigned char mins,unsign
+             -ed char seconds,int *current_pos)
+  43          {
+  44   1        int date,i;
+  45   1        int desired_distance,distance;
+  46   1        date=Day_Of_Year(months,days);
+  47   1        
+  48   1        for(i=0;i<47;i++)// time stamp from 12PM to 15PM, 47 diff values
+  49   1        {
+  50   2          if (hours==Time_stamp_PM[0][i] && mins== Time_stamp_PM[1][i]&& seconds==Time_stamp_PM[2][i])// check if 
+             -current time match the time stamp in the table
+  51   2          {     
+  52   3            switch(date)
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/11/2018 18:31:59 PAGE 2   
+
+  53   3            {
+  54   4              case 79:
+  55   4                desired_distance=receiver_pos[i][0];
+  56   4                break;
+  57   4              case 80:
+  58   4                desired_distance=receiver_pos[i][1];
+  59   4                break;
+  60   4              case 81:
+  61   4                desired_distance=receiver_pos[i][2];
+  62   4                break;
+  63   4              case 82:
+  64   4                desired_distance=receiver_pos[i][3];
+  65   4                break;
+  66   4              case 83:
+  67   4                desired_distance=receiver_pos[i][4];
+  68   4            }
+  69   3            
+  70   3            distance=desired_distance-*current_pos;
+  71   3            
+  72   3            if(distance>0)
+  73   3            {
+  74   4              Move(abs(distance),1);
+  75   4            }
+  76   3            else if(distance<0)
+  77   3            {
+  78   4              Move(abs(distance),0);
+  79   4            }
+  80   3            
+  81   3            break;
+  82   3          }
+  83   2        }
+  84   1      }
+  85          
+  86          //int Day_Of_Year(unsigned char months,unsigned char days)*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    139    ----
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/11/2018 09:45:20 PAGE 2   
-
+   CODE SIZE        =    552    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =      4      12
+   XDATA SIZE       =    756      24
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----    ----
+   BIT SIZE         =   ----       2
 END OF MODULE INFORMATION.
 
 
-C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -2,7 +2,7 @@
 #include "KeyPad.h"
 #include "PCF85063BTL.h"
 #include "LCD_Driver_SPLC780D.h"
-#include "Receiver_Position_Data.h"
+//#include "Receiver_Position_Data.h"
 
 void DisplayLCD(unsigned char BCD);
 void WriteData(unsigned char dat);

@@ -11,7 +11,7 @@
 #include "LCD_Driver_SPLC780D.h"
 #include "VCNL4035X01.h"
 #include <math.h>// to use power function
-#include "Receiver_Position_Data.h"
+//#include "Receiver_Position_Data.h"
 
 #define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000)

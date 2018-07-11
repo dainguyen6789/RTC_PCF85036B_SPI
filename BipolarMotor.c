@@ -39,7 +39,7 @@ void Move(float distance, bit direction)
 
 
 
-/*void Update_position(unsigned char months,unsigned char days,unsigned char hours,unsigned char mins,unsigned char seconds,int *current_pos)
+void Update_position(unsigned char months,unsigned char days,unsigned char hours,unsigned char mins,unsigned char seconds,int *current_pos)
 {
 	int date,i;
 	int desired_distance,distance;
