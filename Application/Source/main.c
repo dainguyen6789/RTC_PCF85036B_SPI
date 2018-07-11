@@ -39,7 +39,7 @@ void Command(unsigned char dat);//LCD command
 unsigned int Read_VCNL4035(unsigned int command_code);
 void I2C_Init();
 void Display_Prox(unsigned int prox_data);
-void Move(unsigned int step, int direction);
+void Step_move(unsigned int step, int direction);
 void Update_position(unsigned char months,unsigned char days,unsigned char hours,unsigned char mins,unsigned char seconds,int direction);
 
 bit busy;
@@ -63,6 +63,7 @@ void main(void)
 //	unsigned char KeyNum;
 	int count=0;
 	char numStr[5];
+	move=0;
 	//=======================================
 	/*float a=-7.0014e-5;
 	float b=1.1071e-2;
@@ -99,7 +100,7 @@ void main(void)
 	WriteData(0x6D);//display "m"
 	WriteData(0x23);//display "#" SETTIME_KEY
 	//WriteData((int) rx_pos_12h);
-	//Move(200, 1);// 1.8* step angle, 200 steps ~ 1 round
+	//Step_move(200, 1);// 1.8* step angle, 200 steps ~ 1 round
 	while(1)
 	{
 		Key_Process();
@@ -126,6 +127,11 @@ void main(void)
 		
 			//Delay_ms(1);
 			//WriteData(Read_VCNL4035(PS3_Data_L));
+			if (move)
+			{
+				Step_move(20, 1);// 1.8* step angle, 200 steps ~ 1 round
+				//move=0;
+			}
 			LCD_return_home();
 			
 		}
