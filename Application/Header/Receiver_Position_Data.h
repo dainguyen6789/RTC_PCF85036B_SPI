@@ -1,3 +1,8 @@
+/*float degree3_function_t[100][4]=
+{  
+   {-7.0014E-05, 1.1071E-02, 2.1989E+00, -2.0858E+02} };*/
+
+
 /*float degree3_function[192][4]=
 {  
    {-7.0014E-05, 1.1071E-02, 2.1989E+00, -2.0858E+02},  
@@ -198,7 +203,7 @@
 
 
 // hour:min:sec format
-float Time_stamp_PM[192][3]=
+/*float Time_stamp_PM[192][3]=
 {
 	{12,0,0},
 	{12,30,0},
@@ -392,12 +397,12 @@ float Time_stamp_PM[192][3]=
 	{16,58,53},	
 	{16,59,26},
 	{17,0,0}		
-};
+};*/
 
 
 
 
-float Time_stamp_AM[191][3]=
+/*float Time_stamp_AM[191][3]=
 {
 {7,0,0},
 {7,0,34},

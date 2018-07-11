@@ -4,15 +4,16 @@
 #include "math.h"
 void Delay_ms(unsigned int ms);
 int Day_Of_Year(unsigned char months,unsigned char days);
-/*void Step_move(unsigned int step, int direction)
+float degree;
+void Step_move(unsigned int step, int direction)
 {
 			unsigned int i=0;
 			for( i=0;i<step;i++)
 			{
-					P4 |=0x06;// P41=1 // moving distance (mm)=pi^2*step*4/675
-					Wait_ms(10);
-					P4 &= 0xFC;
-					Wait_ms(10);
+					P4 |=1<<1;// P41=1 // moving distance (mm)=pi^2*step*4/675
+					Wait_ms(2);
+					P4 &= (~1<<1);
+					Wait_ms(2);
 			}
 }
 
@@ -26,7 +27,7 @@ void Move(float distance, int direction)
 
 
 
-void Update_position(unsigned char months,unsigned char days,unsigned char hours,unsigned char mins,unsigned char seconds,int direction)
+/*void Update_position(unsigned char months,unsigned char days,unsigned char hours,unsigned char mins,unsigned char seconds,int direction)
 {
 	int date,i;
 	float distance;
@@ -43,4 +44,4 @@ void Update_position(unsigned char months,unsigned char days,unsigned char hours
 	}
 }
 
-//int Day_Of_Year(unsigned char months,unsigned char days)
+//int Day_Of_Year(unsigned char months,unsigned char days)*/
