@@ -68,7 +68,7 @@ void Update_position(unsigned char months,unsigned char days,unsigned char hours
 			}
 			
 			distance=desired_distance-*current_pos;
-			
+			*current_pos=desired_distance;
 			if(distance>0)
 			{
 				Move(abs(distance),1);

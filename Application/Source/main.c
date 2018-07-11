@@ -40,7 +40,7 @@ unsigned int Read_VCNL4035(unsigned int command_code);
 void I2C_Init();
 void Display_Prox(unsigned int prox_data);
 void Step_move(unsigned int step, bit dir);
-//void Update_position(unsigned char months,unsigned char days,unsigned char hours,unsigned char mins,unsigned char seconds,int direction);
+void Update_position(unsigned char months,unsigned char days,unsigned char hours,unsigned char mins,unsigned char seconds,int *current_pos);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -63,6 +63,7 @@ void main(void)
 //	unsigned char KeyNum;
 	int count=0;
 	char numStr[5];
+	int current_position=0;
 	direction=0;
 	move=0;
 	//=======================================
@@ -137,7 +138,7 @@ void main(void)
 			
 		}
 		Read_time(&months,&days,&hours,&mins,&seconds);
-		//Update_position(months,days,hours,mins,seconds,1);
+		Update_position(months,days,hours,mins,seconds,&current_position);
 		//==================================================		
 		// This is for UART to set the time		
 		//==================================================				
