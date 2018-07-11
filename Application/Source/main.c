@@ -11,7 +11,7 @@
 #include "LCD_Driver_SPLC780D.h"
 #include "VCNL4035X01.h"
 #include <math.h>// to use power function
-//#include "Receiver_Position_Data.h"
+#include "Receiver_Position_Data.h"
 
 #define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000)
@@ -39,8 +39,8 @@ void Command(unsigned char dat);//LCD command
 unsigned int Read_VCNL4035(unsigned int command_code);
 void I2C_Init();
 void Display_Prox(unsigned int prox_data);
-void Step_move(unsigned int step, int direction);
-void Update_position(unsigned char months,unsigned char days,unsigned char hours,unsigned char mins,unsigned char seconds,int direction);
+void Step_move(unsigned int step, bit dir);
+//void Update_position(unsigned char months,unsigned char days,unsigned char hours,unsigned char mins,unsigned char seconds,int direction);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -63,6 +63,7 @@ void main(void)
 //	unsigned char KeyNum;
 	int count=0;
 	char numStr[5];
+	direction=0;
 	move=0;
 	//=======================================
 	/*float a=-7.0014e-5;
@@ -78,7 +79,7 @@ void main(void)
 	initUART1();
 	I2C_Init();
 	//Timer0===================================
-	AUXR |=0x80;
+	AUXR|=0x80;
 	TL0=T1MS;
 	TH0=T1MS>>8;
 	TMOD=0x00;
@@ -127,9 +128,9 @@ void main(void)
 		
 			//Delay_ms(1);
 			//WriteData(Read_VCNL4035(PS3_Data_L));
-			if (move)
+			if (move && prox_data<2880)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
-				Step_move(20, 1);// 1.8* step angle, 200 steps ~ 1 round
+				Step_move(20, direction);// 1.8* step angle, 200 steps ~ 1 round
 				//move=0;
 			}
 			LCD_return_home();

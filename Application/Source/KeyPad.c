@@ -2,6 +2,7 @@
 #include "KeyPad.h"
 #include "PCF85063BTL.h"
 #include "LCD_Driver_SPLC780D.h"
+#include "Receiver_Position_Data.h"
 
 void DisplayLCD(unsigned char BCD);
 void WriteData(unsigned char dat);
@@ -10,6 +11,7 @@ void SPI_WriteTime(unsigned char val,unsigned char addr);
 void Command(unsigned char dat);
 void LCD_clear(void);
 bit move=0;
+bit direction=0;
 void Delay_ms(unsigned int ms)
 {
   unsigned int De_Cnt;
@@ -205,7 +207,10 @@ void Key_Process(void)//
 	//if( (KeyNum=Key_Scan())!=0 )  	//
 	if (KeyNum_Old==Unpress && KeyNum==KEY_C)
 	{
-		P4^=(1<<2);
+		if(direction)
+			direction=0;
+		else 
+			direction=1;
 		return;
 	}
 	if (KeyNum==KEY_D && !move)
