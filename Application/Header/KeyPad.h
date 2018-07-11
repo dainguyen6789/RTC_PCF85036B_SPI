@@ -6,6 +6,7 @@
  #define 	Column1		5	   //
  #define 	Column2		6	   //
  #define 	Column3		7	   //
+ #define 	Column4		0	   //
  
  //
  #define	KEYPORT		P0
@@ -24,3 +25,9 @@
  #define  Unpress		100
  #define  KEY_SHARP 11
  #define  KEY_Star 	12
+ #define  KEY_A 		13
+ #define  KEY_B 		14
+ #define  KEY_C 		15
+ #define  KEY_D 		16
+ 
+ extern bit move;
