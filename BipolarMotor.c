@@ -40,7 +40,7 @@ void Step_move(unsigned int step, bit dir)
 void Move(float distance, bit direction)
 {
 		unsigned int step;
-		step= distance*675/(4*3.14159*3.14159);
+		step= distance*375/(3.14159);
 		Step_move(step,direction);
 }
 
@@ -76,8 +76,10 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 					break;
 				case 83:
 					desired_distance=receiver_pos[i][4];
+					break;
 			}
 			//desired_distance=receiver_pos[0][4];;
+			//distance=11;
 			distance=desired_distance-*currnt_pos;
 			*currnt_pos=desired_distance;
 			if(distance>0)
