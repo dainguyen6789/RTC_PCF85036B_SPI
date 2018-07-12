@@ -116,9 +116,20 @@ void Read_time(unsigned char *months,unsigned char *days,unsigned char *hours,un
 		SendUART1(unit(*seconds&0x7f)+48);
 		SendUART1(10);			//new line*/
 }
-
-int Day_Of_Year(unsigned char months,unsigned char days) // this function is used to count the date in a year example: 22 March is the 80th day of the year
+char BCDtoDec(char bcd)
 {
+	char hi,lo;
+	hi=bcd>>4;
+	lo=bcd&0x0F;
+	return hi*10+lo;
+}
+int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd) // this function is used to count the date in a year example: 22 March is the 80th day of the year
+{
+	char months,days;
+	
+	months=BCDtoDec(months_bcd);
+	
+	days=BCDtoDec(days_bcd);
 	
 	switch(months)
 	{
