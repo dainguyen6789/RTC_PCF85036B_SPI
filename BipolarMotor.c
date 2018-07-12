@@ -84,11 +84,11 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 			*currnt_pos=desired_distance;
 			if(distance>0)
 			{
-				Move(abs(distance),1);
+				Move(abs(distance),1);// counter clock wise
 			}
 			else if(distance<0)
 			{
-				Move(abs(distance),0);
+				Move(abs(distance),0);// clock wise
 			}
 			
 			break;

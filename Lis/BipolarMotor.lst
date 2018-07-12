@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/12/2018 11:18:33 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/12/2018 15:55:40 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -50,7 +50,7 @@ line level    source
   40          void Move(float distance, bit direction)
   41          {
   42   1          unsigned int step;
-  43   1          step= distance*675/(4*3.14159*3.14159);
+  43   1          step= distance*375/(3.14159);
   44   1          Step_move(step,direction);
   45   1      }
   46          
@@ -62,7 +62,7 @@ line level    source
   51          {
   52   1        int date,i;
   53   1        int desired_distance,distance;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/12/2018 11:18:33 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/12/2018 15:55:40 PAGE 2   
 
   54   1        /*hurs=0x12;
   55   1        mns=0x30;*/
@@ -90,25 +90,27 @@ line level    source
   76   4                break;
   77   4              case 83:
   78   4                desired_distance=receiver_pos[i][4];
-  79   4            }
-  80   3            //desired_distance=receiver_pos[0][4];;
-  81   3            distance=desired_distance-*currnt_pos;
-  82   3            *currnt_pos=desired_distance;
-  83   3            if(distance>0)
-  84   3            {
-  85   4              Move(abs(distance),1);
-  86   4            }
-  87   3            else if(distance<0)
-  88   3            {
-  89   4              Move(abs(distance),0);
-  90   4            }
-  91   3            
-  92   3            break;
-  93   3          }
-  94   2        }
-  95   1      }
-  96          
-  97          //int Day_Of_Year(unsigned char months,unsigned char days)*/
+  79   4                break;
+  80   4            }
+  81   3            //desired_distance=receiver_pos[0][4];;
+  82   3            //distance=11;
+  83   3            distance=desired_distance-*currnt_pos;
+  84   3            *currnt_pos=desired_distance;
+  85   3            if(distance>0)
+  86   3            {
+  87   4              Move(abs(distance),1);
+  88   4            }
+  89   3            else if(distance<0)
+  90   3            {
+  91   4              Move(abs(distance),0);
+  92   4            }
+  93   3            
+  94   3            break;
+  95   3          }
+  96   2        }
+  97   1      }
+  98          
+  99          //int Day_Of_Year(unsigned char months,unsigned char days)*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
