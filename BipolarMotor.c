@@ -2,11 +2,19 @@
 #include "LCD_Driver_SPLC780D.h"
 #include "Receiver_Position_Data.h"
 #include "math.h"
+//#include "PCF85963BTL.h"
 void Delay_ms(unsigned int ms);
 int Day_Of_Year(unsigned char months,unsigned char days);
+unsigned char BCDtoDec1(char bcd);
 float degree;
 
-
+unsigned char BCDtoDec1(unsigned char bcd)
+{
+	unsigned char hi,lo;
+	hi=bcd>>4;
+	lo=bcd&0x0F;
+	return hi*10+lo;
+}
 
 
 
@@ -39,15 +47,18 @@ void Move(float distance, bit direction)
 
 
 
-void Update_position(unsigned char months,unsigned char days,unsigned char hours,unsigned char mins,unsigned char seconds,int *current_pos)
+void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,int *currnt_pos)
 {
 	int date,i;
 	int desired_distance,distance;
-	date=Day_Of_Year(months,days);
-	
-	for(i=0;i<47;i++)// time stamp from 12PM to 15PM, 47 diff values
+	/*hurs=0x12;
+	mns=0x30;*/
+	//sconds=0x15;
+	date=Day_Of_Year(mnths,dys);
+	//date=80;
+	for(i=0;i<47;i++)// time stamp from 12PM to 15PM, 47 diff values of time stamp
 	{
-		if (hours==Time_stamp_PM[0][i] && mins== Time_stamp_PM[1][i]&& seconds==Time_stamp_PM[2][i])// check if current time match the time stamp in the table
+		if (BCDtoDec1(hurs)==Time_stamp_PM[i][0] && BCDtoDec1(mns)== Time_stamp_PM[i][1] && BCDtoDec1(sconds&0x7f)==Time_stamp_PM[i][2])// check if current time match the time stamp in the table
 		{			
 			switch(date)
 			{
@@ -66,9 +77,9 @@ void Update_position(unsigned char months,unsigned char days,unsigned char hours
 				case 83:
 					desired_distance=receiver_pos[i][4];
 			}
-			
-			distance=desired_distance-*current_pos;
-			*current_pos=desired_distance;
+			//desired_distance=receiver_pos[0][4];;
+			distance=desired_distance-*currnt_pos;
+			*currnt_pos=desired_distance;
 			if(distance>0)
 			{
 				Move(abs(distance),1);
