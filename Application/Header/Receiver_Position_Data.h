@@ -1578,7 +1578,7 @@ int receiver_pos[383][365]=
 
 //Time stamp from 12PM to 15PM, not enough storage to store the whole data
 //extern bit direction;
-int Time_stamp_PM[47][3]={
+unsigned char Time_stamp_PM[47][3]={
 	{12,0,0},
 	{12,30,0},
 	{12,40,0},

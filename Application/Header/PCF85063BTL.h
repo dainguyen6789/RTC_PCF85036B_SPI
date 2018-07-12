@@ -71,7 +71,7 @@ sbit SPISS=P1^2;
 
 
 
-
+//char BCDtoDec(char bcd);
 
 
 
