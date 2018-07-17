@@ -61,6 +61,7 @@ void main(void)
 	unsigned int prox_data;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
+	char prox_flag;
 //	unsigned char KeyNum;
 	int count=0;
 	char numStr[5];
@@ -153,11 +154,13 @@ void main(void)
 				{
 					current_position=current_position-1;
 				}
-				//move=0;
+				prox_flag=0;
 			}
-			if (prox_data<=300)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+			if (prox_data<=300 && prox_flag==0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
 				current_position=0;
+				prox_flag=1;
+				move=0;
 			}
 				
 			LCD_return_home();
