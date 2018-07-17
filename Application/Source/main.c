@@ -41,6 +41,7 @@ void I2C_Init();
 void Display_Prox(unsigned int prox_data);
 void Step_move(unsigned int step, bit dir);
 void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,int *currnt_pos);
+void Display_Pos(int sign_dat);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -95,12 +96,12 @@ void main(void)
 	//==============================================================
 	// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
 	//==============================================================
-	Display_Line(1);		
+	Display_Line(1);	
 	WriteData(0x68);//display "h"
 	WriteData(0x68);//display "h"
 	WriteData(0x6D);//display "m"
 	WriteData(0x6D);//display "m"
-	WriteData(0x23);//display "#" SETTIME_KEY
+	WriteData(0x23);//display "#" SETTIME_KEY*/
 	//WriteData((int) rx_pos_12h);
 	//Step_move(200, 1);// 1.8* step angle, 200 steps ~ 1 round
 	while(1)
@@ -109,6 +110,18 @@ void main(void)
 		count++;
 		//if (count==20)
 		{
+			//move cursor to line 1, pos 6
+			
+			Command(0x08);
+			Command(0x05);
+			
+			WriteData(0x50);//display "P"
+			WriteData(0x4F);//display "O"
+			WriteData(0x53);//display "S"	
+			WriteData(0x3A);//display ":"	
+			//LCD_clear();
+			Display_Pos(current_position);
+			//==============================================================
 			Display_Line(2);
 			DisplayLCD(hours);
 			WriteData(0x3A);//display ":"
@@ -129,11 +142,24 @@ void main(void)
 		
 			//Delay_ms(1);
 			//WriteData(Read_VCNL4035(PS3_Data_L));
-			if (move && prox_data<2880)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+			if (move)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
-				Step_move(20, direction);// 1.8* step angle, 200 steps ~ 1 round
+				Step_move(119, direction);// 1.8* step angle, 200 steps ~ 1 round, 119 steps ~ 1mm movement, l(mm)=step*pi/375
+				if (direction==1)
+				{
+					current_position=current_position+1;
+				}
+				else
+				{
+					current_position=current_position-1;
+				}
 				//move=0;
 			}
+			if (prox_data<=300)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+			{
+				current_position=0;
+			}
+				
 			LCD_return_home();
 			
 		}
@@ -218,5 +244,39 @@ void Display_Prox(unsigned int dat)
 	WriteData(hundred|0x30);
 	WriteData(ten|0x30);
 	WriteData(unit|0x30);
+	return;
+}
+
+
+void Display_Pos(int sign_dat)
+{
+	unsigned char unit, ten, hundred,thousand;
+	int dat;
+	dat=abs(sign_dat);
+	unit =dat%10;// remainder after division
+	thousand=dat/1000;
+	hundred=(dat-thousand*1000)/100;
+	ten=(dat-thousand*1000-hundred*100)/10;
+	if (sign_dat>=0)
+	{
+		//WriteData(thousand|0x30);
+		WriteData(hundred|0x30);
+		WriteData(ten|0x30);
+		WriteData(unit|0x30);
+		WriteData(0x6D);
+		WriteData(0x6D);
+		WriteData(0x20);// " "
+	}
+	else
+	{
+		
+		WriteData(0x2D);// "-"
+		WriteData(hundred|0x30);
+		WriteData(ten|0x30);
+		WriteData(unit|0x30);
+		WriteData(0x6D);
+		WriteData(0x6D);
+
+	}
 	return;
 }

@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/12/2018 15:55:40 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/16/2018 08:44:39 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -62,7 +62,7 @@ line level    source
   51          {
   52   1        int date,i;
   53   1        int desired_distance,distance;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/12/2018 15:55:40 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/16/2018 08:44:39 PAGE 2   
 
   54   1        /*hurs=0x12;
   55   1        mns=0x30;*/
@@ -98,11 +98,11 @@ line level    source
   84   3            *currnt_pos=desired_distance;
   85   3            if(distance>0)
   86   3            {
-  87   4              Move(abs(distance),1);
+  87   4              Move(abs(distance),1);// counter clock wise
   88   4            }
   89   3            else if(distance<0)
   90   3            {
-  91   4              Move(abs(distance),0);
+  91   4              Move(abs(distance),0);// clock wise
   92   4            }
   93   3            
   94   3            break;
