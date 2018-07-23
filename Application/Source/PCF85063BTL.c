@@ -123,7 +123,7 @@ unsigned char BCDtoDec(unsigned char bcd)
 	lo=bcd&0x0F;
 	return hi*10+lo;
 }
-int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd) // this function is used to count the date in a year example: 22 March is the 80th day of the year
+unsigned int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd) // this function is used to count the date in a year example: 22 March is the 80th day of the year
 {
 	unsigned char months,days;
 	
