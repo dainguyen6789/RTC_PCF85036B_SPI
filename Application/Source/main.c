@@ -281,7 +281,11 @@ void Display_Pos(float sign_dat)
 	unsigned char after_dot;
 	int dat;
 	dat=abs(sign_dat);
-	after_dot=(unsigned char)((sign_dat-dat)*10);
+	if (sign_dat>0)
+		after_dot=(unsigned char)((sign_dat-dat)*10);
+	else
+		after_dot=(unsigned char)((-sign_dat-dat)*10);
+	
 	unit =dat%10;// remainder after division
 	thousand=dat/1000;
 	hundred=(dat-thousand*1000)/100;
