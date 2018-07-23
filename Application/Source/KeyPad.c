@@ -11,6 +11,7 @@ void SPI_WriteTime(unsigned char val,unsigned char addr);
 void Command(unsigned char dat);
 void LCD_clear(void);
 bit move=0;
+bit small_move=0;
 bit direction=0;
 void Delay_ms(unsigned int ms)
 {
@@ -223,6 +224,12 @@ void Key_Process(void)//
 		move =0;
 		return;
 	}
+	
+	if (KeyNum==KEY_B)
+	{
+		small_move =1;
+		return;
+	}	
 	if(KeyNum_Old==Unpress && KeyNum!=Unpress)
 	{
 		PressedKey[KeyCount]=KeyNum;
