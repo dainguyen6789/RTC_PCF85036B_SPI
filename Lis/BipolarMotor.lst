@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/17/2018 22:11:51 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/23/2018 13:32:18 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -50,7 +50,7 @@ line level    source
   40          void Move(float distance, bit direction)
   41          {
   42   1          unsigned int step;
-  43   1          step= distance*337.5/(3.14159);
+  43   1          step= (unsigned int)(distance*337.5/(3.14159));
   44   1          Step_move(step,direction);
   45   1      }
   46          
@@ -58,68 +58,76 @@ line level    source
   48          
   49          
   50          void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned c
-             -har sconds,int *currnt_pos)
+             -har sconds,float *currnt_pos)
   51          {
-  52   1        int date,i;
-  53   1        int desired_distance,distance;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/17/2018 22:11:51 PAGE 2   
+  52   1        unsigned int date,i;
+  53   1        float desired_distance,distance;
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/23/2018 13:32:18 PAGE 2   
 
   54   1        /*hurs=0x12;
   55   1        mns=0x30;*/
   56   1        //sconds=0x15;
-  57   1        date=Day_Of_Year(mnths,dys);
-  58   1        //date=80;
-  59   1        for(i=0;i<47;i++)// time stamp from 12PM to 15PM, 47 diff values of time stamp
-  60   1        {
-  61   2          if (BCDtoDec1(hurs)==Time_stamp_PM[i][0] && BCDtoDec1(mns)== Time_stamp_PM[i][1] && BCDtoDec1(sconds&0x7
+  57   1        desired_distance=*currnt_pos;
+  58   1        date=Day_Of_Year(mnths,dys);
+  59   1        //date=80;
+  60   1        for(i=0;i<13;i++)// 13 diff values of time stamp
+  61   1        {
+  62   2          if (BCDtoDec1(hurs)==Time_stamp_PM[i][0] && BCDtoDec1(mns)== Time_stamp_PM[i][1] && BCDtoDec1(sconds&0x7
              -f)==Time_stamp_PM[i][2])// check if current time match the time stamp in the table
-  62   2          {     
-  63   3            switch(date)
-  64   3            {
-  65   4              case 79:
-  66   4                desired_distance=receiver_pos[i][0];
-  67   4                break;
-  68   4              case 80:
-  69   4                desired_distance=receiver_pos[i][1];
-  70   4                break;
-  71   4              case 81:
-  72   4                desired_distance=receiver_pos[i][2];
-  73   4                break;
-  74   4              case 82:
-  75   4                desired_distance=receiver_pos[i][3];
-  76   4                break;
-  77   4              case 83:
-  78   4                desired_distance=receiver_pos[i][4];
-  79   4                break;
-  80   4            }
-  81   3            //desired_distance=receiver_pos[0][4];;
-  82   3            //distance=11;
-  83   3            distance=desired_distance-*currnt_pos;
-  84   3            *currnt_pos=desired_distance;
-  85   3            if(distance>0)
-  86   3            {
-  87   4              Move(abs(distance),1);// counter clock wise
-  88   4            }
-  89   3            else if(distance<0)
-  90   3            {
-  91   4              Move(abs(distance),0);// clock wise
-  92   4            }
-  93   3            
-  94   3            break;
-  95   3          }
-  96   2        }
-  97   1      }
-  98          
-  99          //int Day_Of_Year(unsigned char months,unsigned char days)*/
+  63   2          {     
+  64   3            switch(date)
+  65   3            {
+  66   4              case 199://18July2018
+  67   4                desired_distance=receiver_pos[i][0];
+  68   4                break;
+  69   4              case 80:
+  70   4                desired_distance=receiver_pos[i][1];
+  71   4                break;
+  72   4              case 81:
+  73   4                desired_distance=receiver_pos[i][2];
+  74   4                break;
+  75   4              case 82:
+  76   4                desired_distance=receiver_pos[i][3];
+  77   4                break;
+  78   4              case 83:
+  79   4                desired_distance=receiver_pos[i][4];
+  80   4                break;
+  81   4              default:
+  82   4                break;
+  83   4            }
+  84   3            //desired_distance=receiver_pos[0][4];;
+  85   3            //distance=11;
+  86   3            distance=desired_distance-*currnt_pos;
+  87   3            *currnt_pos=desired_distance;// change to sync with step movement
+  88   3            if(distance>0)
+  89   3            {
+  90   4              Move(distance,1);// counter clock wise
+  91   4            }
+  92   3            else if(distance<0)
+  93   3            {
+  94   4              Move(-distance,0);// clock wise
+  95   4            }
+  96   3            else
+  97   3            {
+  98   4            } 
+  99   3            
+ 100   3            break;
+ 101   3          }
+ 102   2        }
+ 103   1      }
+ 104          
+ 105          //int Day_Of_Year(unsigned char months,unsigned char days)*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    524    ----
+   CODE SIZE        =    668    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =    615      24
+   XDATA SIZE       =    303      28
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      07/23/2018 13:32:18 PAGE 3   
+
    BIT SIZE         =   ----       2
 END OF MODULE INFORMATION.
 
