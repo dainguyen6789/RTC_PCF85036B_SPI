@@ -40,8 +40,8 @@ unsigned int Read_VCNL4035(unsigned int command_code);
 void I2C_Init();
 void Display_Prox(unsigned int prox_data);
 void Step_move(unsigned int step, bit dir);
-void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,int *currnt_pos);
-void Display_Pos(int sign_dat);
+void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,float *currnt_pos);
+void Display_Pos(float sign_dat);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -61,13 +61,14 @@ void main(void)
 	unsigned int prox_data;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
-	char prox_flag=0;
+	char prox_flag=1;
 //	unsigned char KeyNum;
 	int count=0;
 	char numStr[5];
-	int current_position=0;
-	direction=0;
+	float current_position=0;
+	direction=1;
 	move=0;
+	small_move=0;
 	//=======================================
 	/*float a=-7.0014e-5;
 	float b=1.1071e-2;
@@ -105,7 +106,7 @@ void main(void)
 	WriteData(0x23);//display "#" SETTIME_KEY*/
 	//WriteData((int) rx_pos_12h);
 	//Step_move(200, 1);// 1.8* step angle, 200 steps ~ 1 round
-	while(1)
+	while(1)                                      
 	{
 		Key_Process();
 		count++;
@@ -134,40 +135,58 @@ void main(void)
 			//WriteData(0x2D);//display "-"
 			DisplayLCD(days);				
 			//count=0;
-			prox_data=Read_VCNL4035(PS1_Data_L);
-			Display_Prox(prox_data);// this is RAW data from the Prox Sensor
+			//prox_data=Read_VCNL4035(PS1_Data_L);
+			//Display_Prox(prox_data);// this is RAW data from the Prox Sensor
 			// 	y = 12.051x2 - 546.97x + 7153.8;   	 	x in [1015:2880] 	=> 	distance: 	10-20mm
 			// 	y = 2.4242x2 - 174.89x + 3545.5;			x in [473:941] 		=> 	distance:		20-30mm
 			// 	y = 0.5038x2 - 54.417x + 1651.1; 		  x in [277:455] 		=> 	distance:		30-40mm
 			//	y = 0.303x2 - 37.642x + 1302.4; 		  x in [177:269]	 	=> 	distance:		40-50mm
 		
+		
 			//Delay_ms(1);
 			//WriteData(Read_VCNL4035(PS3_Data_L));
 			if (move)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
-				Step_move(107, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
+				Step_move(11, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
 				if (direction==1)
 				{
-					current_position=current_position+1;
+					current_position=current_position+0.1;
 				}
 				else
 				{
-					current_position=current_position-1;
+					current_position=current_position-0.1;
 				}
 				prox_flag=0;
 			}
-			if (prox_data<=300 && prox_flag==0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+			if (small_move)
 			{
-				current_position=0;
-				prox_flag=1;
-				move=0;
+				small_move=0;
+				Step_move(11, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
+				if (direction==1)
+				{
+					current_position=current_position+0.1;
+				}
+				else
+				{
+					current_position=current_position-0.1;
+				}
+				prox_flag=0;				
 			}
-		/*	if (P31 && prox_flag==0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+			/*if (prox_data<=300 && prox_flag==0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
 				current_position=0;
 				prox_flag=1;
 				move=0;
-			}			*/	
+			}*/
+			
+		/*if (P33 && prox_flag==0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+			{
+				current_position=0;
+				prox_flag=1;
+				move=0;
+				small_move=0;
+				direction=1;
+			}	*/			
 			LCD_return_home();
 			
 		}
@@ -256,11 +275,13 @@ void Display_Prox(unsigned int dat)
 }
 
 
-void Display_Pos(int sign_dat)
+void Display_Pos(float sign_dat)
 {
 	unsigned char unit, ten, hundred,thousand;
+	unsigned char after_dot;
 	int dat;
 	dat=abs(sign_dat);
+	after_dot=(unsigned char)((sign_dat-dat)*10);
 	unit =dat%10;// remainder after division
 	thousand=dat/1000;
 	hundred=(dat-thousand*1000)/100;
@@ -271,9 +292,11 @@ void Display_Pos(int sign_dat)
 		WriteData(hundred|0x30);
 		WriteData(ten|0x30);
 		WriteData(unit|0x30);
-		WriteData(0x6D);
-		WriteData(0x6D);
-		WriteData(0x20);// " "
+		WriteData(0x2E);//.
+		WriteData((after_dot)|0x30);
+		WriteData(0x6D);//m
+		WriteData(0x6D);//m
+		WriteData(0x20);// "blank"
 	}
 	else
 	{
@@ -282,8 +305,10 @@ void Display_Pos(int sign_dat)
 		WriteData(hundred|0x30);
 		WriteData(ten|0x30);
 		WriteData(unit|0x30);
-		WriteData(0x6D);
-		WriteData(0x6D);
+		WriteData(0x2E);//.
+		WriteData(after_dot|0x30);
+		WriteData(0x6D);//m
+		WriteData(0x6D);//m
 
 	}
 	return;
