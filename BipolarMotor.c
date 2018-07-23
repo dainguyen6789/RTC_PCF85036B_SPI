@@ -40,29 +40,30 @@ void Step_move(unsigned int step, bit dir)
 void Move(float distance, bit direction)
 {
 		unsigned int step;
-		step= distance*337.5/(3.14159);
+		step= (unsigned int)(distance*337.5/(3.14159));
 		Step_move(step,direction);
 }
 
 
 
 
-void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,int *currnt_pos)
+void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,float *currnt_pos)
 {
-	int date,i;
-	int desired_distance,distance;
+	unsigned int date,i;
+	float desired_distance,distance;
 	/*hurs=0x12;
 	mns=0x30;*/
 	//sconds=0x15;
+	desired_distance=*currnt_pos;
 	date=Day_Of_Year(mnths,dys);
 	//date=80;
-	for(i=0;i<47;i++)// time stamp from 12PM to 15PM, 47 diff values of time stamp
+	for(i=0;i<13;i++)// 13 diff values of time stamp
 	{
 		if (BCDtoDec1(hurs)==Time_stamp_PM[i][0] && BCDtoDec1(mns)== Time_stamp_PM[i][1] && BCDtoDec1(sconds&0x7f)==Time_stamp_PM[i][2])// check if current time match the time stamp in the table
 		{			
 			switch(date)
 			{
-				case 79:
+				case 199://18July2018
 					desired_distance=receiver_pos[i][0];
 					break;
 				case 80:
@@ -77,19 +78,24 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 				case 83:
 					desired_distance=receiver_pos[i][4];
 					break;
+				default:
+					break;
 			}
 			//desired_distance=receiver_pos[0][4];;
 			//distance=11;
 			distance=desired_distance-*currnt_pos;
-			*currnt_pos=desired_distance;
+			*currnt_pos=desired_distance;// change to sync with step movement
 			if(distance>0)
 			{
-				Move(abs(distance),1);// counter clock wise
+				Move(distance,1);// counter clock wise
 			}
 			else if(distance<0)
 			{
-				Move(abs(distance),0);// clock wise
+				Move(-distance,0);// clock wise
 			}
+			else
+			{
+			} 
 			
 			break;
 		}
