@@ -61,7 +61,7 @@ void main(void)
 	unsigned int prox_data;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
-	char prox_flag;
+	char prox_flag=0;
 //	unsigned char KeyNum;
 	int count=0;
 	char numStr[5];
