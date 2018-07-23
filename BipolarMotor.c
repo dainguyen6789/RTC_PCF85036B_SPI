@@ -50,7 +50,7 @@ void Move(float distance, bit direction)
 void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,float *currnt_pos)
 {
 	unsigned int date,i;
-	float desired_distance,distance;
+	float desired_distance,distance=0;
 	/*hurs=0x12;
 	mns=0x30;*/
 	//sconds=0x15;
@@ -64,7 +64,7 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 			switch(date)
 			{
 				case 199://18July2018
-					desired_distance=receiver_pos[i][0];
+					desired_distance=receiver_pos[i][0];//18July2018 is stored in the 1st column
 					break;
 				case 80:
 					desired_distance=receiver_pos[i][1];
@@ -81,6 +81,7 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 				default:
 					break;
 			}
+			
 			//desired_distance=receiver_pos[0][4];;
 			//distance=11;
 			distance=desired_distance-*currnt_pos;
@@ -99,7 +100,45 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 			
 			break;
 		}
+		if ((i+1)<13 && BCDtoDec1(hurs)<=Time_stamp_PM[i+1][0] && BCDtoDec1(hurs)>=Time_stamp_PM[i][0] && BCDtoDec1(mns)>= Time_stamp_PM[i][1] && BCDtoDec1(mns)<= Time_stamp_PM[i+1][1] && BCDtoDec1(mns)%5==0)// update every 5 mins
+		{
+			switch(date)
+			{
+				case 199://18July2018
+					desired_distance=(receiver_pos[i+1][0]-receiver_pos[i][0])/(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1]
+														-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])
+														*(BCDtoDec1(hurs)*60+BCDtoDec1(mns)-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])
+														+receiver_pos[i][0];// desired_pos=(pos_end-pos_start)/(time_end-time_start)*(current_time- time_start)+pos_start
+			}
+			distance=desired_distance-*currnt_pos;
+			*currnt_pos=desired_distance;// change to sync with step movement
+			if(distance>0)
+			{
+				Move(distance,1);// counter clock wise
+			}
+			else if(distance<0)
+			{
+				Move(-distance,0);// clock wise
+			}
+			else
+			{
+			} 
+			
+			break;
+			
+		}
+		
 	}
 }
+
+/*
+	for(i=0;i<13;i++)
+	{
+		if (BCDtoDec1(hurs)<=Time_stamp_PM[i+1][0] && BCDtoDec1(hurs)>=Time_stamp_PM[i][0] && BCDtoDec1(mns)>= Time_stamp_PM[i][1] && BCDtoDec1(mns)<= Time_stamp_PM[i+1][1] && BCDtoDec1(mns)%5==0)
+		{
+			desired_distance=(receiver_pos[i+1][0]-receiver_pos[i][0])/(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1]-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])*(BCDtoDec1(hurs)*60+BCDtoDec1(mns)-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])+receiver_pos[i][0];
+		}
+	}
+*/
 
 //int Day_Of_Year(unsigned char months,unsigned char days)*/
