@@ -130,7 +130,7 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 		
 	}
 }
-
+//
 /*
 	for(i=0;i<13;i++)
 	{
