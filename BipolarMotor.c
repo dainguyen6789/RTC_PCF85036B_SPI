@@ -57,13 +57,13 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 	desired_distance=*currnt_pos;
 	date=Day_Of_Year(mnths,dys);
 	//date=80;
-	for(i=0;i<13;i++)// 13 diff values of time stamp
+	for(i=0;i<19;i++)// 13 diff values of time stamp
 	{
 		if (BCDtoDec1(hurs)==Time_stamp_PM[i][0] && BCDtoDec1(mns)== Time_stamp_PM[i][1] && BCDtoDec1(sconds&0x7f)==Time_stamp_PM[i][2])// check if current time match the time stamp in the table
 		{			
 			switch(date)
 			{
-				case 199://18July2018
+				case 210://29July2018
 					desired_distance=receiver_pos[i][0];//18July2018 is stored in the 1st column
 					break;
 				case 80:
@@ -100,11 +100,11 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 			
 			break;
 		}
-		if ((i+1)<13 && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))<=(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1])) && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))>=(Time_stamp_PM[i][0]*60+Time_stamp_PM[i][1])) && BCDtoDec1(mns)%2==0)// update every 2 mins
+		if ((i+1)<19 && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))<=(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1])) && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))>=(Time_stamp_PM[i][0]*60+Time_stamp_PM[i][1])) && BCDtoDec1(mns)%2==0)// update every 2 mins
 		{
 			switch(date)
 			{
-				case 199://18July2018
+				case 210://29July2018
 					desired_distance=(receiver_pos[i+1][0]-receiver_pos[i][0])/(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1]
 														-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])
 														*(BCDtoDec1(hurs)*60+BCDtoDec1(mns)-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])
