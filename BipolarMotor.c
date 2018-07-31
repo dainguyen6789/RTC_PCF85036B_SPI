@@ -63,7 +63,7 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 		{			
 			switch(date)
 			{
-				case 211://29July2018
+				case 212://29July2018
 					desired_distance=receiver_pos[i][0];//18July2018 is stored in the 1st column
 					break;
 				case 80:
@@ -104,7 +104,7 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 		{
 			switch(date)
 			{
-				case 211://30July2018
+				case 212://30July2018
 					desired_distance=(receiver_pos[i+1][0]-receiver_pos[i][0])/(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1]
 														-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])
 														*(BCDtoDec1(hurs)*60+BCDtoDec1(mns)-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])
