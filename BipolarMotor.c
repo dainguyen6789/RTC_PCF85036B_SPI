@@ -6,6 +6,7 @@
 void Delay_ms(unsigned int ms);
 int Day_Of_Year(unsigned char months,unsigned char days);
 unsigned char BCDtoDec1(char bcd);
+float trend_line_30_31(float time);
 float degree;
 
 unsigned char BCDtoDec1(unsigned char bcd)
@@ -59,56 +60,12 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 	//date=80;
 	for(i=0;i<num_of_time_stamp;i++)// 13 diff values of time stamp
 	{
-		if (BCDtoDec1(hurs)==Time_stamp_PM[i][0] && BCDtoDec1(mns)== Time_stamp_PM[i][1] && BCDtoDec1(sconds&0x7f)==Time_stamp_PM[i][2])// check if current time match the time stamp in the table
-		{			
-			switch(date)
-			{
-				case 212://29July2018
-					desired_distance=receiver_pos[i][0];//18July2018 is stored in the 1st column
-					break;
-				case 80:
-					desired_distance=receiver_pos[i][1];
-					break;
-				case 81:
-					desired_distance=receiver_pos[i][2];
-					break;
-				case 82:
-					desired_distance=receiver_pos[i][3];
-					break;
-				case 83:
-					desired_distance=receiver_pos[i][4];
-					break;
-				default:
-					break;
-			}
-			
-			//desired_distance=receiver_pos[0][4];;
-			//distance=11;
-			distance=desired_distance-*currnt_pos;
-			*currnt_pos=desired_distance;// change to sync with step movement
-			if(distance>0)
-			{
-				Move(distance,1);// counter clock wise
-			}
-			else if(distance<0)
-			{
-				Move(-distance,0);// clock wise
-			}
-			else
-			{
-			} 
-			
-			break;
-		}
 		if ((i+1)<num_of_time_stamp && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))<=(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1])) && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))>=(Time_stamp_PM[i][0]*60+Time_stamp_PM[i][1])) && BCDtoDec1(mns)%2==0)// update every 2 mins
 		{
 			switch(date)
 			{
-				case 212://30July2018
-					desired_distance=(receiver_pos[i+1][0]-receiver_pos[i][0])/(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1]
-														-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])
-														*(BCDtoDec1(hurs)*60+BCDtoDec1(mns)-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])
-														+receiver_pos[i][0];// desired_pos=(pos_end-pos_start)/(time_end-time_start)*(current_time- time_start)+pos_start
+				case 216://04Aout2018
+					desired_distance=trend_line_30_31(hurs+(float)mns/60+(float)sconds/3600);
 			}
 			distance=desired_distance-*currnt_pos;
 			*currnt_pos=desired_distance;// change to sync with step movement
@@ -129,6 +86,12 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 		}
 		
 	}
+}
+
+float trend_line_30_31(float time)
+{
+	return -4.88*time*time+126.08*time-745.26-(1.1*5+1.1*4)/2;
+
 }
 //
 /*
