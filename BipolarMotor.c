@@ -91,7 +91,6 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 float trend_line_30_31(float time)
 {
 	return -4.88*time*time+126.08*time-745.26-(1.1*4.5);
-
 }
 //
 /*
