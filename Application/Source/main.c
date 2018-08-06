@@ -57,7 +57,7 @@ void tm0_isr() interrupt 1 using 1
 
 void main(void)
 {
-	unsigned char seconds,mins, hours,days,months;
+	unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
 	unsigned int prox_data;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
@@ -190,8 +190,16 @@ void main(void)
 			LCD_return_home();
 			
 		}
+		hours2=hours1;
+		hours1=hours;
+		mins2=mins1;
+		mins1=mins;
 		Read_time(&months,&days,&hours,&mins,&seconds);
-		Update_position(months,days,hours,mins,seconds,&current_position);
+
+		//Read_time(&months,&days,&hours,&mins,&seconds);
+		//Read_time(&months,&days,&hours,&mins,&seconds);
+		if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)
+			Update_position(months,days,hours,mins,seconds,&current_position);
 		//==================================================		
 		// This is for UART to set the time		
 		//==================================================				
