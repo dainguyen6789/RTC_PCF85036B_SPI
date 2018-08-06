@@ -64,7 +64,7 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 		{
 			//switch(date)
 			{
-				if (date==217)//05Aout2018
+				if (date==218)//06Aout2018
 				{
 					t=(float)(BCDtoDec1(hurs)*60+BCDtoDec1(mns));
 					desired_distance=trend_line_30_31(t/60);
@@ -93,7 +93,7 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 
 float trend_line_30_31(float time)
 {
-	return (-4.88*time*time+126.08*time-745.26+(1.1*5.5));//for 5Aout2018
+	return (-4.88*time*time+126.08*time-745.26+(1.1*6.5));//for 5Aout2018
 }
 //
 /*
