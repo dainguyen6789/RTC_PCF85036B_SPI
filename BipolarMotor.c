@@ -51,7 +51,7 @@ void Move(float distance, bit direction)
 void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,float *currnt_pos)
 {
 	unsigned int date,i;
-	float desired_distance,distance=0;
+	float desired_distance,distance=0,t;
 	/*hurs=0x12;
 	mns=0x30;*/
 	//sconds=0x15;
@@ -62,10 +62,13 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 	{
 		if ((i+1)<num_of_time_stamp && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))<=(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1])) && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))>=(Time_stamp_PM[i][0]*60+Time_stamp_PM[i][1])) && BCDtoDec1(mns)%2==0)// update every 2 mins
 		{
-			switch(date)
+			//switch(date)
 			{
-				case 216://04Aout2018
-					desired_distance=trend_line_30_31(hurs+(float)mns/60+(float)sconds/3600);
+				if (date==217)//05Aout2018
+				{
+					t=(float)(BCDtoDec1(hurs)*60+BCDtoDec1(mns));
+					desired_distance=trend_line_30_31(t/60);
+				}
 			}
 			distance=desired_distance-*currnt_pos;
 			*currnt_pos=desired_distance;// change to sync with step movement
@@ -90,7 +93,7 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 
 float trend_line_30_31(float time)
 {
-	return -4.88*time*time+126.08*time-745.26-(1.1*4.5);
+	return (-4.88*time*time+126.08*time-745.26+(1.1*5.5));//for 5Aout2018
 }
 //
 /*
