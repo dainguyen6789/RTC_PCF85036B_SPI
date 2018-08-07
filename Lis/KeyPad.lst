@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   KEYPAD                                                            08/03/2018 17:26:10 PAGE 1   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            08/07/2018 15:51:12 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE KEYPAD
@@ -62,7 +62,7 @@ line level    source
   48   3            {
   49   4              while(KeyTemp1!=0xff) // if pressed any key on COL1
   50   4              { 
-C51 COMPILER V9.52.0.0   KEYPAD                                                            08/03/2018 17:26:10 PAGE 2   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            08/07/2018 15:51:12 PAGE 2   
 
   51   5                KeyTemp2=KeyTemp1;  
   52   5                KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));  // read the data, KEYPORT is the
@@ -126,7 +126,7 @@ line level    source
  109   5                {
  110   6                  KeyValue=KEY0;
  111   6                
-C51 COMPILER V9.52.0.0   KEYPAD                                                            08/03/2018 17:26:10 PAGE 3   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            08/07/2018 15:51:12 PAGE 3   
 
  112   6                }break;           
  113   5              }
@@ -190,7 +190,7 @@ line level    source
  171   5                case ~(1<<Line2):     //S11°
  172   5                {
  173   6                  KeyValue=KEY_B;
-C51 COMPILER V9.52.0.0   KEYPAD                                                            08/03/2018 17:26:10 PAGE 4   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            08/07/2018 15:51:12 PAGE 4   
 
  174   6                
  175   6                }break;
@@ -254,7 +254,7 @@ line level    source
  233   1        if(KeyNum_Old==Unpress && KeyNum!=Unpress)
  234   1        {
  235   2          PressedKey[KeyCount]=KeyNum;
-C51 COMPILER V9.52.0.0   KEYPAD                                                            08/03/2018 17:26:10 PAGE 5   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            08/07/2018 15:51:12 PAGE 5   
 
  236   2          KeyCount++;
  237   2          if(KeyCount==5)
@@ -318,7 +318,7 @@ line level    source
  295   6                  if(days<=31)
  296   6                  {
  297   7                    SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Months);//Write BCD value
-C51 COMPILER V9.52.0.0   KEYPAD                                                            08/03/2018 17:26:10 PAGE 6   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            08/07/2018 15:51:12 PAGE 6   
 
  298   7                    SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Days);//Write BCD value              
  299   7                  }
@@ -382,7 +382,7 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =      3    ----
-C51 COMPILER V9.52.0.0   KEYPAD                                                            08/03/2018 17:26:10 PAGE 7   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            08/07/2018 15:51:12 PAGE 7   
 
 END OF MODULE INFORMATION.
 
