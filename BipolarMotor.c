@@ -66,6 +66,8 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 			//switch(date)
 			{
 				if (date==218)//06Aout2018
+				//if (date==221)//09Aout2018
+				//if (date==222)//10Aout2018	
 				{
 					h_float=(float)(BCDtoDec1(hurs));
 					m_float=(float)(BCDtoDec1(mns));
@@ -96,7 +98,11 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 
 float trend_line_30_31(float time)
 {
-	return (-4.88*time*time+126.08*time-745.26+(1.1*6.5));//for 6Aout2018
+	float offset;
+	offset=1.099555E-04*pow(time,6) - 8.576526E-03*pow(time,5) + 2.755625E-01*pow(time,4) - 4.666361E+00*pow(time,3) + 4.385879E+01*pow(time,2) - 2.163094E+02*time + 4.336795E+02;
+	return (-4.88*time*time+126.08*time-745.26+((-offset-0.42)*6.5));//for 6Aout2018
+	//return (-4.88*time*time+126.08*time-745.26+(1.1*10.5));//for 10Aout2018
+	//return (-4.88*time*time+126.08*time-745.26+(1.1*9.5));//for 09Aout2018
 }
 //
 /*

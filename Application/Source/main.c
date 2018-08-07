@@ -179,7 +179,7 @@ void main(void)
 				move=0;
 			}*/
 			
-		if (P33 && prox_flag==0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+		if (P33 && prox_flag==0 && current_position<=0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
 				current_position=0;
 				prox_flag=1;
