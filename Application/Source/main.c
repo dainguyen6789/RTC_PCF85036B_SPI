@@ -69,6 +69,7 @@ void main(void)
 	direction=1;
 	move=0;
 	small_move=0;
+	auto_mode=0;
 	//=======================================
 	/*float a=-7.0014e-5;
 	float b=1.1071e-2;
@@ -130,10 +131,18 @@ void main(void)
 			DisplayLCD(mins);
 			WriteData(0x3A);//display ":"
 			DisplayLCD(seconds&0x7f);
-			//WriteData(0x3B);//display ";"
+			WriteData(0x3B);//display ";"
 			DisplayLCD(months);
 			//WriteData(0x2D);//display "-"
-			DisplayLCD(days);				
+			DisplayLCD(days);	
+			if(auto_mode)
+			{
+				WriteData(0x41);//display "A"
+			}
+			else
+			{
+				WriteData(0x41);//display "M"
+			}
 			//count=0;
 			//prox_data=Read_VCNL4035(PS1_Data_L);
 			//Display_Prox(prox_data);// this is RAW data from the Prox Sensor
@@ -198,8 +207,11 @@ void main(void)
 
 		//Read_time(&months,&days,&hours,&mins,&seconds);
 		//Read_time(&months,&days,&hours,&mins,&seconds);
-		if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)
-			Update_position(months,days,hours,mins,seconds,&current_position);
+		if(auto_mode)
+		{
+			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)
+				Update_position(months,days,hours,mins,seconds,&current_position);
+		}
 		//==================================================		
 		// This is for UART to set the time		
 		//==================================================				

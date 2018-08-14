@@ -224,12 +224,23 @@ void Key_Process(void)//
 		move =0;
 		return;
 	}
+	if (KeyNum==KEY_A && auto_mode)
+	{
+		auto_mode=0;
+		return;
+	}	
+	if (KeyNum==KEY_A && !auto_mode)
+	{
+		auto_mode=1;
+		return;
+	}		
 	
 	if (KeyNum==KEY_B)
 	{
 		small_move =1;
 		return;
 	}	
+	
 	if(KeyNum_Old==Unpress && KeyNum!=Unpress)
 	{
 		PressedKey[KeyCount]=KeyNum;
