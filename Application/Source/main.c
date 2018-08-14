@@ -79,10 +79,10 @@ void main(void)
 //	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
 	//=======================================
 	LCD_Init();
-	SPI_Init();
+	//SPI_Init();
 	KeyPad_IO_Init();
-	initUART1();
-	I2C_Init();
+	//initUART1();
+	//I2C_Init();
 	//Timer0===================================
 	AUXR|=0x80;
 	TL0=T1MS;
@@ -92,9 +92,9 @@ void main(void)
 	ET0=1;
 	//========================================
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
-	SPI_WriteTime(0x12,Hours);		// data , register address
+	//SPI_WriteTime(0x12,Hours);		// data , register address
 	Delay_ms(500);
-	SPI_WriteTime(0x12,Minutes);
+	//SPI_WriteTime(0x12,Minutes);
 	Delay_ms(500);
 	//==============================================================
 	// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
