@@ -141,7 +141,7 @@ void main(void)
 			}
 			else
 			{
-				WriteData(0x41);//display "M"
+				WriteData(0x4D);//display "M"
 			}
 			//count=0;
 			//prox_data=Read_VCNL4035(PS1_Data_L);
