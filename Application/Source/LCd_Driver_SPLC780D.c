@@ -9,7 +9,7 @@ void WriteData(unsigned char dat);
 void LCD_Init(void)
 {
 	P1M1 =0x00;  
-	P1M0 =0x00; 
+	P1M0 =0xFF; 
 
 	Wait_ms(150);
 	Command(0x03);
