@@ -10,9 +10,12 @@ void WriteData(unsigned char dat);
 void SPI_WriteTime(unsigned char val,unsigned char addr);
 void Command(unsigned char dat);
 void LCD_clear(void);
+
 bit move=0;
 bit small_move=0;
 bit direction=0;
+bit auto_move=0;
+
 void Delay_ms(unsigned int ms)
 {
   unsigned int De_Cnt;
@@ -35,7 +38,7 @@ unsigned char Key_Scan(void)
 	KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));	//~(10000000 | 01000000 | 00100000)=00011111
 	if(KeyTemp1!=0xff)	 		//
 	{	
-		Delay_ms(10);					//
+		//Delay_ms(10);					//
 		KeyTemp1=KEYPORT | ( ~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)) );	//~(10000000 | 01000000 | 00100000)=00011111
 		if(KeyTemp1!=0xff)	 		//
 		{
@@ -206,6 +209,11 @@ void Key_Process(void)//
 	KeyNum_Old=KeyNum;
 	KeyNum=Key_Scan();
 	//if( (KeyNum=Key_Scan())!=0 )  	//
+	if (KeyNum==KEY_B )
+	{
+		small_move=1;
+		return;
+	}	
 	if (KeyNum_Old==Unpress && KeyNum==KEY_C)
 	{
 		if(direction)
@@ -224,23 +232,22 @@ void Key_Process(void)//
 		move =0;
 		return;
 	}
-	if (KeyNum==KEY_A && auto_mode)
+	if (KeyNum_Old==Unpress && KeyNum==KEY_A )
 	{
-		auto_mode=0;
+		if(auto_mode)
+			auto_mode=0;
+		else
+			auto_mode=1;
 		return;
 	}	
-	if (KeyNum==KEY_A && !auto_mode)
-	{
-		auto_mode=1;
-		return;
-	}		
+
 	
-	if (KeyNum==KEY_B)
+
+	/*if (KeyNum_Old==Unpress && KeyNum==KEY_B)
 	{
-		small_move =1;
+		small_move=0;
 		return;
-	}	
-	
+	}		*/
 	if(KeyNum_Old==Unpress && KeyNum!=Unpress)
 	{
 		PressedKey[KeyCount]=KeyNum;
@@ -348,8 +355,10 @@ void Key_Process(void)//
 ************************************************/
 void KeyPad_IO_Init(void)
 {	
-	P0M1 &=~( 1|(1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );  
-	P0M0 &=~( 1|(1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );    
+	P0M1 &=~( (1<<0)|(1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );  
+	P0M0 &=~( (1<<0)|(1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );    
+	P0M0=0x00;
+	P0M1=0x00;
 }
 
 

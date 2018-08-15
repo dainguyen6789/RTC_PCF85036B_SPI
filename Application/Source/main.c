@@ -79,10 +79,10 @@ void main(void)
 //	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
 	//=======================================
 	LCD_Init();
-	SPI_Init();
+	//SPI_Init();
 	KeyPad_IO_Init();
-	initUART1();
-	I2C_Init();
+	//initUART1();
+	//I2C_Init();
 	//Timer0===================================
 	AUXR|=0x80;
 	TL0=T1MS;
@@ -110,7 +110,7 @@ void main(void)
 	while(1)                                      
 	{
 		Key_Process();
-		count++;
+		//count++;
 		//if (count==20)
 		{
 			//move cursor to line 1, pos 6
@@ -139,10 +139,10 @@ void main(void)
 			{
 				WriteData(0x41);//display "A"
 			}
-			else
+			else if (!auto_mode)
 			{
 				WriteData(0x4D);//display "M"
-			}
+			}			
 			//count=0;
 			//prox_data=Read_VCNL4035(PS1_Data_L);
 			//Display_Prox(prox_data);// this is RAW data from the Prox Sensor
@@ -169,7 +169,8 @@ void main(void)
 			}
 			if (small_move && !auto_mode)
 			{
-				small_move=0;
+				
+				//auto_mode=0;
 				Step_move(11, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
 				if (direction==1)
 				{
@@ -179,8 +180,10 @@ void main(void)
 				{
 					current_position=current_position-0.1;
 				}
-				prox_flag=0;				
+				prox_flag=0;		
+				small_move=0;				
 			}
+
 			/*if (prox_data<=300 && prox_flag==0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
 				current_position=0;
@@ -188,7 +191,7 @@ void main(void)
 				move=0;
 			}*/
 			
-		if (P33 && prox_flag==0 && current_position<=0 && !auto_mode)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+		if (P33 && prox_flag==0 && current_position<=0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
 				current_position=0;
 				prox_flag=1;
@@ -215,7 +218,7 @@ void main(void)
 		//==================================================		
 		// This is for UART to set the time		
 		//==================================================				
-		if(st_time)
+	/*	if(st_time)
 		{
 			SPI_WriteTime(hour_count,Hours);		// data , register address
 			SPI_WriteTime(min_count,Minutes);
@@ -227,7 +230,7 @@ void main(void)
 		{
 			//UART
 			//Delay_ms(1200);
-		}
+		}*/
 	}
 	
 } 
