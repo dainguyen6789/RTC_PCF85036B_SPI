@@ -135,6 +135,7 @@ void main(void)
 			DisplayLCD(months);
 			//WriteData(0x2D);//display "-"
 			DisplayLCD(days);	
+			WriteData(0x3B);//display ";"
 			if(auto_mode)
 			{
 				WriteData(0x41);//display "A"
