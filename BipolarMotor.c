@@ -65,132 +65,44 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 	desired_distance=*currnt_pos;
 	date=Day_Of_Year(mnths,dys);
 	// interpolate for day
-	if(date<=79 && date<=171)
+	if (date>=79 && date <=171)
 	{
 		for (i=0;i<=8;i++)
 		{
-			if (date>= date_stamp_79_171[i] && date<= date_stamp_79_171[i+1])
-			{
-				for (yy=0;yy<21;yy++)
-				{
-					pos_interpolate_12_17h[yy][0]=linear_interpolate(date_stamp_79_171[i],date_stamp_79_171[i+1]
-					,exact_rx_pos_simulation[yy][i],exact_rx_pos_simulation[yy][i+1],date);
-				}
-			}
-		}
-		
-		for(i=0;i<num_of_time_stamp;i++)// 
-		{
-			if (BCDtoDec1(hurs)==Time_stamp_PM[i][0] && BCDtoDec1(mns)== Time_stamp_PM[i][1] && BCDtoDec1(sconds&0x7f)==Time_stamp_PM[i][2])// check if current time match the time stamp in the table
-			{			
-				desired_distance=pos_interpolate_12_17h[i][0];//18July2018 is stored in the 1st column
-			}
+			if( (date >=date_stamp_79_171[i]) && (date <= date_stamp_79_171[i+1])
 				
-				//desired_distance=receiver_pos[0][4];;
-				//distance=11;
-				distance=desired_distance-*currnt_pos;
-				*currnt_pos=desired_distance;// change to sync with step movement
-				if(distance>0)
-				{
-					Move(distance,1);// counter clock wise
-				}
-				else if(distance<0)
-				{
-					Move(-distance,0);// clock wise
-				}
-				else
-				{
-				} 
-				
-			
-			if ((i+1)<num_of_time_stamp && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))<=(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1])) && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))>=(Time_stamp_PM[i][0]*60+Time_stamp_PM[i][1])) && BCDtoDec1(sconds&0x7f)%30==0)// update every 30 sec
-			{
-
-				desired_distance=linear_interpolate(Time_stamp_PM[i][0]+Time_stamp_PM[i][1]/60,
-																						Time_stamp_PM[i+1][0]+Time_stamp_PM[i+1][1]/60,pos_interpolate_12_17h[i][0],
-																						pos_interpolate_12_17h[i+1][0],(float)BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60+(float)BCDtoDec1(sconds&0x7f)/3600);
-				distance=desired_distance-*currnt_pos;
-				*currnt_pos=desired_distance;// change to sync with step movement
-				if(distance>0)
-				{
-					Move(distance,1);// counter clock wise
-				}
-				else if(distance<0)
-				{
-					Move(-distance,0);// clock wise
-				}
-				else
-				{
-				} 
-				
-				
-			}
-			
 		}
 	}
-	if(date<=263 && date>171)
-	{
-		for (i=1;i<=8;i++)
-		{
-			if (date>= date_stamp_171_263[i] && date<= date_stamp_171_263[i+1])
-			{
-				for (yy=0;yy<21;yy++)
-				{
-					pos_interpolate_12_17h[yy][0]=linear_interpolate(date_stamp_171_263[i],date_stamp_171_263[i+1]
-					,exact_rx_pos_simulation[yy][8-i],exact_rx_pos_simulation[yy][8-i-1],date);
-				}
-			}
-		}
-		
-		for(i=0;i<num_of_time_stamp;i++)// 
-		{
-			if (BCDtoDec1(hurs)==Time_stamp_PM[i][0] && BCDtoDec1(mns)== Time_stamp_PM[i][1] && BCDtoDec1(sconds&0x7f)==Time_stamp_PM[i][2])// check if current time match the time stamp in the table
-			{			
-				desired_distance=pos_interpolate_12_17h[i][0];//18July2018 is stored in the 1st column
-			}
-				
-				//desired_distance=receiver_pos[0][4];;
-				//distance=11;
-				distance=desired_distance-*currnt_pos;
-				*currnt_pos=desired_distance;// change to sync with step movement
-				if(distance>0)
-				{
-					Move(distance,1);// counter clock wise
-				}
-				else if(distance<0)
-				{
-					Move(-distance,0);// clock wise
-				}
-				else
-				{
-				} 
-				
-			
-			if ((i+1)<num_of_time_stamp && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))<=(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1])) && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))>=(Time_stamp_PM[i][0]*60+Time_stamp_PM[i][1])) && BCDtoDec1(sconds&0x7f)%30==0)// update every 30 sec
-			{
+	// interpolate for hour
 
-				desired_distance=linear_interpolate(Time_stamp_PM[i][0]+Time_stamp_PM[i][1]/60,
-																						Time_stamp_PM[i+1][0]+Time_stamp_PM[i+1][1]/60,pos_interpolate_12_17h[i][0],
-																						pos_interpolate_12_17h[i+1][0],(float)BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60+(float)BCDtoDec1(sconds&0x7f)/3600);
-				distance=desired_distance-*currnt_pos;
-				*currnt_pos=desired_distance;// change to sync with step movement
-				if(distance>0)
-				{
-					Move(distance,1);// counter clock wise
-				}
-				else if(distance<0)
-				{
-					Move(-distance,0);// clock wise
-				}
-				else
-				{
-				} 
-				
-				
-			}
-			
-		}
-	}
+}
+
+float pos_day_171(float time){
+	return 0.3224*pow(time,4) - 16.883*pow(time,3) + 336.15*pow(time,2) - 3004.8*time + 10281;
+}
+float pos_day_152_190(float time){
+	return 0.3957*pow(time,4) - 20.914*pow(time,3) + 418.74*pow(time,2) - 3752.6*time + 12796;
+}
+
+float pos_day_139_203(float time){
+ return 0.4751*pow(time,4) - 25.31*pow(time,3) + 509.39*pow(time,2) - 4578.4*time + 15589;
+}
+
+float pos_day_121_221(float time){
+	return 0.6567*pow(time,4) - 35.589*pow(time,3) + 725.58*pow(time,2)  - 6585.1*time + 22505;
+}	
+
+float pos_day_113_229(float time){
+	return 0.6698*pow(time,4)- 36.416*pow(time,3) + 744.21*pow(time,2)  - 6765.5*time + 23132;
+}
+float pos_day_106_236(float time){
+	return 0.6886*pow(time,4) - 37.644*pow(time,3) + 772.66*pow(time,2)  - 7048.9*time + 24153;
+}
+float pos_day_94_248(float time){
+	return 0.4628*pow(time,4) - 25.404*pow(time,3) + 523.11*pow(time,2)  - 4784.2*time + 16416;
+}
+float pos_day_87_255(float time){
+	return 0.288*pow(time,4) - 15.904*pow(time,3) + 329.15*pow(time,2)  - 3023.8*time+ 10412;
 }
 //
 /*
