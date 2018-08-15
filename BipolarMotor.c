@@ -6,7 +6,6 @@
 void Delay_ms(unsigned int ms);
 int Day_Of_Year(unsigned char months,unsigned char days);
 unsigned char BCDtoDec1(char bcd);
-float trend_line_30_31(float time);
 float degree;
 
 unsigned char BCDtoDec1(unsigned char bcd)
@@ -45,35 +44,91 @@ void Move(float distance, bit direction)
 		Step_move(step,direction);
 }
 
-
+float linear_interpolate(float x1,float x2,float y1,float y2, float x)
+{
+	float a,b;
+	a=(y1-y2)/(x1-x2);
+	b=y1-a*x1;
+	
+	return a*x+b;
+}
 
 
 void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,float *currnt_pos)
 {
-	unsigned int date,i;
-	float desired_distance,distance=0,h_float,m_float;
-	
+	unsigned int date,i,yy;
+	float desired_distance,distance=0;
+	float pos_interpolate_12_17h[11][1];
 	/*hurs=0x12;
 	mns=0x30;*/
 	//sconds=0x15;
 	desired_distance=*currnt_pos;
 	date=Day_Of_Year(mnths,dys);
-	//date=80;
-	for(i=0;i<num_of_time_stamp;i++)// 13 diff values of time stamp
+	// interpolate for day
+	for (i=0;i<=8;i++)
 	{
-		if ((i+1)<num_of_time_stamp && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))<=(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1])) && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))>=(Time_stamp_PM[i][0]*60+Time_stamp_PM[i][1])) && BCDtoDec1(mns)%1==0)// update every 2 mins
+		if (date> date_stamp[i] && date< date_stamp[i+1])
 		{
-			//switch(date)
+			for (yy=0;yy<=11;yy++)
 			{
-				//if (date==220)//08Aout2018
-				//if (date==221)//09Aout2018
-				if (date==225)//10Aout2018	
-				{
-					h_float=(float)(BCDtoDec1(hurs));
-					m_float=(float)(BCDtoDec1(mns));
-					//t=(float)(BCDtoDec1(hurs))+(float)(BCDtoDec1(mns))/60;
-					desired_distance=trend_line_30_31(h_float+m_float/60);
-				}
+				pos_interpolate_12_17h[yy][0]=linear_interpolate(date_stamp[i],date_stamp[i+1],exact_rx_pos_simulation[yy][i],exact_rx_pos_simulation[yy][i+1],date);
+			}
+		}
+	}
+	
+	//date=80;
+/*	for(i=0;i<num_of_time_stamp;i++)// 13 diff values of time stamp
+	{
+		if (BCDtoDec1(hurs)==Time_stamp_PM[i][0] && BCDtoDec1(mns)== Time_stamp_PM[i][1] && BCDtoDec1(sconds&0x7f)==Time_stamp_PM[i][2])// check if current time match the time stamp in the table
+		{			
+			switch(date)
+			{
+				case 212://29July2018
+					desired_distance=receiver_pos[i][0];//18July2018 is stored in the 1st column
+					break; 
+				case 80:
+					desired_distance=receiver_pos[i][1];
+					break;
+				case 81:
+					desired_distance=receiver_pos[i][2];
+					break;
+				case 82:
+					desired_distance=receiver_pos[i][3];
+					break;
+				case 83:
+					desired_distance=receiver_pos[i][4];
+					break;
+				default:
+					break;
+			}
+			
+			//desired_distance=receiver_pos[0][4];;
+			//distance=11;
+			distance=desired_distance-*currnt_pos;
+			*currnt_pos=desired_distance;// change to sync with step movement
+			if(distance>0)
+			{
+				Move(distance,1);// counter clock wise
+			}
+			else if(distance<0)
+			{
+				Move(-distance,0);// clock wise
+			}
+			else
+			{
+			} 
+			
+			break;
+		}
+		if ((i+1)<num_of_time_stamp && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))<=(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1])) && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))>=(Time_stamp_PM[i][0]*60+Time_stamp_PM[i][1])) && BCDtoDec1(mns)%2==0)// update every 2 mins
+		{
+			switch(date)
+			{
+				case 212://30July2018
+					desired_distance=(receiver_pos[i+1][0]-receiver_pos[i][0])/(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1]
+														-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])
+														*(BCDtoDec1(hurs)*60+BCDtoDec1(mns)-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])
+														+receiver_pos[i][0];// desired_pos=(pos_end-pos_start)/(time_end-time_start)*(current_time- time_start)+pos_start
 			}
 			distance=desired_distance-*currnt_pos;
 			*currnt_pos=desired_distance;// change to sync with step movement
@@ -93,17 +148,55 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 			
 		}
 		
-	}
-}
+	}*/
+	
+	for(i=0;i<num_of_time_stamp;i++)// 13 diff values of time stamp
+	{
+		if (BCDtoDec1(hurs)==Time_stamp_PM[i][0] && BCDtoDec1(mns)== Time_stamp_PM[i][1] && BCDtoDec1(sconds&0x7f)==Time_stamp_PM[i][2])// check if current time match the time stamp in the table
+		{			
+			desired_distance=pos_interpolate_12_17h[i][0];//18July2018 is stored in the 1st column
+		}
+			
+			//desired_distance=receiver_pos[0][4];;
+			//distance=11;
+			distance=desired_distance-*currnt_pos;
+			*currnt_pos=desired_distance;// change to sync with step movement
+			if(distance>0)
+			{
+				Move(distance,1);// counter clock wise
+			}
+			else if(distance<0)
+			{
+				Move(-distance,0);// clock wise
+			}
+			else
+			{
+			} 
+			
+		}
+		if ((i+1)<num_of_time_stamp && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))<=(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1][1])) && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))>=(Time_stamp_PM[i][0]*60+Time_stamp_PM[i][1])) && BCDtoDec1(sconds&0x7f)%30==0)// update every 30 sec
+		{
 
-float trend_line_30_31(float time)
-{
-	float offset;
-	offset=1.099555E-04*pow(time,6) - 8.576526E-03*pow(time,5) + 2.755625E-01*pow(time,4) - 4.666361E+00*pow(time,3) + 4.385879E+01*pow(time,2) - 2.163094E+02*time + 4.336795E+02;
-	return (-4.88*time*time+126.08*time-745.26+((-offset+0.2)*13.5));//for 10Aout2018
-	//return (-4.88*time*time+126.08*time-745.26+(1.1*10.5));//for 10Aout2018
-	//return (-4.88*time*time+126.08*time-745.26+(1.1*9.5));//for 09Aout2018
-}
+			desired_distance=linear_interpolate(Time_stamp_PM[i][0],Time_stamp_PM[i+1][0],pos_interpolate_12_17h[i][0],pos_interpolate_12_17h[i+1][0],hurs+mns/60+sconds&0x7f/3600);
+			distance=desired_distance-*currnt_pos;
+			*currnt_pos=desired_distance;// change to sync with step movement
+			if(distance>0)
+			{
+				Move(distance,1);// counter clock wise
+			}
+			else if(distance<0)
+			{
+				Move(-distance,0);// clock wise
+			}
+			else
+			{
+			} 
+			
+			
+		}
+		
+	}
+
 //
 /*
 	for(i=0;i<13;i++)
