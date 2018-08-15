@@ -1,0 +1,103 @@
+C51 COMPILER V9.52.0.0   UART1                                                             08/15/2018 10:45:11 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE UART1
+OBJECT MODULE PLACED IN .\Obj\UART1.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Application\Source\UART1.c LARGE BROWSE INCDIR(.\Application\Header) DEB
+                    -UG OBJECTEXTEND PRINT(.\Lis\UART1.lst) TABS(2) OBJECT(.\Obj\UART1.obj)
+
+line level    source
+
+   1          #include "stc15f2k60s2.h"
+   2          #include "PCF85063BTL.h"
+   3          #include <stdlib.h>
+   4          //#include "UART1.h"
+   5          #define TBAUD (65536-FOSC/4/BAUD)
+   6          #define FOSC 18432000L
+   7          #define BAUD 115200
+   8          
+   9          
+  10          
+  11          
+  12          unsigned char SPI_ReadTime(unsigned char addr);
+  13          void SPI_WriteTime(unsigned char val,unsigned char addr);
+  14          unsigned char ASCIItoBCD(unsigned char ascii[2]); // time format hh:mm:ss
+  15          void SendUART1(unsigned char dat);
+  16          
+  17          
+  18          
+  19          
+  20          
+  21          void initUART1(void)
+  22          {
+  23   1        SCON=0x50; //0101 0000 8-bit uart,  baud rate variable
+  24   1        AUXR |=0x95;//10010101 Timer2 as Baud Rate generator
+  25   1        T2L=TBAUD;
+  26   1        T2H=TBAUD>>8; 
+  27   1        ES=1;           // enable uart1 interrupt
+  28   1        EA=1;           // each interrupt source will be enable or disable by setting its interrupt bit
+  29   1        //PS=0;           // Serial Port 1 interrupt priority control bit, DS page 561
+  30   1      }
+  31          
+  32          
+  33          
+  34          
+  35           void SendString(char *s)
+  36          {
+  37   1        while(*s)
+  38   1        {
+  39   2          SendUART1(*s++);
+  40   2        }
+  41   1      }
+  42          
+  43          unsigned char ten(unsigned char BCD)
+  44          {
+  45   1        return (BCD)>>4;
+  46   1      }
+  47          unsigned char unit(unsigned char BCD)
+  48          {
+  49   1      
+  50   1        //unit=BCD&0x0f;
+  51   1        //dec=ten*10+unit;
+  52   1        return BCD&0x0f;
+  53   1      }
+  54          unsigned char DectoBCD(unsigned char dec)
+C51 COMPILER V9.52.0.0   UART1                                                             08/15/2018 10:45:11 PAGE 2   
+
+  55          {
+  56   1        
+  57   1        return dec;
+  58   1      }
+  59          //if dat=1, we need to use ASCII value to display "1" on UART1
+  60          unsigned char ASCII_Letter(unsigned char dat)
+  61          {
+  62   1        
+  63   1        return dat+48;
+  64   1      }
+  65          
+  66          unsigned char ASCIItoBCD(unsigned char ascii[2]) // time format hh:mm:ss
+  67          {
+  68   1        unsigned char dec_val,ten, unit;
+  69   1        dec_val=atoi(ascii);
+  70   1        ten=dec_val/10;
+  71   1        unit=dec_val%10;
+  72   1        return ten<<4|unit;
+  73   1        
+  74   1      }
+  75          
+  76          
+  77           
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    108    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----       3
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
