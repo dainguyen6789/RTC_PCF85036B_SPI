@@ -33,4 +33,4 @@
  extern bit move;
  extern bit direction;// motor direction
  extern bit small_move;
- extern bit auto_mode;
+ extern int  auto_mode;
