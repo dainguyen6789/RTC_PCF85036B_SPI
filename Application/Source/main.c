@@ -79,10 +79,10 @@ void main(void)
 //	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
 	//=======================================
 	LCD_Init();
-	//SPI_Init();
+	SPI_Init();
 	KeyPad_IO_Init();
 	//initUART1();
-	//I2C_Init();
+	I2C_Init();
 	//Timer0===================================
 	AUXR|=0x80;
 	TL0=T1MS;
@@ -213,8 +213,9 @@ void main(void)
 		//Read_time(&months,&days,&hours,&mins,&seconds);
 		if(auto_mode)
 		{
-			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)
-				Update_position(months,days,hours,mins,seconds,&current_position);
+			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)
+				//Update_position(months,days,hours,mins,seconds,&current_position);
+				Update_position(0x06,0x20,0x12,0x30,0x00,&current_position);
 		}
 		//==================================================		
 		// This is for UART to set the time		
