@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/15/2018 16:30:33 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/15/2018 17:03:23 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -62,7 +62,7 @@ line level    source
   52   1        
   53   1        return a*x+b;
   54   1      }
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/15/2018 16:30:33 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/15/2018 17:03:23 PAGE 2   
 
   55          
   56          
@@ -77,64 +77,129 @@ line level    source
   64   1        //sconds=0x15;
   65   1        desired_distance=*currnt_pos;
   66   1        date=Day_Of_Year(mnths,dys);
-  67   1        // interpolate for day
-  68   1      
-  69   1      }
-*** WARNING C280 IN LINE 57 OF BipolarMotor.c: 'hurs': unreferenced local variable
-*** WARNING C280 IN LINE 57 OF BipolarMotor.c: 'mns': unreferenced local variable
-*** WARNING C280 IN LINE 57 OF BipolarMotor.c: 'sconds': unreferenced local variable
-*** WARNING C280 IN LINE 59 OF BipolarMotor.c: 'i': unreferenced local variable
-*** WARNING C280 IN LINE 59 OF BipolarMotor.c: 'yy': unreferenced local variable
-*** WARNING C280 IN LINE 61 OF BipolarMotor.c: 'pos_interpolate_12_17h': unreferenced local variable
-  70          
-  71          float pos_day_171(float time){
-  72   1        return 0.3224*pow(time,4) - 16.883*pow(time,3) + 336.15*pow(time,2) - 3004.8*time + 10281;
-  73   1      }
-  74          float pos_day_152_190(float time){
-  75   1        return 0.3957*pow(time,4) - 20.914*pow(time,3) + 418.74*pow(time,2) - 3752.6*time + 12796;
-  76   1      }
-  77          
-  78          float pos_day_139_203(float time){
-  79   1       return 0.4751*pow(time,4) - 25.31*pow(time,3) + 509.39*pow(time,2) - 4578.4*time + 15589;
-  80   1      }
-  81          
-  82          float pos_day_121_221(float time){
-  83   1        return 0.6567*pow(time,4) - 35.589*pow(time,3) + 725.58*pow(time,2)  - 6585.1*time + 22505;
-  84   1      } 
-  85          
-  86          float pos_day_113_229(float time){
-  87   1        return 0.6698*pow(time,4)- 36.416*pow(time,3) + 744.21*pow(time,2)  - 6765.5*time + 23132;
-  88   1      }
-  89          float pos_day_106_236(float time){
-  90   1        return 0.6886*pow(time,4) - 37.644*pow(time,3) + 772.66*pow(time,2)  - 7048.9*time + 24153;
-  91   1      }
-  92          float pos_day_94_248(float time){
-  93   1        return 0.4628*pow(time,4) - 25.404*pow(time,3) + 523.11*pow(time,2)  - 4784.2*time + 16416;
-  94   1      }
-  95          float pos_day_87_255(float time){
-  96   1        return 0.288*pow(time,4) - 15.904*pow(time,3) + 329.15*pow(time,2)  - 3023.8*time+ 10412;
-  97   1      }
-  98          //
-  99          /*
- 100            for(i=0;i<13;i++)
- 101            {
- 102              if (BCDtoDec1(hurs)<=Time_stamp_PM[i+1][0] && BCDtoDec1(hurs)>=Time_stamp_PM[i][0] && BCDtoDec1(mns)>= T
+  67   1        
+  68   1        if(date>=79 && date<=171)
+  69   1        {
+  70   2          // interpolate for day
+  71   2          for (i=0;i<=8;i++)
+  72   2          {
+  73   3            if (date>= date_stamp_79_171[i] && date<= date_stamp_79_171[i+1])
+  74   3            {
+  75   4              for (yy=0;yy<21;yy++)
+  76   4              {
+  77   5                pos_interpolate_12_17h[yy][0]=linear_interpolate(date_stamp_79_171[i],date_stamp_79_171[i+1]
+  78   5                ,exact_rx_pos_simulation[yy][i],exact_rx_pos_simulation[yy][i+1],date);
+  79   5              }
+  80   4            }
+  81   3          }
+  82   2          //interpolate for hour
+  83   2          for(i=0;i<num_of_time_stamp;i++)// 
+  84   2          {
+  85   3            if (BCDtoDec1(hurs)==Time_stamp_PM[i][0] && BCDtoDec1(mns)== Time_stamp_PM[i][1] && BCDtoDec1(sconds&0x
+             -7f)==Time_stamp_PM[i][2])// check if current time match the time stamp in the table
+  86   3            {     
+  87   4              desired_distance=pos_interpolate_12_17h[i][0];//18July2018 is stored in the 1st column
+  88   4            }
+  89   3              
+  90   3              //desired_distance=receiver_pos[0][4];;
+  91   3              //distance=11;
+  92   3              distance=desired_distance-*currnt_pos;
+  93   3              *currnt_pos=desired_distance;// change to sync with step movement
+  94   3              if(distance>0)
+  95   3              {
+  96   4                Move(distance,1);// counter clock wise
+  97   4              }
+  98   3              else if(distance<0)
+  99   3              {
+ 100   4                Move(-distance,0);// clock wise
+ 101   4              }
+ 102   3              else
+ 103   3              {
+ 104   4              } 
+ 105   3              
+ 106   3            
+ 107   3            if ((i+1)<num_of_time_stamp && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))<=(Time_stamp_PM[i+1][0]*60+Time_sta
+             -mp_PM[i+1][1])) && ((BCDtoDec1(hurs)*60+BCDtoDec1(mns))>=(Time_stamp_PM[i][0]*60+Time_stamp_PM[i][1])) && BCDtoDec1(scon
+             -ds&0x7f)%30==0)// update every 30 sec
+ 108   3            {
+ 109   4      
+ 110   4              desired_distance=linear_interpolate(Time_stamp_PM[i][0]+Time_stamp_PM[i][1]/60,
+ 111   4                                                  Time_stamp_PM[i+1][0]+Time_stamp_PM[i+1][1]/60,pos_interpolate_12_17h[i][0],
+ 112   4                                                  pos_interpolate_12_17h[i+1][0],(float)BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60+(floa
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/15/2018 17:03:23 PAGE 3   
+
+             -t)BCDtoDec1(sconds&0x7f)/3600);
+ 113   4              distance=desired_distance-*currnt_pos;
+ 114   4              *currnt_pos=desired_distance;// change to sync with step movement
+ 115   4              if(distance>0)
+ 116   4              {
+ 117   5                Move(distance,1);// counter clock wise
+ 118   5              }
+ 119   4              else if(distance<0)
+ 120   4              {
+ 121   5                Move(-distance,0);// clock wise
+ 122   5              }
+ 123   4              else
+ 124   4              {
+ 125   5              } 
+ 126   4              
+ 127   4              
+ 128   4            }
+ 129   3            
+ 130   3          }
+ 131   2        }
+ 132   1        // interpolate for hour
+ 133   1      
+ 134   1      }
+ 135          
+ 136          float pos_day_171(float time){
+ 137   1        return 0.3224*pow(time,4) - 16.883*pow(time,3) + 336.15*pow(time,2) - 3004.8*time + 10281;
+ 138   1      }
+ 139          float pos_day_152_190(float time){
+ 140   1        return 0.3957*pow(time,4) - 20.914*pow(time,3) + 418.74*pow(time,2) - 3752.6*time + 12796;
+ 141   1      }
+ 142          
+ 143          float pos_day_139_203(float time){
+ 144   1       return 0.4751*pow(time,4) - 25.31*pow(time,3) + 509.39*pow(time,2) - 4578.4*time + 15589;
+ 145   1      }
+ 146          
+ 147          float pos_day_121_221(float time){
+ 148   1        return 0.6567*pow(time,4) - 35.589*pow(time,3) + 725.58*pow(time,2)  - 6585.1*time + 22505;
+ 149   1      } 
+ 150          
+ 151          float pos_day_113_229(float time){
+ 152   1        return 0.6698*pow(time,4)- 36.416*pow(time,3) + 744.21*pow(time,2)  - 6765.5*time + 23132;
+ 153   1      }
+ 154          float pos_day_106_236(float time){
+ 155   1        return 0.6886*pow(time,4) - 37.644*pow(time,3) + 772.66*pow(time,2)  - 7048.9*time + 24153;
+ 156   1      }
+ 157          float pos_day_94_248(float time){
+ 158   1        return 0.4628*pow(time,4) - 25.404*pow(time,3) + 523.11*pow(time,2)  - 4784.2*time + 16416;
+ 159   1      }
+ 160          float pos_day_87_255(float time){
+ 161   1        return 0.288*pow(time,4) - 15.904*pow(time,3) + 329.15*pow(time,2)  - 3023.8*time+ 10412;
+ 162   1      }
+ 163          //
+ 164          /*
+ 165            for(i=0;i<13;i++)
+ 166            {
+ 167              if (BCDtoDec1(hurs)<=Time_stamp_PM[i+1][0] && BCDtoDec1(hurs)>=Time_stamp_PM[i][0] && BCDtoDec1(mns)>= T
              -ime_stamp_PM[i][1] && BCDtoDec1(mns)<= Time_stamp_PM[i+1][1] && BCDtoDec1(mns)%5==0)
- 103              {
- 104                desired_distance=(receiver_pos[i+1][0]-receiver_pos[i][0])/(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1]
+ 168              {
+ 169                desired_distance=(receiver_pos[i+1][0]-receiver_pos[i][0])/(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1]
              -[1]-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])*(BCDtoDec1(hurs)*60+BCDtoDec1(mns)-Time_stamp_PM[i][0]*60-Time_stamp_PM[
              -i][1])+receiver_pos[i][0];
- 105              }
- 106            }
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/15/2018 16:30:33 PAGE 3   
+ 170              }
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/15/2018 17:03:23 PAGE 4   
 
- 107          */
- 108          
- 109          //int Day_Of_Year(unsigned char months,unsigned char days)*/
+ 171            }
+ 172          */
+ 173          
+ 174          //int Day_Of_Year(unsigned char months,unsigned char days)*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   2197    ----
+   CODE SIZE        =   4134    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   1037     174
    PDATA SIZE       =   ----    ----
@@ -144,4 +209,4 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
 END OF MODULE INFORMATION.
 
 
-C51 COMPILATION COMPLETE.  6 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
