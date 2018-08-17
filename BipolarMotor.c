@@ -7,11 +7,11 @@ void Delay_ms(unsigned int ms);
 int Day_Of_Year(unsigned char months,unsigned char days);
 unsigned char BCDtoDec1(char bcd);
 float degree;
-float findDet4x4 (float a11, float a12, float a13, float a14, 
+double findDet4x4 (float a11, float a12, float a13, float a14, 
             float a21, float a22, float a23, float a24,
             float a31, float a32, float a33, float a34,
             float a41, float a42, float a43, float a44 );
- float findDet3x3( 
+ double findDet3x3( 
             float a11, float a12, float a13, 
             float a21, float a22, float a23,
             float a31, float a32, float a33 );						
@@ -53,11 +53,38 @@ void Move(float distance, bit direction)
 }
 //=====================================================
 //We need 4 points for cubic interpolation, p1[x],p1[y],..,p4[x],p4[y]
-float
-cubic_interpolate (float *p1, float *p2, float *p3, float *p4, float x)
+ double findDet3x3( 
+            double a11, double a12, double a13, 
+            double a21, double a22, double a23,
+            double a31, double a32, double a33 )
 {
-  float a, b, c, d, det;	// the parameters of the cubic function
-  float a11, a12, a13, a14, a21, a22, a23, a24,
+		return( a11*a22*a33 + a12*a23*a31 + a13*a21*a32 -
+						a13*a22*a31 - a12*a21*a33 - a11*a23*a32 );
+}
+double findDet4x4 (double a11, double a12, double a13, double a14, 
+            double a21, double a22, double a23, double a24,
+            double a31, double a32, double a33, double a34,
+            double a41, double a42, double a43, double a44 )
+{
+	
+		//return a11*(float)findDet3x3(a22, a23, a24, a32, a33, a34, a42, a43, a44);
+		//return (float)findDet3x3(a21, a23, a24, a31, a33, a34, a41, a43, a44);
+		//return (float)findDet3x3(a21, a22, a24, a31, a32, a34, a41, a42, a44);
+		//return (float)findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43);
+	//	return a21;
+		return( a11*findDet3x3(a22, a23, a24, a32, a33, a34, a42, a43, a44) -
+						a12*findDet3x3(a21, a23, a24, a31, a33, a34, a41, a43, a44) +
+						a13*findDet3x3(a21, a22, a24, a31, a32, a34, a41, a42, a44) -
+						a14*findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43));
+}
+		
+//=====================================================	
+
+double
+cubic_interpolate (double *p1, double *p2, double *p3, double *p4, double x)
+{
+  double a, b, c, d, det;	// the parameters of the cubic function
+  double a11, a12, a13, a14, a21, a22, a23, a24,
     a31, a32, a33, a34, a41, a42, a43, a44, k1, k2, k3, k4;
 
   a11 = pow (p1[0], 3);
@@ -88,40 +115,28 @@ cubic_interpolate (float *p1, float *p2, float *p3, float *p4, float x)
 
   det = findDet4x4 (a11, a12, a13, a14, a21, a22, a23, a24,
 		    a31, a32, a33, a34, a41, a42, a43, a44);
-  a = findDet4x4 (k1, a12, a13, a14, k2, a22, a23, a24,
-		  k3, a32, a33, a34, k4, a42, a43, a44) / det;
-
-  b = findDet4x4 (a11, k1, a13, a14, a21, k2, a23, a24,
-		  a31, k3, a33, a34, a41, k4, a43, a44) / det;
-
-  c = findDet4x4 (a11, a12, k1, a14, a21, a22, k2, a24,
-		  a31, a32, k3, a34, a41, a42, k4, a44) / det;
-  d = findDet4x4 (a11, a12, a13, k1, a21, a22, a23, k2,
-		  a31, a32, a33, k3, a41, a42, a43, k4) / det;
+		    if(det!=0)
+		    {
+                  a = findDet4x4 (k1, a12, a13, a14, k2, a22, a23, a24,
+                		  k3, a32, a33, a34, k4, a42, a43, a44) / det;
+                
+                  b = findDet4x4 (a11, k1, a13, a14, a21, k2, a23, a24,
+                		  a31, k3, a33, a34, a41, k4, a43, a44) / det;
+                
+                  c = findDet4x4 (a11, a12, k1, a14, a21, a22, k2, a24,
+                		  a31, a32, k3, a34, a41, a42, k4, a44) / det;
+                  d = findDet4x4 (a11, a12, a13, k1, a21, a22, a23, k2,
+                		  a31, a32, a33, k3, a41, a42, a43, k4) / det;
+               // return det;	  
+        		  return a *pow(x,3)+b*pow(x,2)+c*x+d;
+		    }
+		    else
+		    {
+		        return 0;
+		    }
 
     //return a21;
-  return a *pow(x,3)+b*pow(x,2)+c*x+d;
-}
-//=====================================================
-float findDet4x4 (float a11, float a12, float a13, float a14, 
-            float a21, float a22, float a23, float a24,
-            float a31, float a32, float a33, float a34,
-            float a41, float a42, float a43, float a44 )
-{
-		return( a11*findDet3x3(a22, a23, a24, a32, a33, a34, a42, a43, a44) -
-						a12*findDet3x3(a21, a23, a24, a31, a33, a34, a41, a43, a44) +
-						a13*findDet3x3(a21, a22, a24, a31, a32, a34, a41, a42, a44) -
-						a14*findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43));
-}
-		
-//=====================================================	
- float findDet3x3( 
-            float a11, float a12, float a13, 
-            float a21, float a22, float a23,
-            float a31, float a32, float a33 )
-{
-		return( a11*a22*a33 + a12*a23*a31 + a13*a21*a32 -
-						a13*a22*a31 - a12*a21*a33 - a11*a23*a32 );
+  
 }
 //=====================================================
 float linear_interpolate(float x1,float x2,float y1,float y2, float x)
@@ -139,14 +154,14 @@ void Update_position(unsigned char mnths,unsigned char dys,
 										 float *currnt_pos)
 {
 	unsigned int date,i,yy;
-	float desired_distance,distance=0;
-	float pos_interpolate_12_17h[21][1],p1[2],p2[2],p3[2],p4[2],current_time;
+	double desired_distance,distance=0;
+	double pos_interpolate_12_17h[21][1],p1[2],p2[2],p3[2],p4[2],current_time;
 	/*hurs=0x12;
 	mns=0x30;*/
 	//sconds=0x15;
 	desired_distance=*currnt_pos;
 	date=Day_Of_Year(mnths,dys);
-	current_time=(float)BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60+(float)BCDtoDec1(sconds&0x7f)/3600;
+	current_time=(double)BCDtoDec1(hurs)+(double)BCDtoDec1(mns)/60+(double)BCDtoDec1(sconds&0x7f)/3600;
 	if (date>=79 && date <=171)
 	{
 		// interpolate for day
@@ -169,9 +184,10 @@ void Update_position(unsigned char mnths,unsigned char dys,
 						// this will give the interpolated position of "date" at time stamp defined in Time_stamp_PM[21][2]
 						pos_interpolate_12_17h[yy][1]=cubic_interpolate(p1,p2,p3,p4,date);
 					}
+					//break;
 				}
-				break;
-			}
+				
+			
 			else if (i==7)// 152 to 171
 			{
 					p1[0]=date_stamp_79_171[i+1];
@@ -187,7 +203,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 						// this will give the interpolated position of "date" at time stamp defined in Time_stamp_PM[21][2]
 						pos_interpolate_12_17h[yy][1]=cubic_interpolate(p1,p2,p3,p4,date);
 					}	
-					break;
+					//break;
 			}
 			else
 			{
@@ -204,10 +220,11 @@ void Update_position(unsigned char mnths,unsigned char dys,
 						// this will give the interpolated position of "date" at time stamp defined in Time_stamp_PM[21][2]
 						pos_interpolate_12_17h[yy][1]=cubic_interpolate(p1,p2,p3,p4,date);
 					}
-					break;
+					//break;
 			}
-					
-		}
+			break;
+		}		
+	}
 		// interpolate for hour
 		for(i=0;i<21;i++)
 		{
