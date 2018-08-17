@@ -1,0 +1,308 @@
+/******************************************************************************
+
+                            Online C Compiler.
+                Code, Compile, Run and Debug C program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <stdio.h>
+#include <math.h>
+float
+cubic_interpolate (double *p1, double *p2, double *p3, double *p4, double x);
+double date_stamp_79_171[9]={79 ,87 ,94 ,106 ,113 ,121 ,139 ,152 ,171};
+
+double exact_rx_pos_simulation[21][9]=
+{
+	{179,124.2,74.1,-10.7,-44.3,-74,-119.3,-137,-152.7},
+	{179,141.4,105.1,39.8,10.7,-15.9,-61.8,-81.3,-98.7},
+	{179,149.6,120.8,68.2,43.5,20.5,-21.9,-40.7,-58.8},
+	{179,154.5,130.8,85.9,64.7,44.2,5.8,-12.3,-29.5},
+	{179,157.6,137.1,97.7,78.9,60.5,25.2,8.3,-8},
+	{179,159.7,141.3,105.7,88.5,71.7,39.2,23.4,7.9},
+	{179,161.4,144.4,111.4,95.6,79.8,49.2,34.2,19.5},
+	{179,162.5,146.4,115.4,100.3,85.3,56.2,41.9,27.6},
+	{179,163.2,147.7,117.9,103.4,89.1,60.8,46.9,33.1},
+	{179,163.6,148.5,119.4,105.2,91.2,63.5,49.8,36.2},
+
+	{179,163.7,148.8,119.8,105.8,91.8,64.4,50.7,37.2},//12h
+
+	{179,163.6,148.5,119.4,105.2,91.2,63.5,49.8,36.2},
+	{179,163.2,147.7,117.9,103.4,89.1,60.8,46.9,33.1},
+	{179,162.5,146.4,115.4,100.3,85.3,56.2,41.9,27.6},
+	{179,161.4,144.4,111.4,95.6,79.8,49.2,34.2,19.5},
+	{179,159.7,141.3,105.7,88.5,71.7,39.2,23.4,7.9},
+	{179,157.6,137.1,97.7,78.9,60.5,25.2,8.3,-8},
+	{179,154.5,130.8,85.9,64.7,44.2,5.8,-12.3,-29.5},
+	{179,149.6,120.8,68.2,43.5,20.5,-21.9,-40.7,-58.8},
+	{179,141.4,105.1,39.8,10.7,-15.9,-61.8,-81.3,-98.7},
+	{179,124.2,74.1,-10.7,-44.3,-74,-119.3,-137,-152.7},
+};
+double Time_stamp_PM[21]={
+	7,
+	7.5,
+	8,
+	8.5,
+	9.0,
+	9.5,
+	10,
+	10.5,
+	11,
+	11.5,
+	12,
+	12.5,
+	13,
+	13.5,
+	14,
+	14.5,
+	15,
+	15.5,
+	16,
+	16.5,
+	17,
+};
+unsigned char BCDtoDec1(unsigned char bcd)
+{
+	unsigned char hi,lo;
+	hi=bcd>>4;
+	lo=bcd&0x0F;
+	return hi*10+lo;
+}
+void Update_position(unsigned char mnths,unsigned char dys,
+										 unsigned char hurs,unsigned char mns,unsigned char sconds,
+										 double *currnt_pos)
+{
+	unsigned int date,i,yy;
+	double desired_distance,distance=0;
+	double pos_interpolate_12_17h[21][1],p1[2],p2[2],p3[2],p4[2],current_time;
+	/*hurs=0x12;
+	mns=0x30;*/
+	//sconds=0x15;
+	desired_distance=*currnt_pos;
+	date=106;
+	current_time=(float)BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60+(float)BCDtoDec1(sconds&0x7f)/3600;
+	if (date>=79 && date <=171)
+	{
+		// interpolate for day
+		for (i=0;i<8;i++)
+		{
+			if( (date >=date_stamp_79_171[i]) && (date <= date_stamp_79_171[i+1]))
+			{
+				if (i==0)// 79 to 87
+				{
+					p1[0]=date_stamp_79_171[0];
+					p2[0]=date_stamp_79_171[1];
+					p3[0]=date_stamp_79_171[2];
+					p4[0]=date_stamp_79_171[3];
+					for (yy=0;yy<21;yy++)
+					{
+						p1[1]=exact_rx_pos_simulation[yy][0];
+						p2[1]=exact_rx_pos_simulation[yy][1];
+						p3[1]=exact_rx_pos_simulation[yy][2];
+						p4[1]=exact_rx_pos_simulation[yy][3];
+						// this will give the interpolated position of "date" at time stamp defined in Time_stamp_PM[21][2]
+						pos_interpolate_12_17h[yy][1]=cubic_interpolate(p1,p2,p3,p4,date);
+					}
+					//break;
+				}
+				
+			
+			else if (i==7)// 152 to 171
+			{
+					p1[0]=date_stamp_79_171[i+1];
+					p2[0]=date_stamp_79_171[i];
+					p3[0]=date_stamp_79_171[i-1];
+					p4[0]=date_stamp_79_171[i-2];
+					for (yy=0;yy<21;yy++)
+					{
+						p1[1]=exact_rx_pos_simulation[yy][i+1];
+						p2[1]=exact_rx_pos_simulation[yy][i];
+						p3[1]=exact_rx_pos_simulation[yy][i-1];
+						p4[1]=exact_rx_pos_simulation[yy][i-2];
+						// this will give the interpolated position of "date" at time stamp defined in Time_stamp_PM[21][2]
+						pos_interpolate_12_17h[yy][1]=cubic_interpolate(p1,p2,p3,p4,date);
+					}	
+					//break;
+			}
+			else
+			{
+					p1[0]=date_stamp_79_171[i+2];
+					p2[0]=date_stamp_79_171[i+1];
+					p3[0]=date_stamp_79_171[i];
+					p4[0]=date_stamp_79_171[i-1];
+					for (yy=0;yy<21;yy++)
+					{
+						p1[1]=exact_rx_pos_simulation[yy][i+2];
+						p2[1]=exact_rx_pos_simulation[yy][i+1];
+						p3[1]=exact_rx_pos_simulation[yy][i];
+						p4[1]=exact_rx_pos_simulation[yy][i-1];
+						// this will give the interpolated position of "date" at time stamp defined in Time_stamp_PM[21][2]
+						pos_interpolate_12_17h[yy][1]=cubic_interpolate(p1,p2,p3,p4,date);
+					}
+					//break;
+			}
+			break;
+		}		
+	}
+		// interpolate for hour
+		for(i=0;i<21;i++)
+		{
+			if (current_time>=Time_stamp_PM[i] && current_time<=Time_stamp_PM[i+1])
+			{
+				if(i==0)//7 to 7h30
+				{
+					p1[0]=Time_stamp_PM[i];
+					p2[0]=Time_stamp_PM[i+1];
+					p3[0]=Time_stamp_PM[i+2];
+					p4[0]=Time_stamp_PM[i+3];
+
+					p1[1]=pos_interpolate_12_17h[i][1];
+					p2[1]=pos_interpolate_12_17h[i+1][1];
+					p3[1]=pos_interpolate_12_17h[i+2][1];
+					p4[1]=pos_interpolate_12_17h[i+3][1];
+						// this will give the interpolated position of "date" at time stamp defined in Time_stamp_PM[21][2]
+					desired_distance=cubic_interpolate(p1,p2,p3,p4,current_time);
+				}
+				else if (i==20)// 16.5h to 17h
+				{
+					p1[0]=Time_stamp_PM[i];
+					p2[0]=Time_stamp_PM[i+1];
+					p3[0]=Time_stamp_PM[i-1];
+					p4[0]=Time_stamp_PM[i-2];
+
+					p1[1]=pos_interpolate_12_17h[i][1];
+					p2[1]=pos_interpolate_12_17h[i+1][1];
+					p3[1]=pos_interpolate_12_17h[i-1][1];
+					p4[1]=pos_interpolate_12_17h[i-2][1];
+						// this will give the interpolated position of "date" at time stamp defined in Time_stamp_PM[21][2]
+					desired_distance=cubic_interpolate(p1,p2,p3,p4,current_time);
+					
+				}
+				else // from 7h30 to 16h30
+				{
+					p1[0]=Time_stamp_PM[i];
+					p2[0]=Time_stamp_PM[i+1];
+					p3[0]=Time_stamp_PM[i+2];
+					p4[0]=Time_stamp_PM[i-1];
+
+					p1[1]=pos_interpolate_12_17h[i][1];
+					p2[1]=pos_interpolate_12_17h[i+1][1];
+					p3[1]=pos_interpolate_12_17h[i+2][1];
+					p4[1]=pos_interpolate_12_17h[i-1][1];
+						// this will give the interpolated position of "date" at time stamp defined in Time_stamp_PM[21][2]
+					desired_distance=cubic_interpolate(p1,p2,p3,p4,current_time);
+				}
+				break;
+			}
+		}
+	}
+	distance=desired_distance-*currnt_pos;
+	
+
+	*currnt_pos=desired_distance;
+	return;
+
+}
+
+ double findDet3x3( 
+            double a11, double a12, double a13, 
+            double a21, double a22, double a23,
+            double a31, double a32, double a33 )
+{
+		return( a11*a22*a33 + a12*a23*a31 + a13*a21*a32 -
+						a13*a22*a31 - a12*a21*a33 - a11*a23*a32 );
+}
+double findDet4x4 (double a11, double a12, double a13, double a14, 
+            double a21, double a22, double a23, double a24,
+            double a31, double a32, double a33, double a34,
+            double a41, double a42, double a43, double a44 )
+{
+	
+		//return a11*(float)findDet3x3(a22, a23, a24, a32, a33, a34, a42, a43, a44);
+		//return (float)findDet3x3(a21, a23, a24, a31, a33, a34, a41, a43, a44);
+		//return (float)findDet3x3(a21, a22, a24, a31, a32, a34, a41, a42, a44);
+		//return (float)findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43);
+	//	return a21;
+		return( a11*(float)findDet3x3(a22, a23, a24, a32, a33, a34, a42, a43, a44) -
+						a12*(float)findDet3x3(a21, a23, a24, a31, a33, a34, a41, a43, a44) +
+						a13*(float)findDet3x3(a21, a22, a24, a31, a32, a34, a41, a42, a44) -
+						a14*(float)findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43));
+}
+		
+//=====================================================	
+
+float
+cubic_interpolate (double *p1, double *p2, double *p3, double *p4, double x)
+{
+  double a, b, c, d, det;	// the parameters of the cubic function
+  double a11, a12, a13, a14, a21, a22, a23, a24,
+    a31, a32, a33, a34, a41, a42, a43, a44, k1, k2, k3, k4;
+
+  a11 = pow (p1[0], 3);
+  a21 = pow (p2[0], 3);
+  a31 = pow (p3[0], 3);
+  a41 = pow (p4[0], 3);
+
+  a12 = pow (p1[0], 2);
+  a22 = pow (p2[0], 2);
+  a32 = pow (p3[0], 2);
+  a42 = pow (p4[0], 2);
+
+  a13 = pow (p1[0], 1);
+  a23 = pow (p2[0], 1);
+  a33 = pow (p3[0], 1);
+  a43 = pow (p4[0], 1);
+
+  a14 = 1;
+  a24 = 1;
+  a34 = 1;
+  a44 = 1;
+
+  k1 = p1[1];
+  k2 = p2[1];
+  k3 = p3[1];
+  k4 = p4[1];
+
+
+  det = findDet4x4 (a11, a12, a13, a14, a21, a22, a23, a24,
+		    a31, a32, a33, a34, a41, a42, a43, a44);
+		    if(det!=0)
+		    {
+                  a = findDet4x4 (k1, a12, a13, a14, k2, a22, a23, a24,
+                		  k3, a32, a33, a34, k4, a42, a43, a44) / det;
+                
+                  b = findDet4x4 (a11, k1, a13, a14, a21, k2, a23, a24,
+                		  a31, k3, a33, a34, a41, k4, a43, a44) / det;
+                
+                  c = findDet4x4 (a11, a12, k1, a14, a21, a22, k2, a24,
+                		  a31, a32, k3, a34, a41, a42, k4, a44) / det;
+                  d = findDet4x4 (a11, a12, a13, k1, a21, a22, a23, k2,
+                		  a31, a32, a33, k3, a41, a42, a43, k4) / det;
+                //return det;	  
+        		  return a *pow(x,3)+b*pow(x,2)+c*x+d;
+		    }
+		    else
+		    {
+		        return 0;
+		    }
+
+    //return a21;
+  
+}
+
+int main ()
+{
+  double y;
+  double current_position=0;;
+  double a[2] ={8,85.9f};
+  double b[2] ={8.5,97.7f}; 
+  double c[2] ={9,105.7f};
+  double d[2] ={9.5,111.4f};
+  Update_position(0x04,0x16,0x10,0x00,0x00,&current_position);
+  //y=cubic_interpolate(a,b,c,d,8.5);
+  //y=findDet4x4(512,64,8,1,614.125,72.25,8.5,1,729,81,9,1,857.375,90.25,9.5,1);
+  //y=findDet3x3(72.25,8.5,1,81,9,1,90.25,9.5,1);
+  printf ("%f",current_position);
+
+  return 0;
+}
