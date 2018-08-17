@@ -1626,11 +1626,11 @@ const char num_of_time_stamp=21;
 
 
 // column: date: 
-float date_stamp_79_171[9]={79 ,87 ,94 ,106 ,113 ,121 ,139 ,152 ,171};
+float  date_stamp_79_171[9]={79 ,87 ,94 ,106 ,113 ,121 ,139 ,152 ,171};
 //float date_stamp_203_263[9]={171	,190, 203	,221,	229,	236,	248,	255,	263};
 //float date_stamp_263_355[9]={263,	271,	278,	290,	297,	305,	323,	336,	355};
 
-double exact_rx_pos_simulation[21][9]=
+float  exact_rx_pos_simulation[21][9]=
 {
 	{179,124.2,74.1,-10.7,-44.3,-74,-119.3,-137,-152.7},
 	{179,141.4,105.1,39.8,10.7,-15.9,-61.8,-81.3,-98.7},
@@ -1681,7 +1681,7 @@ double exact_rx_pos_simulation[21][9]=
 	{17,0},
 };*/
 
-double Time_stamp_PM[21]={
+float  Time_stamp_PM[21]={
 	7,
 	7.5,
 	8,
@@ -1702,5 +1702,5 @@ double Time_stamp_PM[21]={
 	15.5,
 	16,
 	16.5,
-	17,
+	17
 };

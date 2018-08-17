@@ -6,16 +6,18 @@
 void Delay_ms(unsigned int ms);
 int Day_Of_Year(unsigned char months,unsigned char days);
 unsigned char BCDtoDec1(char bcd);
-float degree;
-double findDet4x4 (float a11, float a12, float a13, float a14, 
-            float a21, float a22, float a23, float a24,
-            float a31, float a32, float a33, float a34,
-            float a41, float a42, float a43, float a44 );
- double findDet3x3( 
-            float a11, float a12, float a13, 
-            float a21, float a22, float a23,
-            float a31, float a32, float a33 );						
-						
+float  degree;
+float  findDet4x4 (float  a11, float  a12, float  a13, float  a14, 
+            float  a21, float  a22, float  a23, float  a24,
+            float  a31, float  a32, float  a33, float  a34,
+            float  a41, float  a42, float  a43, float  a44 );
+ float  findDet3x3( 
+            float  a11, float  a12, float  a13, 
+            float  a21, float  a22, float  a23,
+            float  a31, float  a32, float  a33 );						
+float
+cubic_interpolate (float *p1, float *p2, float *p3, float *p4, float x);
+
 unsigned char BCDtoDec1(unsigned char bcd)
 {
 	unsigned char hi,lo;
@@ -45,7 +47,7 @@ void Step_move(unsigned int step, bit dir)
 			}
 }
 
-void Move(float distance, bit direction)
+void Move(float  distance, bit direction)
 {
 		unsigned int step;
 		step= (unsigned int)(distance*337.5/(3.14159));
@@ -53,18 +55,18 @@ void Move(float distance, bit direction)
 }
 //=====================================================
 //We need 4 points for cubic interpolation, p1[x],p1[y],..,p4[x],p4[y]
- double findDet3x3( 
-            double a11, double a12, double a13, 
-            double a21, double a22, double a23,
-            double a31, double a32, double a33 )
+ float  findDet3x3( 
+            float  a11, float  a12, float  a13, 
+            float  a21, float  a22, float  a23,
+            float  a31, float  a32, float  a33 )
 {
 		return( a11*a22*a33 + a12*a23*a31 + a13*a21*a32 -
 						a13*a22*a31 - a12*a21*a33 - a11*a23*a32 );
 }
-double findDet4x4 (double a11, double a12, double a13, double a14, 
-            double a21, double a22, double a23, double a24,
-            double a31, double a32, double a33, double a34,
-            double a41, double a42, double a43, double a44 )
+float  findDet4x4 (float  a11, float  a12, float  a13, float  a14, 
+            float  a21, float  a22, float  a23, float  a24,
+            float  a31, float  a32, float  a33, float  a34,
+            float  a41, float  a42, float  a43, float  a44 )
 {
 	
 		//return a11*(float)findDet3x3(a22, a23, a24, a32, a33, a34, a42, a43, a44);
@@ -80,11 +82,11 @@ double findDet4x4 (double a11, double a12, double a13, double a14,
 		
 //=====================================================	
 
-double
-cubic_interpolate (double *p1, double *p2, double *p3, double *p4, double x)
+float
+cubic_interpolate (float *p1, float *p2, float *p3, float *p4, float x)
 {
-  double a, b, c, d, det;	// the parameters of the cubic function
-  double a11, a12, a13, a14, a21, a22, a23, a24,
+  float a, b, c, d, det;	// the parameters of the cubic function
+  float a11, a12, a13, a14, a21, a22, a23, a24,
     a31, a32, a33, a34, a41, a42, a43, a44, k1, k2, k3, k4;
 
   a11 = pow (p1[0], 3);
@@ -127,8 +129,8 @@ cubic_interpolate (double *p1, double *p2, double *p3, double *p4, double x)
                 		  a31, a32, k3, a34, a41, a42, k4, a44) / det;
                   d = findDet4x4 (a11, a12, a13, k1, a21, a22, a23, k2,
                 		  a31, a32, a33, k3, a41, a42, a43, k4) / det;
-               // return det;	  
-        		  return a *pow(x,3)+b*pow(x,2)+c*x+d;
+                //return det;	  
+        		  return (a*125)*pow(x/5,3)+(b*25)*pow(x/5,2)+c*x+d;
 		    }
 		    else
 		    {
@@ -139,9 +141,9 @@ cubic_interpolate (double *p1, double *p2, double *p3, double *p4, double x)
   
 }
 //=====================================================
-float linear_interpolate(float x1,float x2,float y1,float y2, float x)
+float  linear_interpolate(float  x1,float  x2,float  y1,float  y2, float  x)
 {
-	float a,b;
+	float  a,b;
 	a=(y1-y2)/(x1-x2);
 	b=y1-a*x1;
 	
@@ -151,17 +153,18 @@ float linear_interpolate(float x1,float x2,float y1,float y2, float x)
 
 void Update_position(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float *currnt_pos)
+										 float  *currnt_pos)
 {
 	unsigned int date,i,yy;
-	double desired_distance,distance=0;
-	double pos_interpolate_12_17h[21][1],p1[2],p2[2],p3[2],p4[2],current_time;
+	float  desired_distance,distance=0;
+	float  pos_interpolate_12_17h[21][1],p1[2],p2[2],p3[2],p4[2],current_time;
 	/*hurs=0x12;
 	mns=0x30;*/
 	//sconds=0x15;
 	desired_distance=*currnt_pos;
 	date=Day_Of_Year(mnths,dys);
-	current_time=(double)BCDtoDec1(hurs)+(double)BCDtoDec1(mns)/60+(double)BCDtoDec1(sconds&0x7f)/3600;
+	date=87;
+	current_time=12;
 	if (date>=79 && date <=171)
 	{
 		// interpolate for day
@@ -289,7 +292,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 
 }
 // return 4 closest points of "point"
-/*void closest_points(float input[],float *closest_pts, float point)
+/*void closest_points(float  input[],float  *closest_pts, float  point)
 {
 	int i;
 	for(i=0;i<21;i++)
@@ -303,31 +306,3 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	}
 	return;
 }*/
-
-float pos_day_171(float time){
-	return 0.3224*pow(time,4) - 16.883*pow(time,3) + 336.15*pow(time,2) - 3004.8*time + 10281;
-}
-float pos_day_152_190(float time){
-	return 0.3957*pow(time,4) - 20.914*pow(time,3) + 418.74*pow(time,2) - 3752.6*time + 12796;
-}
-
-float pos_day_139_203(float time){
- return 0.4751*pow(time,4) - 25.31*pow(time,3) + 509.39*pow(time,2) - 4578.4*time + 15589;
-}
-
-float pos_day_121_221(float time){
-	return 0.6567*pow(time,4) - 35.589*pow(time,3) + 725.58*pow(time,2)  - 6585.1*time + 22505;
-}	
-
-float pos_day_113_229(float time){
-	return 0.6698*pow(time,4)- 36.416*pow(time,3) + 744.21*pow(time,2)  - 6765.5*time + 23132;
-}
-float pos_day_106_236(float time){
-	return 0.6886*pow(time,4) - 37.644*pow(time,3) + 772.66*pow(time,2)  - 7048.9*time + 24153;
-}
-float pos_day_94_248(float time){
-	return 0.4628*pow(time,4) - 25.404*pow(time,3) + 523.11*pow(time,2)  - 4784.2*time + 16416;
-}
-float pos_day_87_255(float time){
-	return 0.288*pow(time,4) - 15.904*pow(time,3) + 329.15*pow(time,2)  - 3023.8*time+ 10412;
-}
