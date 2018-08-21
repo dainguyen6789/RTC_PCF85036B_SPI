@@ -83,8 +83,8 @@ float  findDet4x4 (float  a11, float  a12, float  a13, float  a14,
 		
 //=====================================================	
 
-
-//=====================================================
+ 
+//===================================================== 
 float  linear_interpolate(struct point p1,struct point p2, float  x)
 {
 	float  fx;
