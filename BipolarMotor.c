@@ -138,8 +138,8 @@ void Update_position(unsigned char mnths,unsigned char dys,
 
 	
 	desired_distance=*currnt_pos;
-	//date=Day_Of_Year(mnths,dys);
-	date=237;
+	date=Day_Of_Year(mnths,dys);
+	//date=237;
 	declination=sunpos(time,location,&sunCoord)*180/pi;
 	
 	current_time=(float) BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60+(float)BCDtoDec1(sconds&0x7f)/3600;

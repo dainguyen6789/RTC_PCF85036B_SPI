@@ -20,7 +20,7 @@ float RX_pos[num_of_time_stamp][num_of_day_stamp]=
 	{-165.88,-158.21,-149.23,-126.45,-111.78,-95.01,-75.17,-52.58,-27.24,0.00}
 };
 // Corrected sun time
-/*float  Time_stamp_PM[num_of_time_stamp]={
+float  Time_stamp_PM[num_of_time_stamp]={
 11.94,
 12.44,
 12.94,
@@ -32,8 +32,8 @@ float RX_pos[num_of_time_stamp][num_of_day_stamp]=
 15.94,
 16.44,
 16.94,
-};*/
-float  Time_stamp_PM[num_of_time_stamp]={
+};
+/*float  Time_stamp_PM[num_of_time_stamp]={
 12,
 12.5,
 13,
@@ -45,7 +45,7 @@ float  Time_stamp_PM[num_of_time_stamp]={
 16,
 16.5,
 17,
-};
+};*/
 struct point
 {
 	float x;
