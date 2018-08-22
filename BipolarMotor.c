@@ -99,7 +99,7 @@ float  linear_interpolate(struct point p1,struct point p2, float  x)
 // 	output: f(x)
 float second_order_interpolate(struct point p1,struct point p2, struct point p3, float  x)
 {
-	float a,b,c;// fx=ax^2+bx+c
+	//float a,b,c;// fx=ax^2+bx+c
 	float det,det_x,det_y,det_z;
 	
 	det=findDet3x3(pow(p1.x,2),p1.x,1,  pow(p2.x,2),p2.x,1,   pow(p3.x,2),p3.x,1);
@@ -109,6 +109,8 @@ float second_order_interpolate(struct point p1,struct point p2, struct point p3,
 	det_y=findDet3x3(pow(p1.x,2),p1.y,1,  pow(p2.x,2),p2.y,1,   pow(p3.x,2),p3.y,1);
 	
 	det_z=findDet3x3(pow(p1.x,2),p1.x,p1.y,  pow(p2.x,2),p2.x,p2.y,   pow(p3.x,2),p3.x,p3.y);
+	
+	fx=det_x/det*pow(x,2)+det_y/det*x+det_z/det;
 	
 	return fx;
 }

@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/21/2018 16:38:36 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/22/2018 11:35:55 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -62,7 +62,7 @@ line level    source
   52          {
   53   1          unsigned int step;
   54   1          step= (unsigned int)(distance*337.5/(3.14159));
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/21/2018 16:38:36 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/22/2018 11:35:55 PAGE 2   
 
   55   1          Step_move(step,direction);
   56   1      }
@@ -95,8 +95,8 @@ line level    source
   83              
   84          //===================================================== 
   85          
-  86          
-  87          //=====================================================
+  86           
+  87          //===================================================== 
   88          float  linear_interpolate(struct point p1,struct point p2, float  x)
   89          {
   90   1        float  fx;
@@ -106,101 +106,111 @@ line level    source
   94   1        return fx;
   95   1      }
   96          
-  97          
-  98          void Update_position(unsigned char mnths,unsigned char dys,
-  99                               unsigned char hurs,unsigned char mns,unsigned char sconds,
- 100                               float  *currnt_pos)
+  97          //  2nd order interpolate: 
+  98          //  input 3 points p1,p2,p3 and desired x value
+  99          //  output: f(x)
+ 100          float second_order_interpolate(struct point p1,struct point p2, struct point p3, float  x)
  101          {
- 102   1        unsigned int date,i,yy;
- 103   1        float  desired_distance,distance=0,JP_pos;
- 104   1        float  pos_interpolate_12_17h[num_of_time_stamp],current_time;
- 105   1        float declination;
- 106   1        struct point p1,p2;
- 107   1        struct cTime time;
- 108   1        struct cLocation location;
- 109   1        struct cSunCoordinates *sunCoord;
- 110   1        hurs=hurs-1;
- 111   1        time.iYear=2018;
- 112   1        time.iMonth=BCDtoDec1(mnths);
- 113   1        time.iDay=BCDtoDec1(dys);
- 114   1        time.dHours=BCDtoDec1(hurs);
- 115   1        time.dMinutes=BCDtoDec1(mns);
- 116   1        time.dSeconds=BCDtoDec1(sconds&0x7f);
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/21/2018 16:38:36 PAGE 3   
+ 102   1        //float a,b,c;// fx=ax^2+bx+c
+ 103   1        float det,det_x,det_y,det_z;
+ 104   1        
+ 105   1        det=findDet3x3(pow(p1.x,2),p1.x,1,  pow(p2.x,2),p2.x,1,   pow(p3.x,2),p3.x,1);
+ 106   1        
+ 107   1        det_x=findDet3x3(p1.y,p1.x,1,  p2.y,p2.x,1,   p3.y,p3.x,1);
+ 108   1        
+ 109   1        det_y=findDet3x3(pow(p1.x,2),p1.y,1,  pow(p2.x,2),p2.y,1,   pow(p3.x,2),p3.y,1);
+ 110   1        
+ 111   1        det_z=findDet3x3(pow(p1.x,2),p1.x,p1.y,  pow(p2.x,2),p2.x,p2.y,   pow(p3.x,2),p3.x,p3.y);
+ 112   1        
+ 113   1        fx=det_x/det*pow(x,2)+det_y/det*x+det_z/det;
+*** ERROR C202 IN LINE 113 OF BipolarMotor.c: 'fx': undefined identifier
+ 114   1        
+ 115   1        return fx;
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/22/2018 11:35:55 PAGE 3   
 
- 117   1      
- 118   1        
- 119   1        desired_distance=*currnt_pos;
- 120   1        //date=Day_Of_Year(mnths,dys);
- 121   1        date=237;
- 122   1        declination=sunpos(time,location,&sunCoord)*180/pi;
-*** WARNING C182 IN LINE 122 OF BipolarMotor.c: pointer to different objects
- 123   1        
- 124   1        current_time=(float) BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60+(float)BCDtoDec1(sconds&0x7f)/3600;
- 125   1      
- 126   1        // interpolate for day
- 127   1          for (i=0;i<num_of_day_stamp;i++)
- 128   1          {
- 129   2            if (declination<=date_declination_mapping[i] && declination>=date_declination_mapping[i+1])
- 130   2            {
- 131   3              for (yy=0;yy<num_of_time_stamp;yy++)
- 132   3              {
- 133   4                p1.x=date_declination_mapping[i];
- 134   4                p2.x=date_declination_mapping[i+1];
- 135   4                
- 136   4                p1.y=RX_pos[yy][i];
- 137   4                p2.y=RX_pos[yy][i+1];
- 138   4                
- 139   4                pos_interpolate_12_17h[yy]=linear_interpolate(p1,p2,declination);
- 140   4              }
- 141   3              break;
- 142   3            }
- 143   2          }
- 144   1      
- 145   1          // interpolate for hour
- 146   1          for(i=0;i<num_of_time_stamp;i++)
- 147   1          {
- 148   2            if(current_time>=Time_stamp_PM[i]&&current_time<=Time_stamp_PM[i+1] && BCDtoDec1(sconds&0x7f)%30==0)
- 149   2            {
- 150   3              p1.x=Time_stamp_PM[i];
- 151   3              p2.x=Time_stamp_PM[i+1];
- 152   3              
- 153   3              p1.y=pos_interpolate_12_17h[i];
- 154   3              p2.y=pos_interpolate_12_17h[i+1];
- 155   3              
- 156   3              JP_pos=linear_interpolate(p2,p1,current_time);
- 157   3              break;
- 158   3              
- 159   3            }
- 160   2            
- 161   2          }
- 162   1          
- 163   1        desired_distance=179+2*JP_pos;
- 164   1          
- 165   1        distance=desired_distance-*currnt_pos;
- 166   1        
- 167   1        if(distance>0)
- 168   1          Move(distance,1);
- 169   1        else
- 170   1          Move(distance,0);
- 171   1        
- 172   1        *currnt_pos=desired_distance;
- 173   1        return;
- 174   1      
- 175   1      }
+*** ERROR C202 IN LINE 115 OF BipolarMotor.c: 'fx': undefined identifier
+ 116   1      }
+ 117          
+ 118          void Update_position(unsigned char mnths,unsigned char dys,
+ 119                               unsigned char hurs,unsigned char mns,unsigned char sconds,
+ 120                               float  *currnt_pos)
+ 121          {
+ 122   1        unsigned int date,i,yy;
+ 123   1        float  desired_distance,distance=0,JP_pos;
+ 124   1        float  pos_interpolate_12_17h[num_of_time_stamp],current_time;
+ 125   1        float declination;
+ 126   1        struct point p1,p2;
+ 127   1        struct cTime time;
+ 128   1        struct cLocation location;
+ 129   1        struct cSunCoordinates *sunCoord;
+ 130   1        hurs=hurs-1;// change to sun time
+ 131   1        dys=dys+4;// shift 4 days because of Jean Phillip
+ 132   1        time.iYear=2018;
+ 133   1        time.iMonth=BCDtoDec1(mnths);
+ 134   1        time.iDay=BCDtoDec1(dys);
+ 135   1        time.dHours=BCDtoDec1(hurs);
+ 136   1        time.dMinutes=BCDtoDec1(mns);
+ 137   1        time.dSeconds=BCDtoDec1(sconds&0x7f);
+ 138   1      
+ 139   1        
+ 140   1        desired_distance=*currnt_pos;
+ 141   1        //date=Day_Of_Year(mnths,dys);
+ 142   1        date=237;
+ 143   1        declination=sunpos(time,location,&sunCoord)*180/pi;
+ 144   1        
+ 145   1        current_time=(float) BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60+(float)BCDtoDec1(sconds&0x7f)/3600;
+ 146   1      
+ 147   1        // interpolate for day
+ 148   1          for (i=0;i<num_of_day_stamp;i++)
+ 149   1          {
+ 150   2            if (declination<=date_declination_mapping[i] && declination>=date_declination_mapping[i+1])
+ 151   2            {
+ 152   3              for (yy=0;yy<num_of_time_stamp;yy++)
+ 153   3              {
+ 154   4                p1.x=date_declination_mapping[i];
+ 155   4                p2.x=date_declination_mapping[i+1];
+ 156   4                
+ 157   4                p1.y=RX_pos[yy][i];
+ 158   4                p2.y=RX_pos[yy][i+1];
+ 159   4                
+ 160   4                pos_interpolate_12_17h[yy]=linear_interpolate(p1,p2,declination);
+ 161   4              }
+ 162   3              break;
+ 163   3            }
+ 164   2          }
+ 165   1      
+ 166   1          // interpolate for hour
+ 167   1          for(i=0;i<num_of_time_stamp;i++)
+ 168   1          {
+ 169   2            if(current_time>=Time_stamp_PM[i]&&current_time<=Time_stamp_PM[i+1] && BCDtoDec1(sconds&0x7f)%30==0)
+ 170   2            {
+ 171   3              p1.x=Time_stamp_PM[i];
+ 172   3              p2.x=Time_stamp_PM[i+1];
+ 173   3              
+ 174   3              p1.y=pos_interpolate_12_17h[i];
+ 175   3              p2.y=pos_interpolate_12_17h[i+1];
+ 176   3              
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/22/2018 11:35:55 PAGE 4   
 
+ 177   3              JP_pos=linear_interpolate(p2,p1,current_time);
+ 178   3              break;
+ 179   3              
+ 180   3            }
+ 181   2            
+ 182   2          }
+ 183   1          
+ 184   1        desired_distance=179+2*JP_pos;
+ 185   1          
+ 186   1        distance=desired_distance-*currnt_pos;
+ 187   1        
+ 188   1        if(distance>0)
+ 189   1          Move(distance,1);
+ 190   1        else
+ 191   1          Move(distance,0);
+ 192   1        
+ 193   1        *currnt_pos=desired_distance;
+ 194   1        return;
+ 195   1      
+ 196   1      }
 
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/21/2018 16:38:36 PAGE 4   
-
-MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   2845    ----
-   CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =    528     251
-   PDATA SIZE       =   ----    ----
-   DATA SIZE        =   ----    ----
-   IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----       2
-END OF MODULE INFORMATION.
-
-
-C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  0 WARNING(S),  2 ERROR(S)
