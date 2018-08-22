@@ -94,6 +94,24 @@ float  linear_interpolate(struct point p1,struct point p2, float  x)
 	return fx;
 }
 
+// 	2nd order interpolate: 
+//	input 3 points p1,p2,p3 and desired x value
+// 	output: f(x)
+float second_order_interpolate(struct point p1,struct point p2, struct point p3, float  x)
+{
+	float a,b,c;// fx=ax^2+bx+c
+	float det,det_x,det_y,det_z;
+	
+	det=findDet3x3(pow(p1.x,2),p1.x,1,  pow(p2.x,2),p2.x,1,   pow(p3.x,2),p3.x,1);
+	
+	det_x=findDet3x3(p1.y,p1.x,1,  p2.y,p2.x,1,   p3.y,p3.x,1);
+	
+	det_y=findDet3x3(pow(p1.x,2),p1.y,1,  pow(p2.x,2),p2.y,1,   pow(p3.x,2),p3.y,1);
+	
+	det_z=findDet3x3(pow(p1.x,2),p1.x,p1.y,  pow(p2.x,2),p2.x,p2.y,   pow(p3.x,2),p3.x,p3.y);
+	
+	return fx;
+}
 
 void Update_position(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
@@ -108,6 +126,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	struct cLocation location;
 	struct cSunCoordinates *sunCoord;
 	hurs=hurs-1;// change to sun time
+	//dys=dys+4;// shift 4 days because of Jean Phillip
 	time.iYear=2018;
 	time.iMonth=BCDtoDec1(mnths);
 	time.iDay=BCDtoDec1(dys);
