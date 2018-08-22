@@ -126,7 +126,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	struct cLocation location;
 	struct cSunCoordinates *sunCoord;
 	hurs=hurs-1;// change to sun time
-	//dys=dys+4;// shift 4 days because of Jean Phillip
+	dys=dys+4;// shift 4 days because of Jean Phillip
 	time.iYear=2018;
 	time.iMonth=BCDtoDec1(mnths);
 	time.iDay=BCDtoDec1(dys);
