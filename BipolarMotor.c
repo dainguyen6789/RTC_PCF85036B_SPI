@@ -100,18 +100,19 @@ float  linear_interpolate(struct point p1,struct point p2, float  x)
 float second_order_interpolate(struct point p1,struct point p2, struct point p3, float  x)
 {
 	//float a,b,c;// fx=ax^2+bx+c
-	float det,det_x,det_y,det_z;
+	float det,det_x,det_y,det_z,fx;
 	
-	det=findDet3x3(pow(p1.x,2),p1.x,1,  pow(p2.x,2),p2.x,1,   pow(p3.x,2),p3.x,1);
+	det=findDet3x3(pow(p1.x,2) ,p1.x ,1 ,  pow(p2.x,2) ,p2.x ,1 ,   pow(p3.x,2) ,p3.x ,1 );
 	
-	det_x=findDet3x3(p1.y,p1.x,1,  p2.y,p2.x,1,   p3.y,p3.x,1);
+	det_x=findDet3x3(p1.y ,p1.x ,1 ,  p2.y ,p2.x ,1 ,   p3.y ,p3.x ,1 );
 	
-	det_y=findDet3x3(pow(p1.x,2),p1.y,1,  pow(p2.x,2),p2.y,1,   pow(p3.x,2),p3.y,1);
+	det_y=findDet3x3(pow(p1.x,2) ,p1.y ,1 ,  pow(p2.x,2) ,p2.y ,1 ,   pow(p3.x,2) ,p3.y ,1 );
 	
-	det_z=findDet3x3(pow(p1.x,2),p1.x,p1.y,  pow(p2.x,2),p2.x,p2.y,   pow(p3.x,2),p3.x,p3.y);
-	
-	fx=det_x/det*pow(x,2)+det_y/det*x+det_z/det;
-	
+	det_z=findDet3x3(pow(p1.x,2) ,p1.x ,p1.y ,  pow(p2.x,2) ,p2.x ,p2.y ,   pow(p3.x,2) ,p3.x ,p3.y );
+	if(det!=0)
+		fx=det_x/det*pow(x,2)+det_y/det*x+det_z/det;
+	else
+		fx=0;
 	return fx;
 }
 
@@ -123,12 +124,12 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	float  desired_distance,distance=0,JP_pos;
 	float  pos_interpolate_12_17h[num_of_time_stamp],current_time;
 	float declination;
-	struct point p1,p2;
+	struct point p1,p2,p3;
 	struct cTime time;
 	struct cLocation location;
 	struct cSunCoordinates *sunCoord;
 	hurs=hurs-1;// change to sun time
-	dys=dys+4;// shift 4 days because of Jean Phillip
+	//dys=dys+4;// shift 4 days because of Jean Phillip
 	time.iYear=2018;
 	time.iMonth=BCDtoDec1(mnths);
 	time.iDay=BCDtoDec1(dys);
@@ -156,8 +157,30 @@ void Update_position(unsigned char mnths,unsigned char dys,
 					
 					p1.y=RX_pos[yy][i];
 					p2.y=RX_pos[yy][i+1];
-					
-					pos_interpolate_12_17h[yy]=linear_interpolate(p1,p2,declination);
+					if (i>0 && i<8)
+					{
+						if(   (declination-date_declination_mapping[i+1]) > (date_declination_mapping[i]-declination)   )
+						{
+							p3.x=date_declination_mapping[i-1];
+							p3.y=RX_pos[yy][i-1];;
+						}
+						else
+						{
+							p3.x=date_declination_mapping[i+2];
+							p3.y=RX_pos[yy][i+2];;
+						}
+					}
+					if(!i)
+					{
+							p3.x=date_declination_mapping[i+2];
+							p3.y=RX_pos[yy][i+2];;
+					}
+					if(i==8)
+					{
+							p3.x=date_declination_mapping[i-1];
+							p3.y=RX_pos[yy][i-1];;
+					}
+					pos_interpolate_12_17h[yy]=second_order_interpolate(p1,p2,p3,declination);
 				}
 				break;
 			}
@@ -173,8 +196,32 @@ void Update_position(unsigned char mnths,unsigned char dys,
 				
 				p1.y=pos_interpolate_12_17h[i];
 				p2.y=pos_interpolate_12_17h[i+1];
+				if(!i)// i==0
+				{
+					p3.x=Time_stamp_PM[i+2];
+					p3.y=pos_interpolate_12_17h[i+2];
+					
+				}
+				else if(i==(num_of_time_stamp-1))
+				{
+					p3.x=Time_stamp_PM[i-1];
+					p3.y=pos_interpolate_12_17h[i-1];
+				}
+				else
+				{
+					if(   (current_time-Time_stamp_PM[i])>=(Time_stamp_PM[i+1]-current_time)   )
+					{
+							p3.x=Time_stamp_PM[i+2];
+							p3.y=pos_interpolate_12_17h[i+2];
+					}
+					else
+					{
+							p3.x=Time_stamp_PM[i-1];
+							p3.y=pos_interpolate_12_17h[i-1];
+					}
+				}
 				
-				JP_pos=linear_interpolate(p2,p1,current_time);
+				JP_pos=second_order_interpolate(p2,p1,p3,current_time);
 				break;
 				
 			}
