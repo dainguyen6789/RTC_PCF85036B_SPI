@@ -99,7 +99,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
 										 float  *currnt_pos)
 {
-	unsigned int date,i,yy;
+	unsigned int date,i=0,yy=0;
 	float  desired_distance,distance=0,JP_pos;
 	float  pos_interpolate_12_17h[num_of_time_stamp],current_time;
 	float declination;
@@ -108,6 +108,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	struct cLocation location;
 	struct cSunCoordinates *sunCoord;
 	hurs=hurs-1;// change to sun time
+	dys=dys+4;
 	time.iYear=2018;
 	time.iMonth=BCDtoDec1(mnths);
 	time.iDay=BCDtoDec1(dys);
@@ -117,12 +118,13 @@ void Update_position(unsigned char mnths,unsigned char dys,
 
 	
 	desired_distance=*currnt_pos;
-	//date=Day_Of_Year(mnths,dys);
-	date=237;
+	date=Day_Of_Year(mnths,dys);
+	//date=237;
 	declination=sunpos(time,location,&sunCoord)*180/pi;
-	
-	current_time=(float) BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60+(float)BCDtoDec1(sconds&0x7f)/3600;
 
+	current_time=(float) BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60+(float)BCDtoDec1(sconds&0x7f)/3600;
+	if(BCDtoDec1(sconds&0x7f)%30==0)
+	{
 	// interpolate for day
 		for (i=0;i<num_of_day_stamp;i++)
 		{
@@ -138,14 +140,14 @@ void Update_position(unsigned char mnths,unsigned char dys,
 					
 					pos_interpolate_12_17h[yy]=linear_interpolate(p1,p2,declination);
 				}
-				break;
+				//break;
 			}
 		}
 
 		// interpolate for hour
 		for(i=0;i<num_of_time_stamp;i++)
 		{
-			if(current_time>=Time_stamp_PM[i]&&current_time<=Time_stamp_PM[i+1] && BCDtoDec1(sconds&0x7f)%30==0)
+			if(current_time>=Time_stamp_PM[i]&&current_time<=Time_stamp_PM[i+1])
 			{
 				p1.x=Time_stamp_PM[i];
 				p2.x=Time_stamp_PM[i+1];
@@ -154,21 +156,21 @@ void Update_position(unsigned char mnths,unsigned char dys,
 				p2.y=pos_interpolate_12_17h[i+1];
 				
 				JP_pos=linear_interpolate(p2,p1,current_time);
-				break;
+				//break;
 				
 			}
 			
 		}
 		
-	desired_distance=179+2*JP_pos;
+		desired_distance=179+2*JP_pos;
 		
-	distance=desired_distance-*currnt_pos;
+		distance=desired_distance-*currnt_pos;
 	
-	if(distance>0)
-		Move(distance,1);
-	else
-		Move(distance,0);
-	
+		if(distance>0)
+			Move(distance,1);
+		else if (distance<0)
+			Move(-distance,0);
+	}
 	*currnt_pos=desired_distance;
 	return;
 

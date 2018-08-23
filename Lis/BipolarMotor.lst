@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/15/2018 16:30:33 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:05:46 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -12,131 +12,192 @@ line level    source
    2          #include "LCD_Driver_SPLC780D.h"
    3          #include "Receiver_Position_Data.h"
    4          #include "math.h"
-   5          //#include "PCF85963BTL.h"
-   6          void Delay_ms(unsigned int ms);
-   7          int Day_Of_Year(unsigned char months,unsigned char days);
-   8          unsigned char BCDtoDec1(char bcd);
-   9          float degree;
-  10          
-  11          unsigned char BCDtoDec1(unsigned char bcd)
-  12          {
-  13   1        unsigned char hi,lo;
-  14   1        hi=bcd>>4;
-  15   1        lo=bcd&0x0F;
-  16   1        return hi*10+lo;
-  17   1      }
-  18          
-  19          
-  20          
+   5          #include "SunPos.h"
+   6          //#include "PCF85963BTL.h"
+   7          void Delay_ms(unsigned int ms);
+   8          int Day_Of_Year(unsigned char months,unsigned char days);
+   9          unsigned char BCDtoDec1(char bcd);
+  10          float  degree;
+  11          float  findDet4x4 (float  a11, float  a12, float  a13, float  a14, 
+  12                      float  a21, float  a22, float  a23, float  a24,
+  13                      float  a31, float  a32, float  a33, float  a34,
+  14                      float  a41, float  a42, float  a43, float  a44 );
+  15           float  findDet3x3( 
+  16                      float  a11, float  a12, float  a13, 
+  17                      float  a21, float  a22, float  a23,
+  18                      float  a31, float  a32, float  a33 );           
+  19          float
+  20          cubic_interpolate (float *p1, float *p2, float *p3, float *p4, float x);
   21          
-  22          
-  23          void Step_move(unsigned int step, bit dir)
-  24          {
-  25   1            unsigned int i=0;
-  26   1            if(dir)
-  27   1              P4 |=(1<<2);// set bit P4.2
-  28   1            else
-  29   1              P4 &=~(1<<2);// clear bit P4.2
-  30   1            
-  31   1            for( i=0;i<step;i++)
-  32   1            {
-  33   2                P4 |=1<<1;// P41=1 // moving distance (mm)=pi^2*step*4/675
-  34   2                Wait_ms(2);
-  35   2                P4 &= ~(1<<1);
-  36   2                Wait_ms(2);
-  37   2            }
-  38   1      }
-  39          
-  40          void Move(float distance, bit direction)
-  41          {
-  42   1          unsigned int step;
-  43   1          step= (unsigned int)(distance*337.5/(3.14159));
-  44   1          Step_move(step,direction);
-  45   1      }
-  46          
-  47          float linear_interpolate(float x1,float x2,float y1,float y2, float x)
-  48          {
-  49   1        float a,b;
-  50   1        a=(y1-y2)/(x1-x2);
-  51   1        b=y1-a*x1;
-  52   1        
-  53   1        return a*x+b;
-  54   1      }
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/15/2018 16:30:33 PAGE 2   
+  22          unsigned char BCDtoDec1(unsigned char bcd)
+  23          {
+  24   1        unsigned char hi,lo;
+  25   1        hi=bcd>>4;
+  26   1        lo=bcd&0x0F;
+  27   1        return hi*10+lo;
+  28   1      }
+  29          
+  30          
+  31          
+  32          
+  33          
+  34          void Step_move(unsigned int step, bit dir)
+  35          {
+  36   1            unsigned int i=0;
+  37   1            if(dir)
+  38   1              P4 |=(1<<2);// set bit P4.2
+  39   1            else
+  40   1              P4 &=~(1<<2);// clear bit P4.2
+  41   1            
+  42   1            for( i=0;i<step;i++)
+  43   1            {
+  44   2                P4 |=1<<1;// P41=1 // moving distance (mm)=pi^2*step*4/675
+  45   2                Wait_ms(2);
+  46   2                P4 &= ~(1<<1);
+  47   2                Wait_ms(2);
+  48   2            }
+  49   1      }
+  50          
+  51          void Move(float  distance, bit direction)
+  52          {
+  53   1          unsigned int step;
+  54   1          step= (unsigned int)(distance*337.5/(3.14159));
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:05:46 PAGE 2   
 
-  55          
-  56          
-  57          void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned c
-             -har sconds,float *currnt_pos)
-  58          {
-  59   1        unsigned int date,i,yy;
-  60   1        float desired_distance,distance=0;
-  61   1        float pos_interpolate_12_17h[21][1];
-  62   1        /*hurs=0x12;
-  63   1        mns=0x30;*/
-  64   1        //sconds=0x15;
-  65   1        desired_distance=*currnt_pos;
-  66   1        date=Day_Of_Year(mnths,dys);
-  67   1        // interpolate for day
-  68   1      
-  69   1      }
-*** WARNING C280 IN LINE 57 OF BipolarMotor.c: 'hurs': unreferenced local variable
-*** WARNING C280 IN LINE 57 OF BipolarMotor.c: 'mns': unreferenced local variable
-*** WARNING C280 IN LINE 57 OF BipolarMotor.c: 'sconds': unreferenced local variable
-*** WARNING C280 IN LINE 59 OF BipolarMotor.c: 'i': unreferenced local variable
-*** WARNING C280 IN LINE 59 OF BipolarMotor.c: 'yy': unreferenced local variable
-*** WARNING C280 IN LINE 61 OF BipolarMotor.c: 'pos_interpolate_12_17h': unreferenced local variable
-  70          
-  71          float pos_day_171(float time){
-  72   1        return 0.3224*pow(time,4) - 16.883*pow(time,3) + 336.15*pow(time,2) - 3004.8*time + 10281;
-  73   1      }
-  74          float pos_day_152_190(float time){
-  75   1        return 0.3957*pow(time,4) - 20.914*pow(time,3) + 418.74*pow(time,2) - 3752.6*time + 12796;
-  76   1      }
-  77          
-  78          float pos_day_139_203(float time){
-  79   1       return 0.4751*pow(time,4) - 25.31*pow(time,3) + 509.39*pow(time,2) - 4578.4*time + 15589;
-  80   1      }
-  81          
-  82          float pos_day_121_221(float time){
-  83   1        return 0.6567*pow(time,4) - 35.589*pow(time,3) + 725.58*pow(time,2)  - 6585.1*time + 22505;
-  84   1      } 
+  55   1          Step_move(step,direction);
+  56   1      }
+  57          //=====================================================
+  58          //We need 4 points for cubic interpolation, p1[x],p1[y],..,p4[x],p4[y]
+  59           float  findDet3x3( 
+  60                      float  a11, float  a12, float  a13, 
+  61                      float  a21, float  a22, float  a23,
+  62                      float  a31, float  a32, float  a33 )
+  63          {
+  64   1          return( a11*a22*a33 + a12*a23*a31 + a13*a21*a32 -
+  65   1                  a13*a22*a31 - a12*a21*a33 - a11*a23*a32 );
+  66   1      }
+  67          float  findDet4x4 (float  a11, float  a12, float  a13, float  a14, 
+  68                      float  a21, float  a22, float  a23, float  a24,
+  69                      float  a31, float  a32, float  a33, float  a34,
+  70                      float  a41, float  a42, float  a43, float  a44 )
+  71          {
+  72   1        
+  73   1          //return a11*(float)findDet3x3(a22, a23, a24, a32, a33, a34, a42, a43, a44);
+  74   1          //return (float)findDet3x3(a21, a23, a24, a31, a33, a34, a41, a43, a44);
+  75   1          //return (float)findDet3x3(a21, a22, a24, a31, a32, a34, a41, a42, a44);
+  76   1          //return (float)findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43);
+  77   1        //  return a21;
+  78   1          return( a11*findDet3x3(a22, a23, a24, a32, a33, a34, a42, a43, a44) -
+  79   1                  a12*findDet3x3(a21, a23, a24, a31, a33, a34, a41, a43, a44) +
+  80   1                  a13*findDet3x3(a21, a22, a24, a31, a32, a34, a41, a42, a44) -
+  81   1                  a14*findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43));
+  82   1      }
+  83              
+  84          //===================================================== 
   85          
-  86          float pos_day_113_229(float time){
-  87   1        return 0.6698*pow(time,4)- 36.416*pow(time,3) + 744.21*pow(time,2)  - 6765.5*time + 23132;
-  88   1      }
-  89          float pos_day_106_236(float time){
-  90   1        return 0.6886*pow(time,4) - 37.644*pow(time,3) + 772.66*pow(time,2)  - 7048.9*time + 24153;
-  91   1      }
-  92          float pos_day_94_248(float time){
-  93   1        return 0.4628*pow(time,4) - 25.404*pow(time,3) + 523.11*pow(time,2)  - 4784.2*time + 16416;
-  94   1      }
-  95          float pos_day_87_255(float time){
-  96   1        return 0.288*pow(time,4) - 15.904*pow(time,3) + 329.15*pow(time,2)  - 3023.8*time+ 10412;
-  97   1      }
-  98          //
-  99          /*
- 100            for(i=0;i<13;i++)
- 101            {
- 102              if (BCDtoDec1(hurs)<=Time_stamp_PM[i+1][0] && BCDtoDec1(hurs)>=Time_stamp_PM[i][0] && BCDtoDec1(mns)>= T
-             -ime_stamp_PM[i][1] && BCDtoDec1(mns)<= Time_stamp_PM[i+1][1] && BCDtoDec1(mns)%5==0)
- 103              {
- 104                desired_distance=(receiver_pos[i+1][0]-receiver_pos[i][0])/(Time_stamp_PM[i+1][0]*60+Time_stamp_PM[i+1]
-             -[1]-Time_stamp_PM[i][0]*60-Time_stamp_PM[i][1])*(BCDtoDec1(hurs)*60+BCDtoDec1(mns)-Time_stamp_PM[i][0]*60-Time_stamp_PM[
-             -i][1])+receiver_pos[i][0];
- 105              }
- 106            }
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/15/2018 16:30:33 PAGE 3   
+  86           
+  87          //===================================================== 
+  88          float  linear_interpolate(struct point p1,struct point p2, float  x)
+  89          {
+  90   1        float  fx;
+  91   1        
+  92   1        fx=-(p1.x-x)/(p1.x-p2.x)*(p1.y-p2.y)+p1.y;
+  93   1        
+  94   1        return fx;
+  95   1      }
+  96          
+  97          
+  98          void Update_position(unsigned char mnths,unsigned char dys,
+  99                               unsigned char hurs,unsigned char mns,unsigned char sconds,
+ 100                               float  *currnt_pos)
+ 101          {
+ 102   1        unsigned int date,i=0,yy=0;
+ 103   1        float  desired_distance,distance=0,JP_pos;
+ 104   1        float  pos_interpolate_12_17h[num_of_time_stamp],current_time;
+ 105   1        float declination;
+ 106   1        struct point p1,p2;
+ 107   1        struct cTime time;
+ 108   1        struct cLocation location;
+ 109   1        struct cSunCoordinates *sunCoord;
+ 110   1        hurs=hurs-1;// change to sun time
+ 111   1        dys=dys+4;
+ 112   1        time.iYear=2018;
+ 113   1        time.iMonth=BCDtoDec1(mnths);
+ 114   1        time.iDay=BCDtoDec1(dys);
+ 115   1        time.dHours=BCDtoDec1(hurs);
+ 116   1        time.dMinutes=BCDtoDec1(mns);
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:05:46 PAGE 3   
 
- 107          */
- 108          
- 109          //int Day_Of_Year(unsigned char months,unsigned char days)*/
+ 117   1        time.dSeconds=BCDtoDec1(sconds&0x7f);
+ 118   1      
+ 119   1        
+ 120   1        desired_distance=*currnt_pos;
+ 121   1        date=Day_Of_Year(mnths,dys);
+ 122   1        //date=237;
+ 123   1        declination=sunpos(time,location,&sunCoord)*180/pi;
+*** WARNING C182 IN LINE 123 OF BipolarMotor.c: pointer to different objects
+ 124   1      
+ 125   1        current_time=(float) BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60;//+(float)BCDtoDec1(sconds&0x7f)/3600;
+ 126   1        if(BCDtoDec1(sconds&0x7f)%30==0)
+ 127   1        {
+ 128   2        // interpolate for day
+ 129   2          for (i=0;i<num_of_day_stamp;i++)
+ 130   2          {
+ 131   3            if (declination<=date_declination_mapping[i] && declination>=date_declination_mapping[i+1])
+ 132   3            {
+ 133   4              for (yy=0;yy<num_of_time_stamp;yy++)
+ 134   4              {
+ 135   5                p1.x=date_declination_mapping[i];
+ 136   5                p2.x=date_declination_mapping[i+1];
+ 137   5                
+ 138   5                p1.y=RX_pos[yy][i];
+ 139   5                p2.y=RX_pos[yy][i+1];
+ 140   5                
+ 141   5                pos_interpolate_12_17h[yy]=linear_interpolate(p1,p2,declination);
+ 142   5              }
+ 143   4              //break;
+ 144   4            }
+ 145   3          }
+ 146   2      
+ 147   2          // interpolate for hour
+ 148   2          for(i=0;i<num_of_time_stamp;i++)
+ 149   2          {
+ 150   3            if(current_time>=Time_stamp_PM[i]&&current_time<=Time_stamp_PM[i+1])
+ 151   3            {
+ 152   4              p1.x=Time_stamp_PM[i];
+ 153   4              p2.x=Time_stamp_PM[i+1];
+ 154   4              
+ 155   4              p1.y=pos_interpolate_12_17h[i];
+ 156   4              p2.y=pos_interpolate_12_17h[i+1];
+ 157   4              
+ 158   4              JP_pos=linear_interpolate(p2,p1,current_time);
+ 159   4              //break;
+ 160   4              
+ 161   4            }
+ 162   3            
+ 163   3          }
+ 164   2          
+ 165   2          desired_distance=179+2*JP_pos;
+ 166   2          
+ 167   2          distance=desired_distance-*currnt_pos;
+ 168   2        
+ 169   2          if(distance>0)
+ 170   2            Move(distance,1);
+ 171   2          else if (distance<0)
+ 172   2            Move(-distance,0);
+ 173   2        }
+ 174   1        *currnt_pos=desired_distance;
+ 175   1        return;
+ 176   1      
+ 177   1      }
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:05:46 PAGE 4   
+
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   2197    ----
+   CODE SIZE        =   2867    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   1037     174
+   XDATA SIZE       =    968     291
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
@@ -144,4 +205,4 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
 END OF MODULE INFORMATION.
 
 
-C51 COMPILATION COMPLETE.  6 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
