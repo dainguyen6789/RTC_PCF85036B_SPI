@@ -122,8 +122,8 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	//date=237;
 	declination=sunpos(time,location,&sunCoord)*180/pi;
 
-	current_time=(float) BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60+(float)BCDtoDec1(sconds&0x7f)/3600;
-	if(BCDtoDec1(sconds&0x7f)%30==0)
+	current_time=(float) BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60;//+(float)BCDtoDec1(sconds&0x7f)/3600;
+	if(BCDtoDec1(sconds&0x7f)%3==0)
 	{
 	// interpolate for day
 		for (i=0;i<num_of_day_stamp;i++)
