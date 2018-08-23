@@ -128,8 +128,8 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	struct cTime time;
 	struct cLocation location;
 	struct cSunCoordinates *sunCoord;
-	hurs=hurs-1;// change to sun time
-	dys=dys+4;// shift 4 days because of Jean Phillip
+	hurs=hurs-0x01;// change to sun time
+	dys=dys+0x04;// shift 4 days because of Jean Phillip
 	time.iYear=2018;
 	time.iMonth=BCDtoDec1(mnths);
 	time.iDay=BCDtoDec1(dys);
@@ -142,8 +142,9 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	date=Day_Of_Year(mnths,dys);
 	//date=237;
 	declination=sunpos(time,location,&sunCoord)*180/pi;
-	
-	current_time=(float) BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60+(float)BCDtoDec1(sconds&0x7f)/3600;
+	if (BCDtoDec1(sconds&0x7f)%3==0)
+	{
+		current_time=(float) BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60;//+(float)BCDtoDec1(sconds&0x7f)/3600;
 
 	// interpolate for day
 		for (i=0;i<num_of_day_stamp;i++)
@@ -170,7 +171,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 							p3.y=RX_pos[yy][i+2];;
 						}
 					}
-					if(!i)
+					if(i==0)
 					{
 							p3.x=date_declination_mapping[i+2];
 							p3.y=RX_pos[yy][i+2];;
@@ -189,14 +190,14 @@ void Update_position(unsigned char mnths,unsigned char dys,
 		// interpolate for hour
 		for(i=0;i<num_of_time_stamp;i++)
 		{
-			if(current_time>=Time_stamp_PM[i]&&current_time<=Time_stamp_PM[i+1] && BCDtoDec1(sconds&0x7f)%30==0)
+			if(current_time>=Time_stamp_PM[i]&&current_time<=Time_stamp_PM[i+1])
 			{
 				p1.x=Time_stamp_PM[i];
 				p2.x=Time_stamp_PM[i+1];
 				
 				p1.y=pos_interpolate_12_17h[i];
 				p2.y=pos_interpolate_12_17h[i+1];
-				if(!i)// i==0
+				if(i==0)// i==0
 				{
 					p3.x=Time_stamp_PM[i+2];
 					p3.y=pos_interpolate_12_17h[i+2];
@@ -235,8 +236,8 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	if(distance>0)
 		Move(distance,1);
 	else
-		Move(distance,0);
-	
+		Move(-distance,0);
+}
 	*currnt_pos=desired_distance;
 	return;
 

@@ -1,10 +1,10 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 10:26:31 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:34:54 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
 OBJECT MODULE PLACED IN .\Obj\BipolarMotor.obj
-COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE BipolarMotor.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXTEND
-                    - PRINT(.\Lis\BipolarMotor.lst) TABS(2) OBJECT(.\Obj\BipolarMotor.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE BipolarMotor.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXT
+                    -END PRINT(.\Lis\BipolarMotor.lst) TABS(2) OBJECT(.\Obj\BipolarMotor.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   52          {
   53   1          unsigned int step;
   54   1          step= (unsigned int)(distance*337.5/(3.14159));
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 10:26:31 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:34:54 PAGE 2   
 
   55   1          Step_move(step,direction);
   56   1      }
@@ -126,7 +126,7 @@ line level    source
  114   1        else
  115   1          fx=0;
  116   1        return fx;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 10:26:31 PAGE 3   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:34:54 PAGE 3   
 
  117   1      }
  118          
@@ -142,8 +142,8 @@ line level    source
  128   1        struct cTime time;
  129   1        struct cLocation location;
  130   1        struct cSunCoordinates *sunCoord;
- 131   1        hurs=hurs-1;// change to sun time
- 132   1        dys=dys+4;// shift 4 days because of Jean Phillip
+ 131   1        hurs=hurs-0x01;// change to sun time
+ 132   1        dys=dys+0x04;// shift 4 days because of Jean Phillip
  133   1        time.iYear=2018;
  134   1        time.iMonth=BCDtoDec1(mnths);
  135   1        time.iDay=BCDtoDec1(dys);
@@ -157,113 +157,114 @@ line level    source
  143   1        //date=237;
  144   1        declination=sunpos(time,location,&sunCoord)*180/pi;
 *** WARNING C182 IN LINE 144 OF BipolarMotor.c: pointer to different objects
- 145   1        
- 146   1        current_time=(float) BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60+(float)BCDtoDec1(sconds&0x7f)/3600;
- 147   1      
- 148   1        // interpolate for day
- 149   1          for (i=0;i<num_of_day_stamp;i++)
- 150   1          {
- 151   2            if (declination<=date_declination_mapping[i] && declination>=date_declination_mapping[i+1])
- 152   2            {
- 153   3              for (yy=0;yy<num_of_time_stamp;yy++)
- 154   3              {
- 155   4                p1.x=date_declination_mapping[i];
- 156   4                p2.x=date_declination_mapping[i+1];
- 157   4                
- 158   4                p1.y=RX_pos[yy][i];
- 159   4                p2.y=RX_pos[yy][i+1];
- 160   4                if (i>0 && i<8)
- 161   4                {
- 162   5                  if(   (declination-date_declination_mapping[i+1]) > (date_declination_mapping[i]-declination)   )
- 163   5                  {
- 164   6                    p3.x=date_declination_mapping[i-1];
- 165   6                    p3.y=RX_pos[yy][i-1];;
- 166   6                  }
- 167   5                  else
- 168   5                  {
- 169   6                    p3.x=date_declination_mapping[i+2];
- 170   6                    p3.y=RX_pos[yy][i+2];;
- 171   6                  }
- 172   5                }
- 173   4                if(!i)
- 174   4                {
- 175   5                    p3.x=date_declination_mapping[i+2];
- 176   5                    p3.y=RX_pos[yy][i+2];;
- 177   5                }
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 10:26:31 PAGE 4   
+ 145   1        if (BCDtoDec1(sconds&0x7f)%3==0)
+ 146   1        {
+ 147   2          current_time=(float) BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60;//+(float)BCDtoDec1(sconds&0x7f)/3600;
+ 148   2      
+ 149   2        // interpolate for day
+ 150   2          for (i=0;i<num_of_day_stamp;i++)
+ 151   2          {
+ 152   3            if (declination<=date_declination_mapping[i] && declination>=date_declination_mapping[i+1])
+ 153   3            {
+ 154   4              for (yy=0;yy<num_of_time_stamp;yy++)
+ 155   4              {
+ 156   5                p1.x=date_declination_mapping[i];
+ 157   5                p2.x=date_declination_mapping[i+1];
+ 158   5                
+ 159   5                p1.y=RX_pos[yy][i];
+ 160   5                p2.y=RX_pos[yy][i+1];
+ 161   5                if (i>0 && i<8)
+ 162   5                {
+ 163   6                  if(   (declination-date_declination_mapping[i+1]) > (date_declination_mapping[i]-declination)   )
+ 164   6                  {
+ 165   7                    p3.x=date_declination_mapping[i-1];
+ 166   7                    p3.y=RX_pos[yy][i-1];;
+ 167   7                  }
+ 168   6                  else
+ 169   6                  {
+ 170   7                    p3.x=date_declination_mapping[i+2];
+ 171   7                    p3.y=RX_pos[yy][i+2];;
+ 172   7                  }
+ 173   6                }
+ 174   5                if(i==0)
+ 175   5                {
+ 176   6                    p3.x=date_declination_mapping[i+2];
+ 177   6                    p3.y=RX_pos[yy][i+2];;
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:34:54 PAGE 4   
 
- 178   4                if(i==8)
- 179   4                {
- 180   5                    p3.x=date_declination_mapping[i-1];
- 181   5                    p3.y=RX_pos[yy][i-1];;
- 182   5                }
- 183   4                pos_interpolate_12_17h[yy]=second_order_interpolate(p1,p2,p3,declination);
- 184   4              }
- 185   3              break;
- 186   3            }
- 187   2          }
- 188   1      
- 189   1          // interpolate for hour
- 190   1          for(i=0;i<num_of_time_stamp;i++)
- 191   1          {
- 192   2            if(current_time>=Time_stamp_PM[i]&&current_time<=Time_stamp_PM[i+1] && BCDtoDec1(sconds&0x7f)%30==0)
- 193   2            {
- 194   3              p1.x=Time_stamp_PM[i];
- 195   3              p2.x=Time_stamp_PM[i+1];
- 196   3              
- 197   3              p1.y=pos_interpolate_12_17h[i];
- 198   3              p2.y=pos_interpolate_12_17h[i+1];
- 199   3              if(!i)// i==0
- 200   3              {
- 201   4                p3.x=Time_stamp_PM[i+2];
- 202   4                p3.y=pos_interpolate_12_17h[i+2];
- 203   4                
- 204   4              }
- 205   3              else if(i==(num_of_time_stamp-1))
- 206   3              {
- 207   4                p3.x=Time_stamp_PM[i-1];
- 208   4                p3.y=pos_interpolate_12_17h[i-1];
- 209   4              }
- 210   3              else
- 211   3              {
- 212   4                if(   (current_time-Time_stamp_PM[i])>=(Time_stamp_PM[i+1]-current_time)   )
- 213   4                {
- 214   5                    p3.x=Time_stamp_PM[i+2];
- 215   5                    p3.y=pos_interpolate_12_17h[i+2];
- 216   5                }
- 217   4                else
- 218   4                {
- 219   5                    p3.x=Time_stamp_PM[i-1];
- 220   5                    p3.y=pos_interpolate_12_17h[i-1];
- 221   5                }
- 222   4              }
- 223   3              
- 224   3              JP_pos=second_order_interpolate(p2,p1,p3,current_time);
- 225   3              break;
- 226   3              
- 227   3            }
- 228   2            
- 229   2          }
- 230   1          
- 231   1        desired_distance=179+2*JP_pos;
- 232   1          
- 233   1        distance=desired_distance-*currnt_pos;
- 234   1        
- 235   1        if(distance>0)
- 236   1          Move(distance,1);
- 237   1        else
- 238   1          Move(distance,0);
- 239   1        
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 10:26:31 PAGE 5   
+ 178   6                }
+ 179   5                if(i==8)
+ 180   5                {
+ 181   6                    p3.x=date_declination_mapping[i-1];
+ 182   6                    p3.y=RX_pos[yy][i-1];;
+ 183   6                }
+ 184   5                pos_interpolate_12_17h[yy]=second_order_interpolate(p1,p2,p3,declination);
+ 185   5              }
+ 186   4              //break;
+ 187   4            }
+ 188   3          }
+ 189   2      
+ 190   2          // interpolate for hour
+ 191   2          for(i=0;i<num_of_time_stamp;i++)
+ 192   2          {
+ 193   3            if(current_time>=Time_stamp_PM[i]&&current_time<=Time_stamp_PM[i+1])
+ 194   3            {
+ 195   4              p1.x=Time_stamp_PM[i];
+ 196   4              p2.x=Time_stamp_PM[i+1];
+ 197   4              
+ 198   4              p1.y=pos_interpolate_12_17h[i];
+ 199   4              p2.y=pos_interpolate_12_17h[i+1];
+ 200   4              if(i==0)// i==0
+ 201   4              {
+ 202   5                p3.x=Time_stamp_PM[i+2];
+ 203   5                p3.y=pos_interpolate_12_17h[i+2];
+ 204   5                
+ 205   5              }
+ 206   4              else if(i==(num_of_time_stamp-1))
+ 207   4              {
+ 208   5                p3.x=Time_stamp_PM[i-1];
+ 209   5                p3.y=pos_interpolate_12_17h[i-1];
+ 210   5              }
+ 211   4              else
+ 212   4              {
+ 213   5                if(   (current_time-Time_stamp_PM[i])>=(Time_stamp_PM[i+1]-current_time)   )
+ 214   5                {
+ 215   6                    p3.x=Time_stamp_PM[i+2];
+ 216   6                    p3.y=pos_interpolate_12_17h[i+2];
+ 217   6                }
+ 218   5                else
+ 219   5                {
+ 220   6                    p3.x=Time_stamp_PM[i-1];
+ 221   6                    p3.y=pos_interpolate_12_17h[i-1];
+ 222   6                }
+ 223   5              }
+ 224   4              
+ 225   4              JP_pos=second_order_interpolate(p2,p1,p3,current_time);
+ 226   4              //break;
+ 227   4              
+ 228   4            }
+ 229   3            
+ 230   3          }
+ 231   2          
+ 232   2        desired_distance=179+2*JP_pos;
+ 233   2          
+ 234   2        distance=desired_distance-*currnt_pos;
+ 235   2        
+ 236   2        if(distance>0)
+ 237   2          Move(distance,1);
+ 238   2        else
+ 239   2          Move(-distance,0);
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:34:54 PAGE 5   
 
- 240   1        *currnt_pos=desired_distance;
- 241   1        return;
- 242   1      
- 243   1      }
+ 240   2      }
+ 241   1        *currnt_pos=desired_distance;
+ 242   1        return;
+ 243   1      
+ 244   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   4862    ----
+   CODE SIZE        =   4820    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =    968     347
    PDATA SIZE       =   ----    ----
