@@ -107,22 +107,22 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	struct cTime time;
 	struct cLocation location;
 	struct cSunCoordinates *sunCoord;
-	hurs=hurs-1;// change to sun time
-	dys=dys+4;
+	//hurs=hurs-1;// change to sun time
+	//dys=dys+4;
 	time.iYear=2018;
 	time.iMonth=BCDtoDec1(mnths);
-	time.iDay=BCDtoDec1(dys);
+	time.iDay=BCDtoDec1(dys)+4;
 	time.dHours=BCDtoDec1(hurs);
 	time.dMinutes=BCDtoDec1(mns);
 	time.dSeconds=BCDtoDec1(sconds&0x7f);
 
 	
 	desired_distance=*currnt_pos;
-	date=Day_Of_Year(mnths,dys);
+	//date=Day_Of_Year(mnths,dys)+4;
 	//date=237;
 	declination=sunpos(time,location,&sunCoord)*180/pi;
 
-	current_time=(float) BCDtoDec1(hurs)+(float)BCDtoDec1(mns)/60;//+(float)BCDtoDec1(sconds&0x7f)/3600;
+	current_time=(float) (BCDtoDec1(hurs)-1)+(float)BCDtoDec1(mns)/60;//+(float)BCDtoDec1(sconds&0x7f)/3600;
 	if(BCDtoDec1(sconds&0x7f)%3==0)
 	{
 	// interpolate for day
