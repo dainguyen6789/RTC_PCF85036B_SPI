@@ -128,7 +128,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	// interpolate for day
 		for (i=0;i<num_of_day_stamp;i++)
 		{
-			if (declination<=date_declination_mapping[i] && declination>=date_declination_mapping[i+1])
+			if ((declination<=date_declination_mapping[i]) && (declination>=date_declination_mapping[i+1]))
 			{
 				for (yy=0;yy<num_of_time_stamp;yy++)
 				{
@@ -147,7 +147,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 		// interpolate for hour
 		for(i=0;i<num_of_time_stamp;i++)
 		{
-			if(current_time>=Time_stamp_PM[i]&&current_time<=Time_stamp_PM[i+1])
+			if((current_time>=Time_stamp_PM[i])&&(current_time<=Time_stamp_PM[i+1]))
 			{
 				p1.x=Time_stamp_PM[i];
 				p2.x=Time_stamp_PM[i+1];
@@ -155,7 +155,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 				p1.y=pos_interpolate_12_17h[i];
 				p2.y=pos_interpolate_12_17h[i+1];
 				
-				JP_pos=linear_interpolate(p2,p1,current_time);
+				JP_pos=linear_interpolate(p1,p2,current_time);
 				//break;
 				
 			}
