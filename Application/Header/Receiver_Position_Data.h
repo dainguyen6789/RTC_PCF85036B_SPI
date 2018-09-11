@@ -3,6 +3,8 @@
 #define num_of_time_stamp 21
 #define num_of_day_stamp 	10
 #define Dai_to_JP_Zero 179;
+#define declination_offset -0.4829;// calculate from data of 31July2018
+#define time_offset -1.14;// calculate from data of 31July2018
 float date_declination_mapping[num_of_day_stamp]={23.4400,21.0960,18.7520,14.0640,11.7200,9.3760,7.0320,4.6880,2.3440,0.0000};
 
 float RX_pos[num_of_time_stamp][num_of_day_stamp]=
