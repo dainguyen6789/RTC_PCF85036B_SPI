@@ -1,10 +1,10 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:34:54 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      09/07/2018 12:10:44 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
 OBJECT MODULE PLACED IN .\Obj\BipolarMotor.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE BipolarMotor.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXT
-                    -END PRINT(.\Lis\BipolarMotor.lst) TABS(2) OBJECT(.\Obj\BipolarMotor.obj)
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE BipolarMotor.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXTEND
+                    - PRINT(.\Lis\BipolarMotor.lst) TABS(2) OBJECT(.\Obj\BipolarMotor.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   52          {
   53   1          unsigned int step;
   54   1          step= (unsigned int)(distance*337.5/(3.14159));
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:34:54 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      09/07/2018 12:10:44 PAGE 2   
 
   55   1          Step_move(step,direction);
   56   1      }
@@ -126,7 +126,7 @@ line level    source
  114   1        else
  115   1          fx=0;
  116   1        return fx;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:34:54 PAGE 3   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      09/07/2018 12:10:44 PAGE 3   
 
  117   1      }
  118          
@@ -142,8 +142,8 @@ line level    source
  128   1        struct cTime time;
  129   1        struct cLocation location;
  130   1        struct cSunCoordinates *sunCoord;
- 131   1        hurs=hurs-0x01;// change to sun time
- 132   1        dys=dys+0x04;// shift 4 days because of Jean Phillip
+ 131   1        //hurs=hurs-0x01;// change to sun time
+ 132   1        //dys=dys+0x04;// shift 4 days because of Jean Phillip
  133   1        time.iYear=2018;
  134   1        time.iMonth=BCDtoDec1(mnths);
  135   1        time.iDay=BCDtoDec1(dys);
@@ -190,7 +190,7 @@ line level    source
  175   5                {
  176   6                    p3.x=date_declination_mapping[i+2];
  177   6                    p3.y=RX_pos[yy][i+2];;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:34:54 PAGE 4   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      09/07/2018 12:10:44 PAGE 4   
 
  178   6                }
  179   5                if(i==8)
@@ -200,7 +200,7 @@ line level    source
  183   6                }
  184   5                pos_interpolate_12_17h[yy]=second_order_interpolate(p1,p2,p3,declination);
  185   5              }
- 186   4              //break;
+ 186   4              break;
  187   4            }
  188   3          }
  189   2      
@@ -240,7 +240,7 @@ line level    source
  223   5              }
  224   4              
  225   4              JP_pos=second_order_interpolate(p2,p1,p3,current_time);
- 226   4              //break;
+ 226   4              break;
  227   4              
  228   4            }
  229   3            
@@ -254,7 +254,7 @@ line level    source
  237   2          Move(distance,1);
  238   2        else
  239   2          Move(-distance,0);
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/23/2018 17:34:54 PAGE 5   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      09/07/2018 12:10:44 PAGE 5   
 
  240   2      }
  241   1        *currnt_pos=desired_distance;
@@ -264,7 +264,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   4820    ----
+   CODE SIZE        =   4811    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =    968     347
    PDATA SIZE       =   ----    ----

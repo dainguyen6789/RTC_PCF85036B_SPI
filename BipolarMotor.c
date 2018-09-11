@@ -128,8 +128,8 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	struct cTime time;
 	struct cLocation location;
 	struct cSunCoordinates *sunCoord;
-	hurs=hurs-0x01;// change to sun time
-	dys=dys+0x04;// shift 4 days because of Jean Phillip
+	//hurs=hurs-0x01;// change to sun time
+	//dys=dys+0x04;// shift 4 days because of Jean Phillip
 	time.iYear=2018;
 	time.iMonth=BCDtoDec1(mnths);
 	time.iDay=BCDtoDec1(dys);
