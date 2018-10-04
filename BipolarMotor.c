@@ -101,7 +101,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 {
 	unsigned int date,i=0,yy=0;
 	float  desired_distance,distance=0,JP_pos;
-	float  pos_interpolate_12_17h[num_of_time_stamp],current_time;
+	float  pos_interpolate_azimuth[num_of_azimuth_stamp],current_time,azimuth, elevation;
 	float declination;
 	struct point p1,p2;
 	struct cTime time;
@@ -109,6 +109,8 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	struct cSunCoordinates *sunCoord;
 	//hurs=hurs-1;// change to sun time
 	//dys=dys+4;
+	location.dLongitude=-73.6495;
+	location.dLatitude=45.478889;
 	time.iYear=2018;
 	time.iMonth=BCDtoDec1(mnths);
 	time.iDay=BCDtoDec1(dys)+4;
@@ -118,51 +120,54 @@ void Update_position(unsigned char mnths,unsigned char dys,
 
 	
 	desired_distance=*currnt_pos;
+	
 	//date=Day_Of_Year(mnths,dys)+4;
 	//date=237;
 	declination=sunpos(time,location,&sunCoord)*180/pi+declination_offset;
-
-	current_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//+(float)BCDtoDec1(sconds&0x7f)/3600;
+	current_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset-1;//sun time= clock time -1
+	elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_time-12))*pi/180)           );
+	azimuth=180+(180/pi)*asin(       sin((15*(current_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );
+	
 	if(BCDtoDec1(sconds&0x7f)%3==0)
 	{
-	// interpolate for day
-		for (i=0;i<num_of_day_stamp;i++)
+		// interpolate for day
+		for (i=0;i<num_of_azimuth_stamp;i++)
 		{
-			if ((declination<=date_declination_mapping[i]) && (declination>=date_declination_mapping[i+1]))
+			if ((azimuth<=date_azimuth_mapping[i]) && (azimuth>=date_azimuth_mapping[i+1]))
 			{
-				for (yy=0;yy<num_of_time_stamp;yy++)
+				for (yy=0;yy<num_of_elevation_stamp;yy++)
 				{
-					p1.x=date_declination_mapping[i];
-					p2.x=date_declination_mapping[i+1];
+					p1.x=date_azimuth_mapping[i];
+					p2.x=date_azimuth_mapping[i+1];
 					
 					p1.y=RX_pos[yy][i];
 					p2.y=RX_pos[yy][i+1];
 					
-					pos_interpolate_12_17h[yy]=linear_interpolate(p1,p2,declination);
+					pos_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
 				}
 				//break;
 			}
 		}
 
 		// interpolate for hour
-		for(i=0;i<num_of_time_stamp;i++)
+		for(i=0;i<num_of_elevation_stamp;i++)
 		{
-			if((current_time>=Time_stamp_PM[i])&&(current_time<=Time_stamp_PM[i+1]))
+			if((elevation>=elevation_stamp[i])&&(elevation<=elevation_stamp[i+1]))
 			{
-				p1.x=Time_stamp_PM[i];
-				p2.x=Time_stamp_PM[i+1];
+				p1.x=elevation_stamp[i];
+				p2.x=elevation_stamp[i+1];
 				
-				p1.y=pos_interpolate_12_17h[i];
-				p2.y=pos_interpolate_12_17h[i+1];
+				p1.y=pos_interpolate_azimuth[i];
+				p2.y=pos_interpolate_azimuth[i+1];
 				
-				JP_pos=linear_interpolate(p1,p2,current_time);
+				JP_pos=linear_interpolate(p1,p2,elevation);
 				//break;
 				
 			}
 			
 		}
 		
-		desired_distance=179+2*JP_pos;
+		desired_distance=78-JP_pos;
 		
 		distance=desired_distance-*currnt_pos;
 	
