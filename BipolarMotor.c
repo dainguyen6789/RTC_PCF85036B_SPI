@@ -100,7 +100,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 										 float  *currnt_pos)
 {
 	unsigned int date,i=0,yy=0;
-	float  desired_distance,distance=0,JP_pos;
+	float  desired_distance,distance=0,JP_pos=0;
 	float  pos_interpolate_azimuth[num_of_azimuth_stamp],current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
 	float declination;
 	struct point p1,p2;
@@ -133,8 +133,8 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	//azimuth=(180/pi)*acos(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
 
 	
-	if (current_local_sun_time>12)
-		azimuth=360-azimuth;
+	//if (current_local_sun_time>12)
+	//	azimuth=360-azimuth;
 	
 	if(BCDtoDec1(sconds&0x7f)%3==0)
 	{

@@ -215,7 +215,7 @@ void main(void)
 		{
 			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)
 				//Update_position(months,days,hours,mins,seconds,&current_position);
-				Update_position(0x10,0x05,0x12,0x30,0x00,&current_position);
+				Update_position(0x10,0x05,0x13,0x34,0x00,&current_position);
 		}
 		//==================================================		
 		// This is for UART to set the time		
