@@ -4,7 +4,7 @@
 #define num_of_azimuth_stamp 	10
 #define Dai_to_JP_Zero 179;
 #define declination_offset -0.4829;// calculate from data of 31July2018
-#define time_offset -1.14;// calculate from data of 31July2018
+//#define time_offset -1.14;// calculate from data of 31July2018
 float date_azimuth_mapping[num_of_azimuth_stamp]={180	,190,	200,	210,	220,	230,	240,	250,	260,	270};
 
 float RX_pos[num_of_elevation_stamp][num_of_azimuth_stamp]=
