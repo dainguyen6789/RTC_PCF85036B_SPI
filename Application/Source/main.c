@@ -213,7 +213,7 @@ void main(void)
 		//Read_time(&months,&days,&hours,&mins,&seconds);
 		if(auto_mode)
 		{
-			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)
+			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
 				Update_position(months,days,hours,mins,seconds,&current_position);
 				//Update_position(0x10,0x05,0x12,0x00,0x00,&current_position);
 		}
