@@ -8,6 +8,7 @@ void Delay_ms(unsigned int ms);
 int Day_Of_Year(unsigned char months,unsigned char days);
 unsigned char BCDtoDec1(char bcd);
 float  degree;
+unsigned char previous_move_time=0;
 float  findDet4x4 (float  a11, float  a12, float  a13, float  a14, 
             float  a21, float  a22, float  a23, float  a24,
             float  a31, float  a32, float  a33, float  a34,
@@ -100,7 +101,8 @@ void Update_position(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
 										 float  *currnt_pos, float offset_calib)
 {
-	unsigned int date,i=0,yy=0,previous_move_time=0;
+	unsigned int date,i=0,yy=0;
+	
 	float  desired_distance=0,distance=0,JP_pos=0;
 	float  pos_interpolate_azimuth[num_of_azimuth_stamp],current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
 	float declination;

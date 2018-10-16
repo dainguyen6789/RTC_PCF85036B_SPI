@@ -233,7 +233,7 @@ void main(void)
 				//if(Day_Of_Year(months,days)>calib_day && Day_Of_Year(months,days)<calib_day+7)
 				{
 					//offset=calib_interpolate();
-					Update_position(months,days,hours,mins,seconds,&current_position,calib_interpolate(hours, mins));
+					Update_position(months,days,hours,mins,seconds,&current_position,calib_interpolate(hours,mins));
 				}
 				//Update_position(0x10,0x05,0x12,0x00,0x00,&current_position);
 		}
