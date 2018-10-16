@@ -9,7 +9,7 @@ void Move(float  distance, bit direction);
 unsigned int Max_Value(unsigned int *input);
 void Update_position(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos);
+										 float  *currnt_pos, float offset_calib);
 unsigned int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd); // this function is used to count the date in a year example: 22 March is the 80th day of the year
 
 // read adc ch to sense the voltage of the solar panel.			
@@ -81,18 +81,19 @@ float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
 										 float  *currnt_pos)
 {
-	float calib_value;
-	float JP_max_pos=*currnt_pos;
+	float calib_value=0;
+	float JP_max_pos;//=*currnt_pos;
 	// if voltage is stable 
 	if(voltage_is_stable())
 	{
 		// 	move to JP theorical max position
-		Update_position(mnths,dys,hurs,mns,sconds,&currnt_pos);
+		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,0);// off set is Zero means we go to the JP max theorical position
 		// 	find the real max value in the area of JP +/- 10mm
-		Find_Real_Max(&currnt_pos); //find real max and move to real max position
+		Find_Real_Max(&JP_max_pos); //find real max and move to real max position
 		calib_value=*currnt_pos-JP_max_pos;
+		*currnt_pos=JP_max_pos;
 		return calib_value;
 	}
-	else
-		return 0;
+	//else
+	//	return 0;
 }

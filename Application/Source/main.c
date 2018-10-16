@@ -61,7 +61,9 @@ int st_time=0;
 int count=0;
 static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
-float *calib_value,*calib_time;
+float calib_value[24],calib_time[24];
+//calib_value=malloc(24);
+//calib_time=malloc(24);
 
 void tm0_isr() interrupt 1 using 1
 {
@@ -230,20 +232,20 @@ void main(void)
 		{
 			
 			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
-				//if(Day_Of_Year(months,days)>calib_day && Day_Of_Year(months,days)<calib_day+7)
+				if(Day_Of_Year(months,days)>calib_day && Day_Of_Year(months,days)<calib_day+7 && calib_day!=0)// updated position if  and only if the system was calibrated (calib_day!=0 by line 252)
 				{
 					//offset=calib_interpolate();
 					Update_position(months,days,hours,mins,seconds,&current_position,calib_interpolate(hours,mins));
 				}
 				//Update_position(0x10,0x05,0x12,0x00,0x00,&current_position);
 		}
-/*		if (Day_Of_Year(months,days)==calib_day+7)
+		if (Day_Of_Year(months,days)==calib_day+7)
 		{
 			calib_mode=1;
-			//count=0;
+			count=0;
 		}
 		
-		if(calib_mode && mins%30==0)// calib every 30mins
+		if(calib_mode && BCDtoDec1(mins)%30==0)// calib every 30mins
 		{
 			*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
 			*(calib_time+count)=BCDtoDec1(hours)+BCDtoDec1(mins);
@@ -251,10 +253,10 @@ void main(void)
 			{
 				calib_day=Day_Of_Year(months,days);
 				calib_mode=0;
-				count=0;
+				//count=0;
 			}
 			count++;			
-		}*/
+		}
 		//==================================================		
 		// This is for UART to set the time									
 		//==================================================				
