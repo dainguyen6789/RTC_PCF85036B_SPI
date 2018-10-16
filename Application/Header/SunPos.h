@@ -35,5 +35,9 @@ struct cSunCoordinates
 
 
 double sunpos(struct cTime udtTime,struct cLocation udtLocation, struct cSunCoordinates *udtSunCoordinates);
-
+struct point
+{
+	float x;
+	float y;
+};
 #endif

@@ -95,12 +95,13 @@ float  linear_interpolate(struct point p1,struct point p2, float  x)
 }
 
 
+
 void Update_position(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos)
+										 float  *currnt_pos, float offset_calib)
 {
-	unsigned int date,i=0,yy=0;
-	float  desired_distance,distance=0,JP_pos=0;
+	unsigned int date,i=0,yy=0,previous_move_time=0;
+	float  desired_distance=0,distance=0,JP_pos=0;
 	float  pos_interpolate_azimuth[num_of_azimuth_stamp],current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
 	float declination;
 	struct point p1,p2;
@@ -125,7 +126,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	//date=237;
 	declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
 	time_offset=1/60*(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180));
-	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60;//+time_offset-1;//current time=sun time= clock time -1
+	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset-1;//current time=sun time= clock time -1
 	//=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/365)*3.1416/180)    -   1.5*SIN((360*($B$8-81)/365)*3.1416/180))
 	elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
 						cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180)           );
@@ -136,7 +137,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	//if (current_local_sun_time>12)
 	//	azimuth=360-azimuth;
 	
-	if(BCDtoDec1(sconds&0x7f)%3==0)
+	if(BCDtoDec1(sconds&0x7f)%2==0)
 	{
 		// interpolate for azimuth
 		for (i=0;i<num_of_azimuth_stamp;i++)
@@ -175,16 +176,19 @@ void Update_position(unsigned char mnths,unsigned char dys,
 			
 		}
 		
-		desired_distance=78+2*JP_pos;
+		desired_distance=78+2*JP_pos +offset_calib;
 		
 		distance=desired_distance-*currnt_pos;
-	
-		if(distance>0)
-			Move(distance,1);
-		else if (distance<0)
-			Move(-distance,0);
+		if(abs(distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more than 0.5mm OR >30s
+		{
+			if(distance>0)
+				Move(distance,1);
+			else if (distance<0)
+				Move(-distance,0);
+			previous_move_time=BCDtoDec1(sconds&0x7f);
+			*currnt_pos=desired_distance;
+		}
 	}
-	*currnt_pos=desired_distance;
 	return;
 
 }

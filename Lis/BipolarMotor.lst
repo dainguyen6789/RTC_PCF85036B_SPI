@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/10/2018 11:45:20 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/16/2018 11:42:09 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -62,7 +62,7 @@ line level    source
   52          {
   53   1          unsigned int step;
   54   1          step= (unsigned int)(distance*337.5/(3.14159));
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/10/2018 11:45:20 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/16/2018 11:42:09 PAGE 2   
 
   55   1          Step_move(step,direction);
   56   1      }
@@ -107,118 +107,123 @@ line level    source
   95   1      }
   96          
   97          
-  98          void Update_position(unsigned char mnths,unsigned char dys,
-  99                               unsigned char hurs,unsigned char mns,unsigned char sconds,
- 100                               float  *currnt_pos)
- 101          {
- 102   1        unsigned int date,i=0,yy=0;
- 103   1        float  desired_distance,distance=0,JP_pos=0;
- 104   1        float  pos_interpolate_azimuth[num_of_azimuth_stamp],current_local_sun_time,azimuth, elevation,time_offse
+  98          
+  99          void Update_position(unsigned char mnths,unsigned char dys,
+ 100                               unsigned char hurs,unsigned char mns,unsigned char sconds,
+ 101                               float  *currnt_pos, float offset_calib)
+ 102          {
+ 103   1        unsigned int date,i=0,yy=0,previous_move_time=0;
+ 104   1        float  desired_distance=0,distance=0,JP_pos=0;
+ 105   1        float  pos_interpolate_azimuth[num_of_azimuth_stamp],current_local_sun_time,azimuth, elevation,time_offse
              -t,UTC_time=-5;
- 105   1        float declination;
- 106   1        struct point p1,p2;
- 107   1        struct cTime time;
- 108   1        struct cLocation location;
- 109   1        struct cSunCoordinates *sunCoord;
- 110   1        //hurs=hurs-1;// change to sun time
- 111   1        //dys=dys+4;
- 112   1        location.dLongitude=-73.6495;
- 113   1        location.dLatitude=45.478889;
- 114   1        time.iYear=2018;
- 115   1        time.iMonth=BCDtoDec1(mnths);
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/10/2018 11:45:20 PAGE 3   
+ 106   1        float declination;
+ 107   1        struct point p1,p2;
+ 108   1        struct cTime time;
+ 109   1        struct cLocation location;
+ 110   1        struct cSunCoordinates *sunCoord;
+ 111   1        //hurs=hurs-1;// change to sun time
+ 112   1        //dys=dys+4;
+ 113   1        location.dLongitude=-73.6495;
+ 114   1        location.dLatitude=45.478889;
+ 115   1        time.iYear=2018;
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/16/2018 11:42:09 PAGE 3   
 
- 116   1        time.iDay=BCDtoDec1(dys);
- 117   1        time.dHours=BCDtoDec1(hurs);
- 118   1        time.dMinutes=BCDtoDec1(mns);
- 119   1        time.dSeconds=BCDtoDec1(sconds&0x7f);
- 120   1      
- 121   1        
- 122   1        desired_distance=*currnt_pos;
- 123   1        
- 124   1        //date=Day_Of_Year(mnths,dys)+4;
- 125   1        //date=237;
- 126   1        declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
-*** WARNING C182 IN LINE 126 OF BipolarMotor.c: pointer to different objects
- 127   1        time_offset=1/60*(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -   
+ 116   1        time.iMonth=BCDtoDec1(mnths);
+ 117   1        time.iDay=BCDtoDec1(dys);
+ 118   1        time.dHours=BCDtoDec1(hurs);
+ 119   1        time.dMinutes=BCDtoDec1(mns);
+ 120   1        time.dSeconds=BCDtoDec1(sconds&0x7f);
+ 121   1      
+ 122   1        
+ 123   1        desired_distance=*currnt_pos;
+ 124   1        
+ 125   1        //date=Day_Of_Year(mnths,dys)+4;
+ 126   1        //date=237;
+ 127   1        declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
+*** WARNING C182 IN LINE 127 OF BipolarMotor.c: pointer to different objects
+ 128   1        time_offset=1/60*(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -   
              - 7.53*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180));
- 128   1        current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60;//+time_offset-1;//current time
-             -=sun time= clock time -1
- 129   1        //=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/
+ 129   1        current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset-1;//current time=su
+             -n time= clock time -1
+ 130   1        //=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/
              -365)*3.1416/180)    -   1.5*SIN((360*($B$8-81)/365)*3.1416/180))
- 130   1        elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
- 131   1                  cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180) 
+ 131   1        elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
+ 132   1                  cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180) 
              -          );
- 132   1        azimuth=180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin
+ 133   1        azimuth=180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin
              -((90-elevation)*pi/180)          );// JP calculation
- 133   1        //azimuth=(180/pi)*acos(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((
+ 134   1        //azimuth=(180/pi)*acos(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((
              -90-elevation)*pi/180)          );// JP calculation
- 134   1      
- 135   1        
- 136   1        //if (current_local_sun_time>12)
- 137   1        //  azimuth=360-azimuth;
- 138   1        
- 139   1        if(BCDtoDec1(sconds&0x7f)%3==0)
- 140   1        {
- 141   2          // interpolate for azimuth
- 142   2          for (i=0;i<num_of_azimuth_stamp;i++)
- 143   2          {
- 144   3            if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
- 145   3            {
- 146   4              for (yy=0;yy<num_of_elevation_stamp;yy++)
- 147   4              {
- 148   5                p1.x=date_azimuth_mapping[i];
- 149   5                p2.x=date_azimuth_mapping[i+1];
- 150   5                
- 151   5                p1.y=RX_pos[yy][i];
- 152   5                p2.y=RX_pos[yy][i+1];
- 153   5                
- 154   5                pos_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
- 155   5              }
- 156   4              //break;
- 157   4            }
- 158   3          }
- 159   2      
- 160   2          // interpolate for elevation
- 161   2          for(i=0;i<num_of_elevation_stamp;i++)
- 162   2          {
- 163   3            if((elevation>=elevation_stamp[i])&&(elevation<=elevation_stamp[i+1]))
- 164   3            {
- 165   4              p1.x=elevation_stamp[i];
- 166   4              p2.x=elevation_stamp[i+1];
- 167   4              
- 168   4              p1.y=pos_interpolate_azimuth[i];
- 169   4              p2.y=pos_interpolate_azimuth[i+1];
- 170   4              
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/10/2018 11:45:20 PAGE 4   
+ 135   1      
+ 136   1        
+ 137   1        //if (current_local_sun_time>12)
+ 138   1        //  azimuth=360-azimuth;
+ 139   1        
+ 140   1        if(BCDtoDec1(sconds&0x7f)%2==0)
+ 141   1        {
+ 142   2          // interpolate for azimuth
+ 143   2          for (i=0;i<num_of_azimuth_stamp;i++)
+ 144   2          {
+ 145   3            if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
+ 146   3            {
+ 147   4              for (yy=0;yy<num_of_elevation_stamp;yy++)
+ 148   4              {
+ 149   5                p1.x=date_azimuth_mapping[i];
+ 150   5                p2.x=date_azimuth_mapping[i+1];
+ 151   5                
+ 152   5                p1.y=RX_pos[yy][i];
+ 153   5                p2.y=RX_pos[yy][i+1];
+ 154   5                
+ 155   5                pos_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
+ 156   5              }
+ 157   4              //break;
+ 158   4            }
+ 159   3          }
+ 160   2      
+ 161   2          // interpolate for elevation
+ 162   2          for(i=0;i<num_of_elevation_stamp;i++)
+ 163   2          {
+ 164   3            if((elevation>=elevation_stamp[i])&&(elevation<=elevation_stamp[i+1]))
+ 165   3            {
+ 166   4              p1.x=elevation_stamp[i];
+ 167   4              p2.x=elevation_stamp[i+1];
+ 168   4              
+ 169   4              p1.y=pos_interpolate_azimuth[i];
+ 170   4              p2.y=pos_interpolate_azimuth[i+1];
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/16/2018 11:42:09 PAGE 4   
 
- 171   4              JP_pos=linear_interpolate(p1,p2,elevation);
- 172   4              //break;
- 173   4              
- 174   4            }
- 175   3            
- 176   3          }
- 177   2          
- 178   2          desired_distance=78+2*JP_pos;
- 179   2          
- 180   2          distance=desired_distance-*currnt_pos;
- 181   2        
- 182   2          if(distance>0)
- 183   2            Move(distance,1);
- 184   2          else if (distance<0)
- 185   2            Move(-distance,0);
- 186   2        }
- 187   1        *currnt_pos=desired_distance;
- 188   1        return;
- 189   1      
- 190   1      }
-*** WARNING C280 IN LINE 102 OF BipolarMotor.c: 'date': unreferenced local variable
+ 171   4              
+ 172   4              JP_pos=linear_interpolate(p1,p2,elevation);
+ 173   4              //break;
+ 174   4              
+ 175   4            }
+ 176   3            
+ 177   3          }
+ 178   2          
+ 179   2          desired_distance=78+2*JP_pos +offset_calib;
+ 180   2          
+ 181   2          distance=desired_distance-*currnt_pos;
+ 182   2          if(abs(distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more t
+             -han 0.5mm OR >30s
+ 183   2          {
+ 184   3            if(distance>0)
+ 185   3              Move(distance,1);
+ 186   3            else if (distance<0)
+ 187   3              Move(-distance,0);
+ 188   3            previous_move_time=BCDtoDec1(sconds&0x7f);
+ 189   3            *currnt_pos=desired_distance;
+ 190   3          }
+ 191   2        }
+ 192   1        return;
+ 193   1      
+ 194   1      }
+*** WARNING C280 IN LINE 103 OF BipolarMotor.c: 'date': unreferenced local variable
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   3381    ----
+   CODE SIZE        =   3533    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =    960     299
+   XDATA SIZE       =    960     305
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

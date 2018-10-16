@@ -9,8 +9,12 @@
 #include "KeyPad.h"
 #include <REG51F.H>
 #include "LCD_Driver_SPLC780D.h"
+//#include "Receiver_Position_Data.h"
 #include "VCNL4035X01.h"
 #include <math.h>// to use power function
+#include "ADCh.h"
+#include "SunPos.h"
+
 //#include "Receiver_Position_Data.h"
 
 #define FOSC 18432000L 	 
@@ -40,15 +44,24 @@ unsigned int Read_VCNL4035(unsigned int command_code);
 void I2C_Init();
 void Display_Prox(unsigned int prox_data);
 void Step_move(unsigned int step, bit dir);
-void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,float *currnt_pos);
+void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,float *currnt_pos,float offset_calib);
 void Display_Pos(float sign_dat);
+float calibration(unsigned char mnths,unsigned char dys,
+										 unsigned char hurs,unsigned char mns,unsigned char sconds,
+										 float  *currnt_pos);
+unsigned int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd); // this function is used to count the date in a year example: 22 March is the 80th day of the year
+unsigned char BCDtoDec1(unsigned char bcd);
+float calib_interpolate(float hours, float mins);
+float  linear_interpolate(struct point p1,struct point p2, float  x);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
 int RX_Data_Uart_Cnt=0;
 int st_time=0;
+int count=0;
 static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
+float *calib_value,*calib_time;
 
 void tm0_isr() interrupt 1 using 1
 {
@@ -63,9 +76,11 @@ void main(void)
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 	char prox_flag=1;
 //	unsigned char KeyNum;
-	int count=0;
+	int calib_day=0;
 	char numStr[5];
 	float current_position=0;
+	
+	calib_mode=1;
 	direction=1;
 	move=0;
 	small_move=0;
@@ -213,12 +228,35 @@ void main(void)
 		//Read_time(&months,&days,&hours,&mins,&seconds);
 		if(auto_mode)
 		{
+			
 			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
-				Update_position(months,days,hours,mins,seconds,&current_position);
+				//if(Day_Of_Year(months,days)>calib_day && Day_Of_Year(months,days)<calib_day+7)
+				{
+					//offset=calib_interpolate();
+					Update_position(months,days,hours,mins,seconds,&current_position,calib_interpolate(hours, mins));
+				}
 				//Update_position(0x10,0x05,0x12,0x00,0x00,&current_position);
 		}
+/*		if (Day_Of_Year(months,days)==calib_day+7)
+		{
+			calib_mode=1;
+			//count=0;
+		}
+		
+		if(calib_mode && mins%30==0)// calib every 30mins
+		{
+			*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
+			*(calib_time+count)=BCDtoDec1(hours)+BCDtoDec1(mins);
+			if (BCDtoDec1(hours)>18)// do not calib after 18pm
+			{
+				calib_day=Day_Of_Year(months,days);
+				calib_mode=0;
+				count=0;
+			}
+			count++;			
+		}*/
 		//==================================================		
-		// This is for UART to set the time		
+		// This is for UART to set the time									
 		//==================================================				
 	/*	if(st_time)
 		{
@@ -273,6 +311,31 @@ void Uart() interrupt 4 using 1
 		TI=0;
 		busy=0;
 	}
+}
+
+
+float calib_interpolate(float hours, float mins)
+{
+	struct point p_calib1,p_calib2;
+	int i;
+	float current_time;
+	current_time=(float) (BCDtoDec1(hours))+(float)BCDtoDec1(mins)/60;
+	
+	for(i=0;i<=count;i++)
+	{
+		if(current_time >= *(calib_time+i) && current_time<= *(calib_time+i+1))
+		{
+			p_calib1.x= *(calib_time+i);
+			p_calib1.y= *(calib_value+i);
+			
+			p_calib2.x= *(calib_time+i+1);
+			p_calib2.y= *(calib_value+i+1);
+			
+			break;
+		}
+	}
+	return 0;// for debugging only
+	//return linear_interpolate(p_calib1,p_calib2,current_time);	
 }
 
 

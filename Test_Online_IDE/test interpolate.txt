@@ -1,0 +1,38 @@
+/******************************************************************************
+
+                            Online C Compiler.
+                Code, Compile, Run and Debug C program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <stdio.h>
+struct point
+{
+	float x;
+	float y;
+};
+float  linear_interpolate(struct point p1,struct point p2, float  x)
+{
+	float  fx;
+	
+	fx=-(p1.x-x)/(p1.x-p2.x)*(p1.y-p2.y)+p1.y;
+	
+	return fx;
+}
+
+int main()
+{
+    struct point pp1,pp2;
+    float pos;
+    pp1.x=26.7;
+    pp1.y=37.877;
+    pp2.x=31.4;
+    pp2.y=22.518;
+    
+    
+    pos=linear_interpolate(pp1,pp2,144.635);
+    printf("%f",pos);
+
+    return 0;
+}

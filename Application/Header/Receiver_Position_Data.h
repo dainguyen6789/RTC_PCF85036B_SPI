@@ -39,8 +39,3 @@ float  elevation_stamp[num_of_elevation_stamp]={
 
 };
 
-struct point
-{
-	float x;
-	float y;
-};
