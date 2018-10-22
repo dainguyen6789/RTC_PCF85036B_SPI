@@ -62,17 +62,64 @@ int count=0;
 static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 float calib_value[24],calib_time[24];
+unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
+float current_position=0;
+int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);
 
 void tm0_isr() interrupt 1 using 1
 {
 	//Display_time(&months,&days,&hours,&mins,&seconds);
+			lcd++;
+/*		if(lcd==15000)
+		{
+			lcd=0;
+			LCD_return_home();
+			Display_Line(1);	
+			WriteData(0x68);//display "h"
+			WriteData(0x68);//display "h"
+			WriteData(0x6D);//display "m"
+			WriteData(0x6D);//display "m"
+			WriteData(0x23);//display "#" SETTIME_KEY
+			Command(0x08);
+			Command(0x05);
+			
+			WriteData(0x50);//display "P"
+			WriteData(0x4F);//display "O"
+			WriteData(0x53);//display "S"	
+			WriteData(0x3A);//display ":"	*/
+			//LCD_clear();
+			//Command(0x0A);
+			//Command(0x10);
+			//Display_Pos(current_position);
+			//==============================================================
+			/*Display_Line(2);
+			DisplayLCD(hours);
+			WriteData(0x3A);//display ":"
+			DisplayLCD(mins);
+			WriteData(0x3A);//display ":"
+			DisplayLCD(seconds&0x7f);
+			WriteData(0x3B);//display ";"
+			DisplayLCD(months);
+			//WriteData(0x2D);//display "-"
+			DisplayLCD(days);	
+			WriteData(0x3B);//display ";"
+			if(auto_mode)
+			{
+				WriteData(0x41);//display "A"
+			}
+			else if (!auto_mode)
+			{
+				WriteData(0x4D);//display "M"
+			}	
+		
+		}*/
 }
 
 void main(void)
 {
-	unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
+//	unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
 	unsigned int prox_data;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
@@ -80,13 +127,14 @@ void main(void)
 //	unsigned char KeyNum;
 	int calib_day=0;
 	char numStr[5];
-	float current_position=0;
+//	float current_position=0;
 	
-	calib_mode=1;
 	direction=1;
 	move=0;
 	small_move=0;
+	calib_mode=1;
 	auto_mode=0;
+
 	//=======================================
 	/*float a=-7.0014e-5;
 	float b=1.1071e-2;
@@ -100,6 +148,7 @@ void main(void)
 	KeyPad_IO_Init();
 	//initUART1();
 	I2C_Init();
+	ADC_Init();
 	//Timer0===================================
 	AUXR|=0x80;
 	TL0=T1MS;
@@ -235,7 +284,7 @@ void main(void)
 				if(Day_Of_Year(months,days)>calib_day && Day_Of_Year(months,days)<calib_day+7 && calib_day!=0)// updated position if  and only if the system was calibrated (calib_day!=0 by line 252)
 				{
 					//offset=calib_interpolate();
-					Update_position(months,days,hours,mins,seconds,&current_position,calib_interpolate(hours,mins));
+					//Update_position(months,days,hours,mins,seconds,&current_position,calib_interpolate(hours,mins));
 				}
 				//Update_position(0x10,0x05,0x12,0x00,0x00,&current_position);
 		}
@@ -245,7 +294,7 @@ void main(void)
 			count=0;
 		}
 		
-		if(calib_mode && BCDtoDec1(mins)%30==0)// calib every 30mins
+		if(calib_mode && BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0)// calib every 30mins
 		{
 			*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
 			*(calib_time+count)=BCDtoDec1(hours)+BCDtoDec1(mins);
