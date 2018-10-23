@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ADCh.h"
-
+void Wait_ms(int ms);
 unsigned int ADC_GetResult(unsigned char ch);
 void Move(float  distance, bit direction);
 unsigned int Max_Value(unsigned int *input);
@@ -42,10 +42,12 @@ void  Find_Real_Max(float  *current_position)
 		Move(calib_step_move,1);
 		*current_position=*current_position+0.5;
 		voltage_at_scanned_pos[20+i]=ADC_GetResult(ch);
+		Wait_ms(500);
 	}
 	// go back to JP max theorical position
 		Move(10,0);
 		*current_position=*current_position-10;	
+		Wait_ms(500);
 	// move/scan -direction
 	for (i=1;i<=20;i++)
 	{
@@ -53,20 +55,22 @@ void  Find_Real_Max(float  *current_position)
 			Move(calib_step_move,0);
 			*current_position=*current_position-0.5;
 			voltage_at_scanned_pos[i]=ADC_GetResult(ch);
+			Wait_ms(500);
 	}
 	
 	max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,39]
 	// move to the optimal position in the area of +/-10mm from JP max theorical pos
 	Move(calib_step_move*max_location,1);
 	*current_position=*current_position+calib_step_move*max_location;
+	Wait_ms(500);
 
 }
 
 
 unsigned int Max_Value(unsigned int *input)
 {
-	unsigned int max,max_location=0;
-	int i;
+	unsigned int max,max_location=0,i;
+	//int i;
 	for(i=0;i<=39;i++)
 	{
 		max=max>*(input+i)? max:*(input+i);
