@@ -178,7 +178,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 			
 		}
 		
-		desired_distance=78+2*JP_pos +offset_calib;
+		desired_distance=27+2*JP_pos +offset_calib;
 		
 		distance=desired_distance-*currnt_pos;
 		if(abs(distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more than 0.5mm OR >30s
