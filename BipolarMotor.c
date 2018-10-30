@@ -48,7 +48,33 @@ void Step_move(unsigned int step, bit dir)
 					Wait_ms(2);
 			}
 }
+/*
 
+// P4.5 direction; P4.3 pulse
+void Step_move_2ndMotor(unsigned int step, bit dir)
+{
+			unsigned int i=0;
+			if(dir)
+				P4 |=(1<<=5);// set bit P4.5
+			else
+				P4 &=~(1<<5);// clear bit P4.5
+			
+			for( i=0;i<step;i++)
+			{
+					P4 |=1<<3;// P43=1 // moving distance (mm)=pi^2*step*4/675
+					Wait_ms(2);
+					P4 &= ~(1<<3);
+					Wait_ms(2);
+			}
+}
+
+void Move_2ndMotor(float  distance, bit direction)
+{
+		unsigned int step;
+		step= (unsigned int)(distance*337.5/(3.14159));
+		Step_move_2ndMotor(step,direction);
+}
+*/
 void Move(float  distance, bit direction)
 {
 		unsigned int step;
