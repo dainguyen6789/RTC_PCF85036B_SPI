@@ -4,6 +4,7 @@
 #define num_of_azimuth_stamp 	10
 
 int date_azimuth_mapping[num_of_azimuth_stamp]={180,190,200,210,220,230,240,250,260,270};
+int date_azimuth_mapping_symmetry_side[num_of_azimuth_stamp]={180,170,160,150,140,130,120,110,100,90};
 
 float RX_pos[num_of_elevation_stamp][num_of_azimuth_stamp]=
 {

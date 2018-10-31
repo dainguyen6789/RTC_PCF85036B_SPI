@@ -44,7 +44,7 @@ unsigned int Read_VCNL4035(unsigned int command_code);
 void I2C_Init();
 void Display_Prox(unsigned int prox_data);
 void Step_move(unsigned int step, bit dir);
-void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,float *currnt_pos,float offset_calib);
+void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,float *currnt_pos,float offset_calib,float  *currnt_angle);
 void Display_Pos(float sign_dat);
 float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,

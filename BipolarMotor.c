@@ -48,14 +48,14 @@ void Step_move(unsigned int step, bit dir)
 					Wait_ms(2);
 			}
 }
-/*
+
 
 // P4.5 direction; P4.3 pulse
 void Step_move_2ndMotor(unsigned int step, bit dir)
 {
 			unsigned int i=0;
 			if(dir)
-				P4 |=(1<<=5);// set bit P4.5
+				P4 |=(1<<5);// set bit P4.5
 			else
 				P4 &=~(1<<5);// clear bit P4.5
 			
@@ -68,13 +68,14 @@ void Step_move_2ndMotor(unsigned int step, bit dir)
 			}
 }
 
-void Move_2ndMotor(float  distance, bit direction)
+void Move_2ndMotor(float  angle_distance, bit direction)
 {
 		unsigned int step;
-		step= (unsigned int)(distance*337.5/(3.14159));
+		step= (unsigned int)(angle_distance/0.039);// use geared motor 
+		//https://www.omc-stepperonline.com/geared-stepper-motor/nema-23-stepper-motor-bipolar-l76mm-w-gear-raio-471-planetary-gearbox-23hs30-2804s-pg47.html
 		Step_move_2ndMotor(step,direction);
 }
-*/
+
 void Move(float  distance, bit direction)
 {
 		unsigned int step;
@@ -125,12 +126,12 @@ float  linear_interpolate(struct point p1,struct point p2, float  x)
 
 void Update_position(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos, float offset_calib)
+										 float  *currnt_pos, float offset_calib,float  *currnt_angle)
 {
 	unsigned int date,i=0,yy=0;
 	
-	float  desired_distance=0,distance=0,JP_pos=0;
-	float  pos_interpolate_azimuth[num_of_azimuth_stamp],current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
+	float  desired_distance=0,distance=0,angle_distance=0,JP_pos=0,angle,JP_angle=0;
+	float  pos_interpolate_azimuth[num_of_azimuth_stamp],angle_interpolate_azimuth[num_of_azimuth_stamp],current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
 	float declination;
 	struct point p1,p2;
 	struct cTime time;
@@ -149,7 +150,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 
 	
 	desired_distance=*currnt_pos;
-	
+	angle=*currnt_angle;
 	//date=Day_Of_Year(mnths,dys)+4;
 	//date=237;
 	declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
@@ -161,9 +162,6 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	azimuth=180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
 	//azimuth=(180/pi)*acos(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
 
-	
-	//if (current_local_sun_time>12)
-	//	azimuth=360-azimuth;
 	
 	if(BCDtoDec1(sconds&0x7f)%2==0)
 	{
@@ -184,6 +182,21 @@ void Update_position(unsigned char mnths,unsigned char dys,
 				}
 				//break;
 			}
+			else if ((azimuth<=date_azimuth_mapping_symmetry_side[i]) && (azimuth>=date_azimuth_mapping_symmetry_side[i+1]))
+			{
+				for (yy=0;yy<num_of_elevation_stamp;yy++)
+				{
+					p1.x=date_azimuth_mapping_symmetry_side[i];
+					p2.x=date_azimuth_mapping_symmetry_side[i+1];
+					
+					p1.y=RX_pos[yy][i];
+					p2.y=RX_pos[yy][i+1];
+					
+					pos_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
+				}
+				//break;
+			}
+			
 		}
 
 		// interpolate for elevation
@@ -216,6 +229,74 @@ void Update_position(unsigned char mnths,unsigned char dys,
 			previous_move_time=BCDtoDec1(sconds&0x7f);
 			*currnt_pos=desired_distance;
 		}
+		
+		//============================================================
+		// MOVEMENT CONTROL FOR ANGLE ROTATION
+		// Interpolate for azimuth
+		//============================================================
+		
+		for (i=0;i<num_of_azimuth_stamp;i++)
+		{
+			if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
+			{
+				for (yy=0;yy<num_of_elevation_stamp;yy++)
+				{
+					p1.x=date_azimuth_mapping[i];
+					p2.x=date_azimuth_mapping[i+1];
+					
+					p1.y=RX_angle[yy][i];
+					p2.y=RX_angle[yy][i+1];
+					
+					angle_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
+				}
+				//break;
+			}
+			else if ((azimuth<=date_azimuth_mapping_symmetry_side[i]) && (azimuth>=date_azimuth_mapping_symmetry_side[i+1]))
+			{
+				for (yy=0;yy<num_of_elevation_stamp;yy++)
+				{
+					p1.x=date_azimuth_mapping_symmetry_side[i];
+					p2.x=date_azimuth_mapping_symmetry_side[i+1];
+					
+					p1.y=RX_angle[yy][i];
+					p2.y=RX_angle[yy][i+1];
+					
+					angle_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
+				}
+				//break;
+			}
+			
+		}
+		// MOVEMENT CONTROL FOR ANGLE ROTATION
+		// interpolate for elevation
+		for(i=0;i<num_of_elevation_stamp;i++)
+		{
+			if((elevation>=elevation_stamp[i])&&(elevation<=elevation_stamp[i+1]))
+			{
+				p1.x=elevation_stamp[i];
+				p2.x=elevation_stamp[i+1];
+				
+				p1.y=angle_interpolate_azimuth[i];
+				p2.y=angle_interpolate_azimuth[i+1];
+				
+				JP_angle=linear_interpolate(p1,p2,elevation);
+				//break;
+				
+			}
+			
+		}
+				
+		angle_distance=JP_angle-*currnt_angle;
+		if(abs(angle_distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more than 0.5mm OR >30s
+		{
+			if(angle_distance>0)
+				Move_2ndMotor(angle_distance,1);
+			else if (angle_distance<0)
+				Move_2ndMotor(-angle_distance,0);
+			previous_move_time=BCDtoDec1(sconds&0x7f);
+			*currnt_angle=JP_angle;
+		}
+		
 	}
 	return;
 
@@ -224,7 +305,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 
 
 
-void Update_angle(unsigned char mnths,unsigned char dys,
+/*void Update_angle(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
 										 float  *currnt_angle, float offset_calib)
 {
@@ -260,11 +341,7 @@ void Update_angle(unsigned char mnths,unsigned char dys,
 	elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
 						cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180)           );
 	azimuth=180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
-	//azimuth=(180/pi)*acos(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
 
-	
-	//if (current_local_sun_time>12)
-	//	azimuth=360-azimuth;
 	
 	if(BCDtoDec1(sconds&0x7f)%2==0)
 	{
@@ -320,4 +397,4 @@ void Update_angle(unsigned char mnths,unsigned char dys,
 	}
 	return;
 
-}
+}*/
