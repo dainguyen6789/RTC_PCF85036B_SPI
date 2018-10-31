@@ -64,57 +64,13 @@ static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 float calib_value[24],calib_time[24];
 unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
 float current_position=0;
-int lcd=0;
+//int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);
 
 void tm0_isr() interrupt 1 using 1
 {
-	//Display_time(&months,&days,&hours,&mins,&seconds);
-			lcd++;
-/*		if(lcd==15000)
-		{
-			lcd=0;
-			LCD_return_home();
-			Display_Line(1);	
-			WriteData(0x68);//display "h"
-			WriteData(0x68);//display "h"
-			WriteData(0x6D);//display "m"
-			WriteData(0x6D);//display "m"
-			WriteData(0x23);//display "#" SETTIME_KEY
-			Command(0x08);
-			Command(0x05);
-			
-			WriteData(0x50);//display "P"
-			WriteData(0x4F);//display "O"
-			WriteData(0x53);//display "S"	
-			WriteData(0x3A);//display ":"	*/
-			//LCD_clear();
-			//Command(0x0A);
-			//Command(0x10);
-			//Display_Pos(current_position);
-			//==============================================================
-			/*Display_Line(2);
-			DisplayLCD(hours);
-			WriteData(0x3A);//display ":"
-			DisplayLCD(mins);
-			WriteData(0x3A);//display ":"
-			DisplayLCD(seconds&0x7f);
-			WriteData(0x3B);//display ";"
-			DisplayLCD(months);
-			//WriteData(0x2D);//display "-"
-			DisplayLCD(days);	
-			WriteData(0x3B);//display ";"
-			if(auto_mode)
-			{
-				WriteData(0x41);//display "A"
-			}
-			else if (!auto_mode)
-			{
-				WriteData(0x4D);//display "M"
-			}	
-		
-		}*/
+
 }
 
 void main(void)
