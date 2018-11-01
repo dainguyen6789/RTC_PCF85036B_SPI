@@ -3,10 +3,18 @@
 #include "Receiver_Position_Data.h"
 #include "math.h"
 #include "SunPos.h"
+#include "KeyPad.h"
 //#include "PCF85963BTL.h"
+//#include "PCF85063BTL.h"
+
 void Delay_ms(unsigned int ms);
 int Day_Of_Year(unsigned char months,unsigned char days);
 unsigned char BCDtoDec1(char bcd);
+void Display_Pos(float sign_dat);
+void WriteData(unsigned char dat);
+void Command(unsigned char dat);
+
+int lcd=0;
 float  degree;
 unsigned char previous_move_time=0;
 float  findDet4x4 (float  a11, float  a12, float  a13, float  a14, 
@@ -40,7 +48,7 @@ void Step_move(unsigned int step, bit dir)
 			else
 				P4 &=~(1<<2);// clear bit P4.2
 			
-			for( i=0;i<step;i++)
+			//for( i=0;i<step;i++)
 			{
 					P4 |=1<<1;// P41=1 // moving distance (mm)=pi^2*step*4/675
 					Wait_ms(2);
@@ -59,7 +67,7 @@ void Step_move_2ndMotor(unsigned int step, bit dir)
 			else
 				P4 &=~(1<<5);// clear bit P4.5
 			
-			for( i=0;i<step;i++)
+			//for( i=0;i<step;i++)
 			{
 					P4 |=1<<3;// P43=1 // moving distance (mm)=pi^2*step*4/675
 					Wait_ms(2);
@@ -68,19 +76,46 @@ void Step_move_2ndMotor(unsigned int step, bit dir)
 			}
 }
 
-void Move_2ndMotor(float  angle_distance, bit direction)
+void Move_2ndMotor(float  angle_distance, bit direction,float current_angle)
 {
-		unsigned int step;
+		unsigned int step,i;
 		step= (unsigned int)(angle_distance/0.039);// use geared motor 
 		//https://www.omc-stepperonline.com/geared-stepper-motor/nema-23-stepper-motor-bipolar-l76mm-w-gear-raio-471-planetary-gearbox-23hs30-2804s-pg47.html
-		Step_move_2ndMotor(step,direction);
+		for( i=0;i<step;i++)
+		{
+			Step_move_2ndMotor(step,direction);
+			if(direction)
+				current_angle=current_angle+0.039;// for LCD display only
+			else
+				current_angle=current_angle-0.039;// for LCD display only
+			if(i%50==0)
+			{
+				Command(0x08);
+				Command(0x0A);
+				Display_Pos(current_angle);
+			}
+		}
 }
 
-void Move(float  distance, bit direction)
+void Move(float  distance, bit direction,float current_position)
 {
-		unsigned int step;
-		step= (unsigned int)(distance*337.5/(3.14159));
-		Step_move(step,direction);
+		unsigned long int step,i;
+		//int i;
+		step= (unsigned long int)(distance*337.5/(3.14159));
+		for( i=0;i<step;i++)
+		{
+			Step_move(step,direction);
+			if(direction)
+				current_position=current_position+0.00931;
+			else
+				current_position=current_position-0.00931;
+			if(i%50==0)
+			{			
+				Command(0x08);
+				Command(0x0A);
+				Display_Pos(current_position);
+			}
+		}
 }
 //=====================================================
 //We need 4 points for cubic interpolation, p1[x],p1[y],..,p4[x],p4[y]
@@ -217,15 +252,15 @@ void Update_position(unsigned char mnths,unsigned char dys,
 			
 		}
 		
-		desired_distance=27+2*JP_pos +offset_calib;
+		desired_distance=JP_pos;// +offset_calib;
 		
 		distance=desired_distance-*currnt_pos;
 		if(abs(distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more than 0.5mm OR >30s
 		{
 			if(distance>0)
-				Move(distance,1);
+				Move(distance,1,*currnt_pos);
 			else if (distance<0)
-				Move(-distance,0);
+				Move(-distance,0,*currnt_pos);
 			previous_move_time=BCDtoDec1(sconds&0x7f);
 			*currnt_pos=desired_distance;
 		}
@@ -290,9 +325,9 @@ void Update_position(unsigned char mnths,unsigned char dys,
 		if(abs(angle_distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more than 0.5mm OR >30s
 		{
 			if(angle_distance>0)
-				Move_2ndMotor(angle_distance,1);
+				Move_2ndMotor(angle_distance,1,*currnt_angle);
 			else if (angle_distance<0)
-				Move_2ndMotor(-angle_distance,0);
+				Move_2ndMotor(-angle_distance,0,*currnt_angle);
 			previous_move_time=BCDtoDec1(sconds&0x7f);
 			*currnt_angle=JP_angle;
 		}
@@ -302,7 +337,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 
 }
 
-/*void Display_Pos(float sign_dat)
+void Display_Pos(float sign_dat)
 {
 	unsigned char unit, ten, hundred,thousand;
 	unsigned char after_dot;
@@ -319,7 +354,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	ten=(dat-thousand*1000-hundred*100)/10;
 	if (sign_dat>=0)
 	{
-		//WriteData(thousand|0x30);
+		WriteData(thousand|0x30);
 		WriteData(hundred|0x30);
 		WriteData(ten|0x30);
 		WriteData(unit|0x30);
@@ -344,6 +379,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	{
 		
 		WriteData(0x2D);// "-"
+		WriteData(thousand|0x30);
 		WriteData(hundred|0x30);
 		WriteData(ten|0x30);
 		WriteData(unit|0x30);
@@ -368,6 +404,6 @@ void Update_position(unsigned char mnths,unsigned char dys,
 
 	}
 	return;
-}*/
+}
 
 

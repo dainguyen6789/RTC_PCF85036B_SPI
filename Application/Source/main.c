@@ -70,7 +70,6 @@ float current_position=0,current_angle=0;
 void Step_move_2ndMotor(unsigned int step, bit dir);
 bit pos_angle_display=0;
 
-int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);
 
@@ -438,7 +437,7 @@ void SendUART1(unsigned char dat)
 }
 
 
-void Display_Prox(unsigned int dat)
+/*void Display_Prox(unsigned int dat)
 {
 	unsigned char unit, ten, hundred,thousand;
 	unit =dat%10;// remainder after division
@@ -519,4 +518,4 @@ void Display_Pos(float sign_dat)
 
 	}
 	return;
-}
+}*/

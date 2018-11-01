@@ -37,6 +37,6 @@
 
  extern int  auto_mode;
  extern int  calib_mode;
-
+ extern int lcd;
 
  
