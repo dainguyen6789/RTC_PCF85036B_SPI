@@ -14,11 +14,14 @@
 #include <math.h>// to use power function
 #include "ADCh.h"
 #include "SunPos.h"
-
+#include "KeyPad.h"
 //#include "Receiver_Position_Data.h"
 
 #define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000)
+
+#define Rotating_Motor 1
+#define Positioning_Motor 0
 
 void Delay_ms(unsigned int ms);
 void SendString(char *s);
@@ -63,33 +66,49 @@ static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 float calib_value[24],calib_time[24];
 unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
-float current_position=0;
-//int lcd=0;
+float current_position=0,current_angle=0;
+void Step_move_2ndMotor(unsigned int step, bit dir);
+bit pos_angle_display=0;
+
+int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);
 
 void tm0_isr() interrupt 1 using 1
 {
-
+		lcd++;
+		if(lcd==1500)
+		{
+			lcd=0;
+			pos_angle_display=!pos_angle_display;
+		}
 }
 
 void main(void)
 {
 //	unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
-	unsigned int prox_data;
+	//unsigned int prox_data;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
-	char prox_flag=1;
+	char prox_flag=1,prox_flag_rotation=1;
 //	unsigned char KeyNum;
 	int calib_day=0;
 	char numStr[5];
 //	float current_position=0;
 	
 	direction=1;
+	//direction_rotation=1;
+	
 	move=0;
+	//move_rotation=1;
+	
 	small_move=0;
-	calib_mode=1;
+	//small_move_rotation=0;
 	auto_mode=0;
+	//calib_mode=1;
+	selected_motor=1;
+
+	
 
 	//=======================================
 	/*float a=-7.0014e-5;
@@ -137,15 +156,56 @@ void main(void)
 		{
 			//move cursor to line 1, pos 6
 			
-			Command(0x08);
-			Command(0x05);
-			
-			WriteData(0x50);//display "P"
-			WriteData(0x4F);//display "O"
-			WriteData(0x53);//display "S"	
-			WriteData(0x3A);//display ":"	
+//			Command(0x08);
+//			Command(0x05);
+			if (auto_mode)
+			{
+				if(pos_angle_display==0)
+				{
+					Command(0x08);
+					Command(0x05);
+					WriteData(0x50);//display "P"
+					WriteData(0x4F);//display "O"
+					WriteData(0x53);//display "S"	
+					WriteData(0x3A);//display ":"	
+					Display_Pos(current_position);
+				}
+				if(pos_angle_display==1)
+				{
+					Command(0x08);
+					Command(0x05);
+					WriteData(0x41);// display "A"
+					WriteData(0x67);// display "g"
+					WriteData(0x6C);//	display "l"
+					WriteData(0x3A);//display ":"	
+					Display_Pos(current_angle);				
+				}
+			}
+			else
+			{
+				if(selected_motor==0)
+				{
+					Command(0x08);
+					Command(0x05);
+					WriteData(0x50);//display "P"
+					WriteData(0x4F);//display "O"
+					WriteData(0x53);//display "S"	
+					WriteData(0x3A);//display ":"	
+					Display_Pos(current_position);
+				}
+				if(selected_motor==1)
+				{
+					Command(0x08);
+					Command(0x05);
+					WriteData(0x41);// display "A"
+					WriteData(0x67);// display "g"
+					WriteData(0x6C);//	display "l"
+					WriteData(0x3A);//display ":"	
+					Display_Pos(current_angle);				
+				}
+			}
 			//LCD_clear();
-			Display_Pos(current_position);
+			
 			//==============================================================
 			Display_Line(2);
 			DisplayLCD(hours);
@@ -177,42 +237,71 @@ void main(void)
 		
 			//Delay_ms(1);
 			//WriteData(Read_VCNL4035(PS3_Data_L));
-			if (move && !auto_mode)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+			if(selected_motor==Positioning_Motor)
 			{
-				Step_move(11, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
-				if (direction==1)
+				if (move && !auto_mode)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 				{
-					current_position=current_position+0.1;
+					Step_move(11, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
+					if (direction==1)
+					{
+						current_position=current_position+0.1;
+					}
+					else
+					{
+						current_position=current_position-0.1;
+					}
+					prox_flag=0;
 				}
-				else
+				if (small_move && !auto_mode)
 				{
-					current_position=current_position-0.1;
+					
+					//auto_mode=0;
+					Step_move(11, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
+					if (direction==1)
+					{
+						current_position=current_position+0.1;
+					}
+					else
+					{
+						current_position=current_position-0.1;
+					}
+					prox_flag=0;		
+					small_move=0;				
 				}
-				prox_flag=0;
 			}
-			if (small_move && !auto_mode)
+			else if(selected_motor==Rotating_Motor)
 			{
-				
-				//auto_mode=0;
-				Step_move(11, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
-				if (direction==1)
+				if (move && !auto_mode)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 				{
-					current_position=current_position+0.1;
+					Step_move_2ndMotor(11, direction_rotation);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
+					if (direction==1)
+					{
+						current_angle=current_angle+0.1;
+					}
+					else
+					{
+						current_angle=current_angle-0.1;
+					}
+					prox_flag_rotation=0;
 				}
-				else
+				if (small_move && !auto_mode)
 				{
-					current_position=current_position-0.1;
-				}
-				prox_flag=0;		
-				small_move=0;				
+					
+					//auto_mode=0;
+					Step_move_2ndMotor(11, direction_rotation);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
+					if (direction==1)
+					{
+						current_angle=current_angle+0.1;
+					}
+					else
+					{
+						current_angle=current_angle-0.1;
+					}
+					prox_flag_rotation=0;		
+					small_move=0;				
+				}			
 			}
 
-			/*if (prox_data<=300 && prox_flag==0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
-			{
-				current_position=0;
-				prox_flag=1;
-				move=0;
-			}*/
 			
 		if (P33 && prox_flag==0 && current_position<=0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
@@ -222,6 +311,16 @@ void main(void)
 				small_move=0;
 				direction=1;
 			}			
+			
+			
+		if (P32 && prox_flag_rotation==0 && current_angle<=0)
+			{
+				current_angle=0;
+				prox_flag_rotation=1;
+				move=0;
+				small_move=0;
+				direction=1;
+			}					
 			LCD_return_home();
 			
 		}
@@ -242,7 +341,7 @@ void main(void)
 					//offset=calib_interpolate();
 					//Update_position(months,days,hours,mins,seconds,&current_position,calib_interpolate(hours,mins));
 				}
-				//Update_position(0x10,0x05,0x12,0x00,0x00,&current_position);
+				Update_position(0x10,0x05,0x12,0x00,0x00,&current_position,0,&current_angle);
 		}
 		if (Day_Of_Year(months,days)==calib_day+7)
 		{
@@ -258,26 +357,10 @@ void main(void)
 			{
 				calib_day=Day_Of_Year(months,days);
 				calib_mode=0;
-				//count=0;
 			}
 			count++;			
 		}
-		//==================================================		
-		// This is for UART to set the time									
-		//==================================================				
-	/*	if(st_time)
-		{
-			SPI_WriteTime(hour_count,Hours);		// data , register address
-			SPI_WriteTime(min_count,Minutes);
-			st_time=0;
-			SendUART1(hour_count);
-			SendUART1(min_count);
-		}	
-		else
-		{
-			//UART
-			//Delay_ms(1200);
-		}*/
+
 	}
 	
 } 
@@ -287,7 +370,7 @@ void main(void)
 
 void Uart() interrupt 4 using 1
 {
-	if(RI) 
+/*	if(RI) 
 	{
 		RX_Data_Uart_Cnt++;
 		RI=0;
@@ -317,7 +400,7 @@ void Uart() interrupt 4 using 1
 	{
 		TI=0;
 		busy=0;
-	}
+	}*/
 }
 
 
@@ -393,9 +476,20 @@ void Display_Pos(float sign_dat)
 		WriteData(unit|0x30);
 		WriteData(0x2E);//.
 		WriteData((after_dot)|0x30);
-		WriteData(0x6D);//m
-		WriteData(0x6D);//m
-		WriteData(0x20);// "blank"
+		if(!selected_motor)
+		{
+			WriteData(0x6D);//m
+			WriteData(0x6D);//m
+			WriteData(0x20);// "blank"
+			//WriteData(0x20);// "blank"
+			//WriteData(0x20);// "blank"
+		}
+		else
+		{
+			WriteData(0xDF);// "blank"
+			WriteData(0x20);// "blank"
+			WriteData(0x20);// "blank"
+		}
 	}
 	else
 	{
@@ -404,10 +498,24 @@ void Display_Pos(float sign_dat)
 		WriteData(hundred|0x30);
 		WriteData(ten|0x30);
 		WriteData(unit|0x30);
-		WriteData(0x2E);//.
+		WriteData(0x2E);//"."
 		WriteData(after_dot|0x30);
-		WriteData(0x6D);//m
-		WriteData(0x6D);//m
+		if(!selected_motor)
+		{
+			WriteData(0x6D);//m
+			WriteData(0x6D);//m
+			WriteData(0x20);// "blank"
+			//WriteData(0x20);// "blank"
+			//WriteData(0x20);// "blank"
+		}
+		else
+		{
+			WriteData(0xDF);// "blank"
+			WriteData(0x20);// "blank"
+			WriteData(0x20);// "blank"
+		}
+		//WriteData(0x6D);//m
+		//WriteData(0x6D);//m
 
 	}
 	return;

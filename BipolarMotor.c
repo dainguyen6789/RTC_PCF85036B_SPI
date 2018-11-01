@@ -302,99 +302,72 @@ void Update_position(unsigned char mnths,unsigned char dys,
 
 }
 
-
-
-
-/*void Update_angle(unsigned char mnths,unsigned char dys,
-										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_angle, float offset_calib)
+/*void Display_Pos(float sign_dat)
 {
-	unsigned int date,i=0,yy=0;
+	unsigned char unit, ten, hundred,thousand;
+	unsigned char after_dot;
+	int dat;
+	dat=abs(sign_dat);
+	if (sign_dat>0)
+		after_dot=(unsigned char)((sign_dat-dat)*10);
+	else
+		after_dot=(unsigned char)((-sign_dat-dat)*10);
 	
-	float  desired_distance=0,distance=0,JP_pos=0;
-	float  angle_interpolate_azimuth[num_of_azimuth_stamp],current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
-	float declination;
-	struct point p1,p2;
-	struct cTime time;
-	struct cLocation location;
-	struct cSunCoordinates *sunCoord;
-	//hurs=hurs-1;// change to sun time
-	//dys=dys+4;
-	location.dLongitude=-73.6495;
-	location.dLatitude=45.478889;
-	time.iYear=2018;
-	time.iMonth=BCDtoDec1(mnths);
-	time.iDay=BCDtoDec1(dys);
-	time.dHours=BCDtoDec1(hurs);
-	time.dMinutes=BCDtoDec1(mns);
-	time.dSeconds=BCDtoDec1(sconds&0x7f);
-
-	
-	desired_distance=*currnt_angle;
-	
-	//date=Day_Of_Year(mnths,dys)+4;
-	//date=237;
-	declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
-	time_offset=1/60*(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180));
-	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset-1;//current time=sun time= clock time -1
-	//=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/365)*3.1416/180)    -   1.5*SIN((360*($B$8-81)/365)*3.1416/180))
-	elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
-						cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180)           );
-	azimuth=180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
-
-	
-	if(BCDtoDec1(sconds&0x7f)%2==0)
+	unit =dat%10;// remainder after division
+	thousand=dat/1000;
+	hundred=(dat-thousand*1000)/100;
+	ten=(dat-thousand*1000-hundred*100)/10;
+	if (sign_dat>=0)
 	{
-		// interpolate for azimuth
-		for (i=0;i<num_of_azimuth_stamp;i++)
+		//WriteData(thousand|0x30);
+		WriteData(hundred|0x30);
+		WriteData(ten|0x30);
+		WriteData(unit|0x30);
+		WriteData(0x2E);//.
+		WriteData((after_dot)|0x30);
+		if(!selected_motor)
 		{
-			if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
-			{
-				for (yy=0;yy<num_of_elevation_stamp;yy++)
-				{
-					p1.x=date_azimuth_mapping[i];
-					p2.x=date_azimuth_mapping[i+1];
-					
-					p1.y=RX_angle[yy][i];
-					p2.y=RX_angle[yy][i+1];
-					
-					angle_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
-				}
-				//break;
-			}
+			WriteData(0x6D);//m
+			WriteData(0x6D);//m
+			WriteData(0x20);// "blank"
+			//WriteData(0x20);// "blank"
+			//WriteData(0x20);// "blank"
 		}
-
-		// interpolate for elevation
-		for(i=0;i<num_of_elevation_stamp;i++)
+		else
 		{
-			if((elevation>=elevation_stamp[i])&&(elevation<=elevation_stamp[i+1]))
-			{
-				p1.x=elevation_stamp[i];
-				p2.x=elevation_stamp[i+1];
-				
-				p1.y=angle_interpolate_azimuth[i];
-				p2.y=angle_interpolate_azimuth[i+1];
-				
-				JP_pos=linear_interpolate(p1,p2,elevation);
-				//break;
-				
-			}
-			
-		}
-		
-		desired_distance=27+2*JP_pos +offset_calib;
-		
-		distance=desired_distance-*currnt_angle;
-		if(abs(distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more than 0.5mm OR >30s
-		{
-			if(distance>0)
-				Move(distance,1);
-			else if (distance<0)
-				Move(-distance,0);
-			previous_move_time=BCDtoDec1(sconds&0x7f);
-			*currnt_angle=desired_distance;
+			WriteData(0xDF);// "blank"
+			WriteData(0x20);// "blank"
+			WriteData(0x20);// "blank"
 		}
 	}
-	return;
+	else
+	{
+		
+		WriteData(0x2D);// "-"
+		WriteData(hundred|0x30);
+		WriteData(ten|0x30);
+		WriteData(unit|0x30);
+		WriteData(0x2E);//"."
+		WriteData(after_dot|0x30);
+		if(!selected_motor)
+		{
+			WriteData(0x6D);//m
+			WriteData(0x6D);//m
+			WriteData(0x20);// "blank"
+			//WriteData(0x20);// "blank"
+			//WriteData(0x20);// "blank"
+		}
+		else
+		{
+			WriteData(0xDF);// "blank"
+			WriteData(0x20);// "blank"
+			WriteData(0x20);// "blank"
+		}
+		//WriteData(0x6D);//m
+		//WriteData(0x6D);//m
 
+	}
+	return;
 }*/
+
+
