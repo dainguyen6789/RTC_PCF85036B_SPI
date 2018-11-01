@@ -10,12 +10,13 @@ void WriteData(unsigned char dat);
 void SPI_WriteTime(unsigned char val,unsigned char addr);
 void Command(unsigned char dat);
 void LCD_clear(void);
-
+//=============================================
 bit move=0;
 bit small_move=0;
 bit direction=0;
 bit auto_move=0;
-
+bit selected_motor=0;
+//=============================================
 void Delay_ms(unsigned int ms)
 {
   unsigned int De_Cnt;
@@ -265,6 +266,14 @@ void Key_Process(void)//
 			{	
 				SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);//Write BCD value
 				SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);//Write BCD value
+			}
+			if(PressedKey[4]==KEY1)// set hour, minute
+			{	
+				selected_motor=0;
+			}
+			else if(PressedKey[4]==KEY2)
+			{
+				selected_motor=1;
 			}
 			//=========================================================================			
 			// Set Month,Day			
