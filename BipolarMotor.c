@@ -101,7 +101,7 @@ void Move(float  distance, bit direction,float current_position)
 {
 		unsigned long int step,i;
 		//int i;
-		step= (unsigned long int)(distance*337.5/(3.14159));
+		step= (unsigned long int)(distance*337.5/(3.14159));// need to update this for the system in Vancouver
 		for( i=0;i<step;i++)
 		{
 			Step_move(step,direction);
