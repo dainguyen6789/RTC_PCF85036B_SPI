@@ -187,7 +187,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 
 	
 	desired_distance=*currnt_pos;
-	angle=*currnt_angle;
+	//desired_angle=*currnt_angle;
 	//date=Day_Of_Year(mnths,dys)+4;
 	//date=237;
 	declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;

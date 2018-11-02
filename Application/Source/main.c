@@ -51,7 +51,7 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 void Display_Pos(float sign_dat);
 float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos);
+										 float  *currnt_pos,float *current_angle);
 unsigned int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd); // this function is used to count the date in a year example: 22 March is the 80th day of the year
 unsigned char BCDtoDec1(unsigned char bcd);
 float calib_interpolate(float hours, float mins);
@@ -66,7 +66,7 @@ static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 float calib_value[24],calib_time[24];
 unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
-float current_position=0,current_angle=0;
+float current_position=1850,current_angle=0;
 void Step_move_2ndMotor(unsigned int step, bit dir);
 bit pos_angle_display=0;
 
@@ -104,7 +104,7 @@ void main(void)
 	small_move=0;
 	//small_move_rotation=0;
 	auto_mode=0;
-	//calib_mode=1;
+	calib_mode=1;
 	selected_motor=1;
 
 	
@@ -350,7 +350,7 @@ void main(void)
 		
 		if(calib_mode && BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0)// calib every 30mins
 		{
-			*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
+			*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position,&current_angle);// find the real max value within JP max +/- 10mm
 			*(calib_time+count)=BCDtoDec1(hours)+BCDtoDec1(mins);
 			if (BCDtoDec1(hours)>18)// do not calib after 18pm
 			{

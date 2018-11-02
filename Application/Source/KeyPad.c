@@ -16,6 +16,7 @@ bit small_move=0;
 bit direction=0;
 bit auto_move=0;
 bit selected_motor=0;
+bit calib_mode=0;
 //=============================================
 void Delay_ms(unsigned int ms)
 {

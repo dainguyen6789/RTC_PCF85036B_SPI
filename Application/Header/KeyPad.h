@@ -34,9 +34,8 @@
  extern bit direction,direction_rotation;// motor direction
  extern bit small_move,small_move_rotation;
  extern bit selected_motor;
-
  extern int  auto_mode;
- extern int  calib_mode;
+ extern bit  calib_mode;
  extern int lcd;
 
  

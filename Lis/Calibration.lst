@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       11/02/2018 12:04:45 PAGE 1   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       11/02/2018 16:30:13 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE CALIBRATION
@@ -15,7 +15,7 @@ line level    source
    5          #include "ADCh.h"
    6          void Wait_ms(int ms);
    7          unsigned int ADC_GetResult(unsigned char ch);
-   8          void Move(float  distance, bit direction);
+   8          void Move(float  distance, bit direction,float current_position);
    9          unsigned int Max_Value(unsigned int *input);
   10          void Update_position(unsigned char mnths,unsigned char dys,
   11                               unsigned char hurs,unsigned char mns,unsigned char sconds,
@@ -47,87 +47,89 @@ line level    source
   36   1        float calib_step_move=0.5;
   37   1        unsigned int voltage_at_scanned_pos[40],max_location;
   38   1        int i;
-  39   1        // move/scan +direction
-  40   1        for(i=1;i<=20;i++)
-  41   1        {
-  42   2          Move(calib_step_move,1);
-  43   2          *current_position=*current_position+0.5;
-  44   2          voltage_at_scanned_pos[20+i]=ADC_GetResult(ch);
-  45   2          Wait_ms(500);
-  46   2        }
-  47   1        // go back to JP max theorical position
-  48   1          Move(10,0);
-  49   1          *current_position=*current_position-10; 
-  50   1          Wait_ms(500);
-  51   1        // move/scan -direction
-  52   1        for (i=1;i<=20;i++)
-  53   1        {
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       11/02/2018 12:04:45 PAGE 2   
+  39   1        //float currnt_pos=*current_position;
+  40   1        // move/scan +direction
+  41   1        for(i=1;i<=20;i++)
+  42   1        {
+  43   2          Move(calib_step_move,1,*current_position);
+  44   2          *current_position=*current_position+0.5;
+  45   2          voltage_at_scanned_pos[20+i]=ADC_GetResult(ch);
+  46   2          Wait_ms(500);
+  47   2        }
+  48   1        // go back to JP max theorical position
+  49   1          Move(10,0,*current_position);
+  50   1          *current_position=*current_position-10; 
+  51   1          Wait_ms(500);
+  52   1        // move/scan -direction
+  53   1        for (i=1;i<=20;i++)
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       11/02/2018 16:30:13 PAGE 2   
 
-  54   2      
-  55   2            Move(calib_step_move,0);
-  56   2            *current_position=*current_position-0.5;
-  57   2            voltage_at_scanned_pos[i]=ADC_GetResult(ch);
-  58   2            Wait_ms(500);
-  59   2        }
-  60   1        
-  61   1        max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,39]
-  62   1        // move to the optimal position in the area of +/-10mm from JP max theorical pos
-  63   1        Move(calib_step_move*max_location,1);
-  64   1        *current_position=*current_position+calib_step_move*max_location;
-  65   1        Wait_ms(500);
-  66   1      
-  67   1      }
-  68          
+  54   1        {
+  55   2      
+  56   2            Move(calib_step_move,0,*current_position);
+  57   2            *current_position=*current_position-0.5;
+  58   2            voltage_at_scanned_pos[i]=ADC_GetResult(ch);
+  59   2            Wait_ms(500);
+  60   2        }
+  61   1        
+  62   1        max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,39]
+  63   1        // move to the optimal position in the area of +/-10mm from JP max theorical pos
+  64   1        Move(calib_step_move*max_location,1,*current_position);
+  65   1        *current_position=*current_position+calib_step_move*max_location;
+  66   1        Wait_ms(500);
+  67   1      
+  68   1      }
   69          
-  70          unsigned int Max_Value(unsigned int *input)
-  71          {
-  72   1        unsigned int max,max_location=0,i;
-  73   1        //int i;
-  74   1        for(i=0;i<=39;i++)
-  75   1        {
-  76   2          max=max>*(input+i)? max:*(input+i);
-  77   2          if (max==*(input+i))
-  78   2            max_location=i;
-  79   2        }
-  80   1        return max_location;// pos in the array
-  81   1        
-  82   1      }
-  83          //input currnt_pos is the JP max theorical position
-  84          float calibration(unsigned char mnths,unsigned char dys,
-  85                               unsigned char hurs,unsigned char mns,unsigned char sconds,
-  86                               float  *currnt_pos)
-  87          {
-  88   1        float calib_value=0;
-  89   1        float JP_max_pos=*currnt_pos;
-  90   1        // if voltage is stable 
-  91   1        if(voltage_is_stable())
-  92   1        {
-  93   2          //  move to JP theorical max position
-  94   2          Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,0,0);// off set is Zero means we go to the JP max 
-             -theorical position
-  95   2          //  find the real max value in the area of JP +/- 10mm
-  96   2          Find_Real_Max(&JP_max_pos); //find real max and move to real max position
-  97   2          calib_value=*currnt_pos-JP_max_pos;
-  98   2          *currnt_pos=JP_max_pos;
-  99   2          return calib_value;
- 100   2        }
- 101   1        else
- 102   1          return 0;
- 103   1      }
+  70          
+  71          unsigned int Max_Value(unsigned int *input)
+  72          {
+  73   1        unsigned int max,max_location=0,i;
+  74   1        //int i;
+  75   1        for(i=0;i<=39;i++)
+  76   1        {
+  77   2          max=max>*(input+i)? max:*(input+i);
+  78   2          if (max==*(input+i))
+  79   2            max_location=i;
+  80   2        }
+  81   1        return max_location;// pos in the array
+  82   1        
+  83   1      }
+  84          //input currnt_pos is the JP max theorical position
+  85          float calibration(unsigned char mnths,unsigned char dys,
+  86                               unsigned char hurs,unsigned char mns,unsigned char sconds,
+  87                               float  *currnt_pos,float *current_angle)
+  88          {
+  89   1        float calib_value=0;
+  90   1        float JP_max_pos=*currnt_pos,JP_max_angle=*current_angle;
+  91   1        // if voltage is stable 
+  92   1        if(voltage_is_stable())
+  93   1        {
+  94   2          //  move to JP theorical max position
+  95   2          Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,0,&JP_max_angle);// off set is Zero means we go to
+             - the JP max theorical position
+  96   2          //  find the real max value in the area of JP +/- 10mm
+  97   2          *current_angle=JP_max_angle;
+  98   2          Find_Real_Max(&JP_max_pos); //find real max and move to real max position
+  99   2          calib_value=*currnt_pos-JP_max_pos;
+ 100   2          *currnt_pos=JP_max_pos;
+ 101   2          return calib_value;
+ 102   2        }
+ 103   1        else
+ 104   1          return 0;
+ 105   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1054    ----
+   CODE SIZE        =   1203    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----     136
+   XDATA SIZE       =   ----     143
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       11/02/2018 16:30:13 PAGE 3   
+
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
-
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       11/02/2018 12:04:45 PAGE 3   
 
 
 C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
