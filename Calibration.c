@@ -5,7 +5,7 @@
 #include "ADCh.h"
 void Wait_ms(int ms);
 unsigned int ADC_GetResult(unsigned char ch);
-void Move(float  distance, bit direction);
+void Move(float  distance, bit direction,float current_position);
 unsigned int Max_Value(unsigned int *input);
 void Update_position(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
@@ -36,23 +36,24 @@ void  Find_Real_Max(float  *current_position)
 	float calib_step_move=0.5;
 	unsigned int voltage_at_scanned_pos[40],max_location;
 	int i;
+	//float currnt_pos=*current_position;
 	// move/scan +direction
 	for(i=1;i<=20;i++)
 	{
-		Move(calib_step_move,1);
+		Move(calib_step_move,1,*current_position);
 		*current_position=*current_position+0.5;
 		voltage_at_scanned_pos[20+i]=ADC_GetResult(ch);
 		Wait_ms(500);
 	}
 	// go back to JP max theorical position
-		Move(10,0);
+		Move(10,0,*current_position);
 		*current_position=*current_position-10;	
 		Wait_ms(500);
 	// move/scan -direction
 	for (i=1;i<=20;i++)
 	{
 
-			Move(calib_step_move,0);
+			Move(calib_step_move,0,*current_position);
 			*current_position=*current_position-0.5;
 			voltage_at_scanned_pos[i]=ADC_GetResult(ch);
 			Wait_ms(500);
@@ -60,7 +61,7 @@ void  Find_Real_Max(float  *current_position)
 	
 	max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,39]
 	// move to the optimal position in the area of +/-10mm from JP max theorical pos
-	Move(calib_step_move*max_location,1);
+	Move(calib_step_move*max_location,1,*current_position);
 	*current_position=*current_position+calib_step_move*max_location;
 	Wait_ms(500);
 
@@ -83,16 +84,17 @@ unsigned int Max_Value(unsigned int *input)
 //input currnt_pos is the JP max theorical position
 float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos)
+										 float  *currnt_pos,float *current_angle)
 {
 	float calib_value=0;
-	float JP_max_pos=*currnt_pos;
+	float JP_max_pos=*currnt_pos,JP_max_angle=*current_angle;
 	// if voltage is stable 
 	if(voltage_is_stable())
 	{
 		// 	move to JP theorical max position
-		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,0,0);// off set is Zero means we go to the JP max theorical position
+		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,0,&JP_max_angle);// off set is Zero means we go to the JP max theorical position
 		// 	find the real max value in the area of JP +/- 10mm
+		*current_angle=JP_max_angle;
 		Find_Real_Max(&JP_max_pos); //find real max and move to real max position
 		calib_value=*currnt_pos-JP_max_pos;
 		*currnt_pos=JP_max_pos;
