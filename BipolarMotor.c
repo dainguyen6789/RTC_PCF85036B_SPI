@@ -92,6 +92,7 @@ void Move_2ndMotor(float  angle_distance, bit direction,float current_angle)
 			{
 				Command(0x08);
 				Command(0x09);
+				selected_motor=1;
 				Display_Pos(current_angle);
 			}
 		}
@@ -113,8 +114,8 @@ void Move(float  distance, bit direction,float current_position)
 			{			
 				Command(0x08);
 				Command(0x09);
+				selected_motor=0;
 				Display_Pos(current_position);
-				WriteData(0x6D);//m
 			}
 		}
 }
