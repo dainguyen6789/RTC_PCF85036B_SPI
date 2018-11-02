@@ -302,7 +302,7 @@ void main(void)
 			}
 
 			
-		if (P33 && prox_flag==0 && current_position<=0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+		if (P33 && prox_flag==0 && current_position<=0)
 			{
 				current_position=0;
 				prox_flag=1;
@@ -335,12 +335,12 @@ void main(void)
 		{
 			
 			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
-				if(Day_Of_Year(months,days)>calib_day && Day_Of_Year(months,days)<calib_day+7 && calib_day!=0)// updated position if  and only if the system was calibrated (calib_day!=0 by line 252)
+				//if(Day_Of_Year(months,days)>calib_day && Day_Of_Year(months,days)<calib_day+7 && calib_day!=0)// updated position if  and only if the system was calibrated (calib_day!=0 by line 252)
 				{
 					//offset=calib_interpolate();
 					//Update_position(months,days,hours,mins,seconds,&current_position,calib_interpolate(hours,mins));
 				}
-				Update_position(0x10,0x05,0x12,0x00,0x00,&current_position,0,&current_angle);
+				Update_position(months,days,hours,mins,seconds,&current_position,0,&current_angle);
 		}
 		if (Day_Of_Year(months,days)==calib_day+7)
 		{

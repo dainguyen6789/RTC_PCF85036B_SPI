@@ -69,9 +69,9 @@ void Step_move_2ndMotor(unsigned int step, bit dir)
 			
 			//for( i=0;i<step;i++)
 			{
-					P4 |=1<<3;// P43=1 // moving distance (mm)=pi^2*step*4/675
+					P3 |=1<<4;// P43=1 // moving distance (mm)=pi^2*step*4/675
 					Wait_ms(2);
-					P4 &= ~(1<<3);
+					P3 &= ~(1<<4);
 					Wait_ms(2);
 			}
 }
@@ -91,7 +91,7 @@ void Move_2ndMotor(float  angle_distance, bit direction,float current_angle)
 			if(i%50==0)
 			{
 				Command(0x08);
-				Command(0x0A);
+				Command(0x09);
 				Display_Pos(current_angle);
 			}
 		}
@@ -112,8 +112,9 @@ void Move(float  distance, bit direction,float current_position)
 			if(i%50==0)
 			{			
 				Command(0x08);
-				Command(0x0A);
+				Command(0x09);
 				Display_Pos(current_position);
+				WriteData(0x6D);//m
 			}
 		}
 }
@@ -253,7 +254,10 @@ void Update_position(unsigned char mnths,unsigned char dys,
 		}
 		
 		desired_distance=JP_pos;// +offset_calib;
-		
+		//desired_distance=elevation;// +offset_calib;
+		//desired_distance=azimuth;// +offset_calib;
+		//desired_distance=declination;// +offset_calib;
+
 		distance=desired_distance-*currnt_pos;
 		if(abs(distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more than 0.5mm OR >30s
 		{
