@@ -80,7 +80,8 @@ void Move_2ndMotor(float  angle_distance, bit direction,float current_angle)
 {
 		unsigned int step,i;
 		step= (unsigned int)(angle_distance/0.039);// use geared motor 
-		//https://www.omc-stepperonline.com/geared-stepper-motor/nema-23-stepper-motor-bipolar-l76mm-w-gear-raio-471-planetary-gearbox-23hs30-2804s-pg47.html
+		//	https://www.omc-stepperonline.com/geared-stepper-motor/nema-23-stepper-motor-bipolar-l76mm-w-gear-raio-471-planetary-gearbox-23hs30-2804s-pg47.html
+		// we have another gear on the shaft with ratio 1:1
 		for( i=0;i<step;i++)
 		{
 			Step_move_2ndMotor(step,direction);
@@ -102,14 +103,14 @@ void Move(float  distance, bit direction,float current_position)
 {
 		unsigned long int step,i;
 		//int i;
-		step= (unsigned long int)(distance*337.5/(3.14159));// need to update this for the system in Vancouver
+		step= (unsigned long int)(distance*17.7);// num of steps=distance*180/(2*pi*R*0.039); step angle = 0.039, R=83/2mm
 		for( i=0;i<step;i++)
 		{
-			Step_move(step,direction);
+			Step_move(step,direction);// move one step
 			if(direction)
-				current_position=current_position+0.00931;
+				current_position=current_position+0.0565;//2*angle*R=2*0.039/180*pi*83mm
 			else
-				current_position=current_position-0.00931;
+				current_position=current_position-0.0565;
 			if(i%50==0)
 			{			
 				Command(0x08);
