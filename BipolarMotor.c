@@ -69,7 +69,7 @@ void Step_move_2ndMotor(unsigned int step, bit dir)
 			
 			//for( i=0;i<step;i++)
 			{
-					P3 |=1<<4;// P43=1 // moving distance (mm)=pi^2*step*4/675
+					P3 |=1<<4;// P34=1 // moving distance (mm)=pi^2*step*4/675
 					Wait_ms(2);
 					P3 &= ~(1<<4);
 					Wait_ms(2);
@@ -177,6 +177,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	struct cSunCoordinates *sunCoord;
 	//hurs=hurs-1;// change to sun time
 	//dys=dys+4;
+
 	location.dLongitude=-73.6495;
 	location.dLatitude=45.478889;
 	time.iYear=2018;
