@@ -143,11 +143,13 @@ void main(void)
 	float dd=138;*/
 //	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
 	//=======================================
+	//P3M1=0x00;
+	//P3M0=0xFF;
 	LCD_Init();
 	SPI_Init();
 	KeyPad_IO_Init();
 	//initUART1();
-	I2C_Init();
+	//I2C_Init();
 	ADC_Init();
 	//Timer0===================================
 	AUXR|=0x80;
@@ -258,14 +260,14 @@ void main(void)
 				move=0;
 			}*/
 			
-		if (P33 && prox_flag==0 && current_position<=0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+		/*if (P33 && prox_flag==0 && current_position<=0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
 				current_position=0;
 				prox_flag=1;
 				move=0;
 				small_move=0;
 				direction=1;
-			}			
+			}			*/
 			LCD_return_home();
 			
 		}
