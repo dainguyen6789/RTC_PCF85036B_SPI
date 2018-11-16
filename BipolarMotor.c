@@ -27,7 +27,7 @@ unsigned char BCDtoDec1(unsigned char bcd)
 	lo=bcd&0x0F;
 	return hi*10+lo;
 }
-
+//
 void wait (void)  {                   /* wait function */
   ;                                   /* only to delay for LED flashes */
 }
@@ -41,32 +41,45 @@ void Step_move(unsigned int step, bit dir)
 			//P3M1=0x00;
 			//P3M0=0xFF;
 			if(dir)
-				P4 |=(1<<2);// set bit P4.2
-			else
-				P4 &=~(1<<2);// clear bit P4.2
-			
-			for( i=0;i<step;i++)
 			{
-				P3=0x10;
-				
-				for (i = 0; i < 2000; i++)  {  
-									wait ();                       
-								}	
-								
-				P3=0x20;
-				for (i = 0; i < 2000; i++)  {  
-									wait ();                       
-								}	
-								
-				P3=0x40;
-				for (i = 0; i < 2000; i++)  {  
-									wait ();                       
-								}		
-				P3=0x80;
-				for (i = 0; i < 2000; i++)  {  
-									wait ();                       
-								}		
+				for( i=0;i<step;i++)
+				{
+					P3=0x13;
+					Wait_ms(10);
+					/*
+					for (i = 0; i < 4000; i++)  {  
+						wait ();                       
+					}*/
+					P3=0x26;
+					Wait_ms(10);
+
+					P3=0x4C;
+					Wait_ms(10);
+
+					P3=0x89;
+					Wait_ms(10);
+		
+				}
 			}
+			else
+			{
+				for( i=0;i<step;i++)
+				{
+					P3=0x89;
+					Wait_ms(10);
+					
+					P3=0x4C;
+					Wait_ms(10);
+
+					P3=0x26;
+					Wait_ms(10);
+
+					P3=0x13;
+					Wait_ms(10);
+		
+				}		
+			}				
+
 }
 
 void Move(float  distance, bit direction)
