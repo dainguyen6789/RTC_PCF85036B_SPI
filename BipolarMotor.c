@@ -27,7 +27,7 @@ unsigned char BCDtoDec1(unsigned char bcd)
 	lo=bcd&0x0F;
 	return hi*10+lo;
 }
-//
+// 
 void wait (void)  {                   /* wait function */
   ;                                   /* only to delay for LED flashes */
 }
@@ -46,7 +46,7 @@ void Step_move(unsigned int step, bit dir)
 				{
 					P3=0x13;
 					Wait_ms(10);
-					/*
+					/* 
 					for (i = 0; i < 4000; i++)  {  
 						wait ();                       
 					}*/
