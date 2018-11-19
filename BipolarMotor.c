@@ -32,7 +32,45 @@ void wait (void)  {                   /* wait function */
   ;                                   /* only to delay for LED flashes */
 }
 
-
+void vOneStepMove(bit bDir)
+{
+	unsigned char temp;
+	temp=P3;
+	if(bDir)
+		{
+			switch(temp){
+			 case	0x13: 
+				 P3=0x26;
+					break;
+			case 0x26:
+				P3=0x4C;
+				break;
+			case 0x4C:
+				P3=0x89;
+				break;
+			case 0x89:
+				P3=0x13;
+				break;
+		}
+	}
+	else
+		{
+			switch(temp){
+			case 0x13:
+				P3=0x89;
+				break;
+			case 0x89:
+				P3=0x4C;
+				break;
+			case 0x4C:
+				P3=0x26;
+				break;
+			case 0x26:
+				P3=0x13;
+				break;
+		}
+	}
+}
 
 void Step_move(unsigned int step, bit dir)
 {
@@ -40,52 +78,18 @@ void Step_move(unsigned int step, bit dir)
 			unsigned int i=0;
 			//P3M1=0x00;
 			//P3M0=0xFF;
-			if(dir)
+			for(i=0;i<step;i++)
 			{
-				for( i=0;i<step;i++)
-				{
-					P3=0x13;
-					Wait_ms(10);
-					/* 
-					for (i = 0; i < 4000; i++)  {  
-						wait ();                       
-					}*/
-					P3=0x26;
-					Wait_ms(10);
-
-					P3=0x4C;
-					Wait_ms(10);
-
-					P3=0x89;
-					Wait_ms(10);
-		
-				}
+							vOneStepMove(dir);
+							Wait_ms(30);
 			}
-			else
-			{
-				for( i=0;i<step;i++)
-				{
-					P3=0x89;
-					Wait_ms(10);
-					
-					P3=0x4C;
-					Wait_ms(10);
-
-					P3=0x26;
-					Wait_ms(10);
-
-					P3=0x13;
-					Wait_ms(10);
-		
-				}		
-			}				
 
 }
 
 void Move(float  distance, bit direction)
 {
 		unsigned int step;
-		step= (unsigned int)(distance*337.5/(3.14159));
+		step= (unsigned int)(distance*188.018/(3.14159));
 		Step_move(step,direction);
 }
 //=====================================================
