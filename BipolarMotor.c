@@ -89,7 +89,7 @@ void Step_move(unsigned int step, bit dir)
 void Move(float  distance, bit direction)
 {
 		unsigned int step;
-		step= (unsigned int)(distance*188.018/(3.14159));
+		step= (unsigned int)(distance*10/0.3);// from practical, know the number of steps, know the real distance => 10 steps ~0.3mm 
 		Step_move(step,direction);
 }
 //=====================================================
