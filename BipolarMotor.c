@@ -175,7 +175,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 			
 		}
 		
-		desired_distance=78+2*JP_pos;
+		desired_distance=11+2*JP_pos;
 		
 		distance=desired_distance-*currnt_pos;
 	
