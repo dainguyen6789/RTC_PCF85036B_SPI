@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      11/30/2018 10:54:01 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      12/04/2018 11:35:11 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -62,7 +62,7 @@ line level    source
   52          {
   53   1          unsigned int step;
   54   1          step= (unsigned int)(distance*337.5/(3.14159));
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      11/30/2018 10:54:01 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      12/04/2018 11:35:11 PAGE 2   
 
   55   1          Step_move(step,direction);
   56   1      }
@@ -126,7 +126,7 @@ line level    source
  113   1        location.dLatitude=45.478889;
  114   1        time.iYear=2018;
  115   1        time.iMonth=BCDtoDec1(mnths);
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      11/30/2018 10:54:01 PAGE 3   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      12/04/2018 11:35:11 PAGE 3   
 
  116   1        time.iDay=BCDtoDec1(dys);
  117   1        time.dHours=BCDtoDec1(hurs);
@@ -190,7 +190,7 @@ line level    source
  168   4              p1.y=pos_interpolate_azimuth[i];
  169   4              p2.y=pos_interpolate_azimuth[i+1];
  170   4              
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      11/30/2018 10:54:01 PAGE 4   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      12/04/2018 11:35:11 PAGE 4   
 
  171   4              JP_pos=linear_interpolate(p1,p2,elevation);
  172   4              //break;
@@ -199,7 +199,7 @@ line level    source
  175   3            
  176   3          }
  177   2          
- 178   2          desired_distance=11+2*JP_pos;
+ 178   2          desired_distance=11+2*JP_pos+20;// offset manual 20
  179   2          
  180   2          distance=desired_distance-*currnt_pos;
  181   2        
