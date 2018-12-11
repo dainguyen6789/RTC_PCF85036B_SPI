@@ -1,58 +1,37 @@
-C51 COMPILER V9.52.0.0   ADC                                                               11/19/2018 11:49:50 PAGE 1   
+C51 COMPILER V9.52.0.0   ADC                                                               12/11/2018 15:15:14 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE ADC
 OBJECT MODULE PLACED IN .\Obj\ADC.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Application\Source\ADC.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG
-                    - OBJECTEXTEND PRINT(.\Lis\ADC.lst) TABS(2) OBJECT(.\Obj\ADC.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ADC.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXTEND PRINT
+                    -(.\Lis\ADC.lst) TABS(2) OBJECT(.\Obj\ADC.obj)
 
 line level    source
 
-   1          
-   2          #include "ADCh.h"
-   3          #include "stc15f2k60s2.h"
-   4           #include <intrins.h>
-   5          void ADC_Init(void)
+   1          #include "ADCh.h"
+   2          #include "stc15f2k60s2.h"
+   3          #include "LCD_Driver_SPLC780D.h"
+   4          
+   5          void adc_isr() interrupt 5 using 1
    6          {
-   7   1        // P1.0 is input
-   8   1        P1M1 |=( 1<<0);  
-   9   1        P1M0 &=~( 1<<0); 
-  10   1        
-  11   1        P1ASF |=P1_0_ADC_FUNCTION;  
-  12   1          
-  13   1        ADC_RES=0;        
-  14   1                
-  15   1        ADC_CONTR=ADC_PWR;  //enable ADC power  
-  16   1        //Delay_ms(2);     
-  17   1      }
-  18          
-  19          
-  20          unsigned int ADC_GetResult(unsigned char ch) // unsigned int is 16 bit data
-  21          {
-  22   1        unsigned int ADC_Value;
-  23   1        ADC_CONTR =ADC_PWR  | ch | ADC_START; 
-  24   1        _nop_();                     
-  25   1        _nop_();
-  26   1        _nop_();
-  27   1        _nop_();
-  28   1        while (!(ADC_CONTR & ADC_FLAG));
-  29   1        ADC_CONTR &= ~ADC_FLAG;         
-  30   1        ADC_Value=ADC_RES;              
-  31   1        ADC_Value=(ADC_Value<<2)|ADC_RESL;
-  32   1        _nop_();                     
-  33   1        _nop_();
-  34   1        _nop_();
-  35   1        _nop_();  
-  36   1        _nop_();                     
-  37   1        _nop_();
-  38   1        _nop_();
-  39   1        _nop_();
-  40   1        return ADC_Value;                   
-  41   1      }
+   7   1        
+   8   1        ADC_CONTR&=!ADC_Flag;
+   9   1        adc_data=ADC_RES;// 8 high bit
+  10   1        adc_data=(adc_data<<2)|ADC_RESL;//ADC 10 bit
+  11   1      }
+  12          
+  13          void initADC()
+  14          {
+  15   1        P1ASF=P1ASF|(1<<0);// P1.0 is ADC port
+  16   1        ADC_RES=0;
+  17   1        ADC_RESL=0;
+  18   1        ADC_CONTR=ADC_PWR | ADC_START;
+  19   1        Wait_ms(2);
+  20   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     62    ----
+   CODE SIZE        =     80    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

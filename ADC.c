@@ -1,4 +1,4 @@
-#include "ADC.h"
+#include "ADCh.h"
 #include "stc15f2k60s2.h"
 #include "LCD_Driver_SPLC780D.h"
 
