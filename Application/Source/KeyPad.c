@@ -15,7 +15,7 @@ bit move=0;
 bit small_move=0;
 bit direction=0;
 bit auto_move=0;
-
+bit  calib_mode=1;
 void Delay_ms(unsigned int ms)
 {
   unsigned int De_Cnt;

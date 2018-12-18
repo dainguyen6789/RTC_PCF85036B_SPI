@@ -129,11 +129,11 @@ void main(void)
 	int calib_day=0;
 	char numStr[5];
 //	float current_position=0;
-	
+	calib_mode=1;
 	direction=1;
 	move=0;
 	small_move=0;
-	calib_mode=1;
+	
 	auto_mode=0;
 
 	//=======================================
@@ -298,6 +298,8 @@ void main(void)
 			count=0;
 		}
 		
+		mins=0x30;
+		seconds=0x00;
 		if(calib_mode && BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0)// calib every 30mins
 		{
 			//*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
@@ -309,6 +311,7 @@ void main(void)
 				calib_mode=0;
 				//count=0;
 			}
+			
 			count++;			
 		}
 		//==================================================		
