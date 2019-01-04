@@ -298,8 +298,8 @@ void main(void)
 			count=0;
 		}
 		
-		mins=0x30;
-		seconds=0x00;
+		//mins=0x30;
+		///seconds=0x00;
 		if(calib_mode && BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0)// calib every 30mins
 		{
 			//*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
