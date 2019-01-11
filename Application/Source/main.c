@@ -157,14 +157,14 @@ void main(void)
 			//WriteData(Read_VCNL4035(PS3_Data_L));
 			if (move && !auto_mode)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
-				Step_move(11, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
+				Step_move(88, direction);// 1.8* step angle, 200 steps ~ 1 round,  l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
 				if (direction==1)
 				{
-					current_position=current_position+0.1;
+					current_position=current_position+1;
 				}
 				else
 				{
-					current_position=current_position-0.1;
+					current_position=current_position-1;
 				}
 				prox_flag=0;
 			}
@@ -172,14 +172,14 @@ void main(void)
 			{
 				
 				//auto_mode=0;
-				Step_move(11, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
+				Step_move(88, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
 				if (direction==1)
 				{
-					current_position=current_position+0.1;
+					current_position=current_position+1;
 				}
 				else
 				{
-					current_position=current_position-0.1;
+					current_position=current_position-1;
 				}
 				prox_flag=0;		
 				small_move=0;				

@@ -51,7 +51,9 @@ void Step_move(unsigned int step, bit dir)
 void Move(float  distance, bit direction)
 {
 		unsigned int step;
-		step= (unsigned int)(distance*337.5/(3.14159));
+		step= (unsigned int)(distance*145.95/(3.14159));// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, 
+		//l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, 
+		//R3 is the long pulley 
 		Step_move(step,direction);
 }
 //=====================================================
