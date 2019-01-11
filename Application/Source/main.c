@@ -10,10 +10,11 @@
 #include <REG51F.H>
 #include "LCD_Driver_SPLC780D.h"
 //#include "Receiver_Position_Data.h"
-#include "VCNL4035X01.h"
+//#include "VCNL4035X01.h"
 #include <math.h>// to use power function
 #include "ADCh.h"
 #include "SunPos.h"
+#include "PI4IOE5V96248.h"
 
 //#include "Receiver_Position_Data.h"
 
@@ -54,6 +55,8 @@ unsigned int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd); // th
 unsigned char BCDtoDec1(unsigned char bcd);
 float calib_interpolate(float hours, float mins);
 float  linear_interpolate(struct point p1,struct point p2, float  x);
+void Write_PI4IOE5V96248(struct DATA_FOR_IO_6PORTS *xdat);
+
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -68,6 +71,11 @@ float current_position=0;
 int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);
+struct DATA_FOR_IO_6PORTS dat;
+
+
+
+
 
 void tm0_isr() interrupt 1 using 1
 {
@@ -128,6 +136,7 @@ void main(void)
 //	unsigned char KeyNum;
 	int calib_day=0;
 	char numStr[5];
+	
 //	float current_position=0;
 	calib_mode=1;
 	direction=1;
@@ -135,7 +144,12 @@ void main(void)
 	small_move=0;
 	
 	auto_mode=0;
-
+	dat.port0=0x00;
+	dat.port1=0x00;
+	dat.port2=0x00;
+	dat.port3=0x00;
+	dat.port4=0x00;
+	dat.port5=0x0F;
 	//=======================================
 	/*float a=-7.0014e-5;
 	float b=1.1071e-2;
@@ -184,7 +198,7 @@ void main(void)
 		//if (count==20)
 		{
 			//move cursor to line 1, pos 6
-			
+			Write_PI4IOE5V96248(&dat);
 			Command(0x08);
 			Command(0x05);
 			

@@ -1,9 +1,10 @@
 #include "PI4IOE5V96248.h"
 
-unsigned int Read_PI4IOE5V96248(unsigned int command_code);
-void Write_PI4IOE5V96248(unsigned char  command_code,unsigned char dat_h,unsigned char  dat_l);
+//unsigned int Read_PI4IOE5V96248(unsigned int command_code);
 
-void Wait_ms_iic(int ms)
+void Write_PI4IOE5V96248(struct DATA_FOR_IO_6PORTS *dat);
+
+void Wait_ms_i2c(int ms)
 {
   unsigned int De_Cnt;
   while( (ms--) != 0)
@@ -12,14 +13,6 @@ void Wait_ms_iic(int ms)
   }  	
 }
 
-void Wait_ms_i2c(int ms)
-{
-  unsigned int De_Cnt;
-  while( (ms--) != 0)
-  {
-    for(De_Cnt = 0; De_Cnt < 1; De_Cnt++); 
-  }  	
-}
 void nop()
 {
 	return;
@@ -29,12 +22,12 @@ void I2C_Start()
 
 	I2C_SCK=1;
 	I2C_SDA=1;
-	Wait_ms_iic(2);
+	Wait_ms_i2c(2);
 	I2C_SDA=0;
 	Wait_ms_i2c(2);
 	I2C_SCK=0;
 	//Wait_ms_i2c(1);
-	//Wait_ms_iic(1);
+	//Wait_ms_i2c(1);
 }
 
 void I2C_Stop()
@@ -127,20 +120,6 @@ void uC_NACK()
   
 }
 
-void I2C_Init()
-{
-		//P41 SDA,P42 SCL quasi-bidirectional
-
-	P3M1 &=~( (1<<1) | (1<<2) );  //~ bitwise NOT
-	P3M0 &=~( (1<<1) | (1<<2) );  
-	//P4M1 |=0x04;// SCK OPen Drain output
-	//P4M0 |=0x04;
-	//Write_PI4IOE5V96248(PS_CONF1,0x20,0x00);
-	
-	Write_PI4IOE5V96248(PS_CONF1,0x00,0x00);//  1 = typical sensitivity mode (two step mode)
-	//Write_PI4IOE5V96248(PS_CONF3,0x0F,0x80);
-	Write_PI4IOE5V96248(PS_CONF3,0x07,0x80);// 20mA
-}
 
 
 void I2C_SendByte(unsigned char dat)// Send dat to SPI device/Slave
@@ -166,51 +145,37 @@ void I2C_SendByte(unsigned char dat)// Send dat to SPI device/Slave
 		Wait_ms_i2c(2);      
   }
 }
-
-
-
-unsigned char I2C_ReceiveByte(void)
-{
-	unsigned char i;
-  unsigned char dat = 0;
-	
-
-	//I2C_SDA_Set();					//
-  for (i=0; i<8; i++)         //
-  {
-		dat <<= 1;	              //
-		I2C_SCK_Clr();       //
-		Wait_ms_i2c(2);        //
-        
-		if (I2C_SDA) 				//If  I2C_SDO is HIGH, dat will be 1(one) , I2C_SDO is defined in .h file
-		{
-			dat |= 0x01;            //
-		}
-		I2C_SCK_Set();       //
-		Wait_ms_i2c(2);
-		if (i==7)
-		{
-			I2C_SCK_Clr();
-			I2C_SDA_Clr(); 			
-		}
-		//	
-	}
-  return dat;
-}
-void Write_PI4IOE5V96248(unsigned char  command_code,unsigned char dat_h,unsigned char  dat_l)
+void Write_PI4IOE5V96248(struct DATA_FOR_IO_6PORTS *xdat)
 {
 	I2C_Start();
 	Wait_ms_i2c(1);
-	I2C_SendByte(PI4IOE5V96248_addr);
+	I2C_SendByte(PI4IOE5V96248_Write_Addr);
 	if(I2C_ACK()==0)
 	{
-		I2C_SendByte(command_code);
+		I2C_SendByte(xdat->port0);
+	}
+	
+	if(I2C_ACK()==0)
+	{
+		I2C_SendByte(xdat->port1);
 	}
 	if(I2C_ACK()==0)
-		I2C_SendByte(dat_l);
-
+	{
+		I2C_SendByte(xdat->port2);
+	}
 	if(I2C_ACK()==0)
-		I2C_SendByte(dat_h);
+	{
+		I2C_SendByte(xdat->port3);
+	}
+	
+	if(I2C_ACK()==0)
+	{
+		I2C_SendByte(xdat->port4);
+	}
+	if(I2C_ACK()==0)
+	{
+		I2C_SendByte(xdat->port5);
+	}	
 	
 	if(I2C_ACK()==0)	
 		I2C_Stop();
