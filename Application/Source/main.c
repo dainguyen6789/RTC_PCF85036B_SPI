@@ -71,7 +71,7 @@ float current_position=0;
 int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);
-struct DATA_FOR_IO_6PORTS dat;
+
 
 
 
@@ -144,12 +144,7 @@ void main(void)
 	small_move=0;
 	
 	auto_mode=0;
-	dat.port0=0x00;
-	dat.port1=0x00;
-	dat.port2=0x00;
-	dat.port3=0x00;
-	dat.port4=0x00;
-	dat.port5=0x0F;
+
 	//=======================================
 	/*float a=-7.0014e-5;
 	float b=1.1071e-2;
@@ -198,7 +193,7 @@ void main(void)
 		//if (count==20)
 		{
 			//move cursor to line 1, pos 6
-			Write_PI4IOE5V96248(&dat);
+			//Write_PI4IOE5V96248(&dat);
 			Command(0x08);
 			Command(0x05);
 			
