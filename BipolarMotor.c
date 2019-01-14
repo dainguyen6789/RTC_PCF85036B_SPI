@@ -42,21 +42,25 @@ void vOneStepMove(bit bDir)
 	//unsigned char temp;
 	if(bDir)	//pos direction
 		{
-			dat.port5=0x00;//port5.2 is used to move the motor, port5.0 is used to control the direction.
-			Delay_ms(20);
+			dat.port5=0x00;//port5.1 is used to move the motor, port5.0 is used to control the direction.
+			Write_PI4IOE5V96248(&dat);
+			Delay_ms(2);
 			dat.port5=0x02;
-			Delay_ms(20);
+			Write_PI4IOE5V96248(&dat);
+			Delay_ms(2);
 			
 		}
 	
 	else			// neg direction
 		{
-			dat.port5=0x01;//port5.2 is used to move the motor, port5.0 is used to control the direction.
-			Delay_ms(20);
+			dat.port5=0x01;//port5.1 is used to move the motor, port5.0 is used to control the direction.
+			Write_PI4IOE5V96248(&dat);
+			Delay_ms(2);
 			dat.port5=0x03;
-			Delay_ms(20);
+			Write_PI4IOE5V96248(&dat);
+			Delay_ms(2);
 		}
-	Write_PI4IOE5V96248(&dat);
+	
 
 	
 }
@@ -78,7 +82,7 @@ void Step_move(unsigned int step, bit dir)
 void Move(float  distance, bit direction)
 {
 		unsigned int step;
-		step= (unsigned int)(distance*10/0.3);// from practical, know the number of steps, know the real distance => 10 steps ~0.3mm 
+		step= (unsigned int)(distance*337.5/3.14159);// from practical, know the number of steps, know the real distance => 10 steps ~0.3mm 
 		Step_move(step,direction);
 }
 //=====================================================
