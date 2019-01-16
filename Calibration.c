@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ADCh.h"
+#define CloudAppears_Threshold 200
 void Wait_ms(int ms);
 unsigned int ADC_GetResult(unsigned char ch);
 void Move(float  distance, bit direction);
@@ -42,6 +43,11 @@ void  Find_Real_Max(float  *current_position)
 		Move(calib_step_move,1);
 		*current_position=*current_position+0.5;
 		voltage_at_scanned_pos[i]=ADC_GetResult(ch);
+		// voltage_at_scanned_pos[i-1] >0 to make sure that previous position was not cloudy
+		if(i>0 && voltage_at_scanned_pos[i-1] >0 && (voltage_at_scanned_pos[i]-voltage_at_scanned_pos[i-1])>CloudAppears_Threshold)
+		{
+			voltage_at_scanned_pos[i]=0;
+		}
 		Wait_ms(1500);
 	}
 	// go back to JP max theorical position

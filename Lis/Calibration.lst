@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/16/2019 15:56:12 PAGE 1   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/16/2019 16:21:49 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE CALIBRATION
@@ -13,112 +13,121 @@ line level    source
    3          #include <stdio.h>
    4          #include <stdlib.h>
    5          #include "ADCh.h"
-   6          void Wait_ms(int ms);
-   7          unsigned int ADC_GetResult(unsigned char ch);
-   8          void Move(float  distance, bit direction);
-   9          unsigned int Max_Value(unsigned int *input);
-  10          void Update_position(unsigned char mnths,unsigned char dys,
-  11                               unsigned char hurs,unsigned char mns,unsigned char sconds,
-  12                               float  *currnt_pos, float offset_calib);
-  13          unsigned int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd); // this function is used to cou
+   6          #define CloudAppears_Threshold 200
+   7          void Wait_ms(int ms);
+   8          unsigned int ADC_GetResult(unsigned char ch);
+   9          void Move(float  distance, bit direction);
+  10          unsigned int Max_Value(unsigned int *input);
+  11          void Update_position(unsigned char mnths,unsigned char dys,
+  12                               unsigned char hurs,unsigned char mns,unsigned char sconds,
+  13                               float  *currnt_pos, float offset_calib);
+  14          unsigned int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd); // this function is used to cou
              -nt the date in a year example: 22 March is the 80th day of the year
-  14          
-  15          // read adc ch to sense the voltage of the solar panel.     
-  16          
-  17          int voltage_is_stable(void)
-  18          {
-  19   1        unsigned int sample_voltage[10];
-  20   1        int i,ch=0;
-  21   1        for (i=0; i<10;i++)
-  22   1        {
-  23   2              sample_voltage[i]=ADC_GetResult(ch);
-  24   2        }
-  25   1        
-  26   1        for(i=1;i<=9;i++)
-  27   1        {
-  28   2              if(abs(sample_voltage[i]-sample_voltage[0])>ADC_Stable_Threshold)
-  29   2                return 0;
-  30   2        }
-  31   1        return 1;
-  32   1      }
-  33          void  Find_Real_Max(float  *current_position)
-  34          {
-  35   1        unsigned char ch=0;
-  36   1        float calib_step_move=0.5;
-  37   1        unsigned int voltage_at_scanned_pos[40],max_location;
-  38   1        int i;
-  39   1        // move/scan +direction
-  40   1        for(i=0;i<40;i++)
-  41   1        {
-  42   2          Move(calib_step_move,1);
-  43   2          *current_position=*current_position+0.5;
-  44   2          voltage_at_scanned_pos[i]=ADC_GetResult(ch);
-  45   2          Wait_ms(1500);
-  46   2        }
-  47   1        // go back to JP max theorical position
-  48   1      /*    Move(10,0);
-  49   1          *current_position=*current_position-10; 
-  50   1          Wait_ms(500);
-  51   1        // move/scan -direction
-  52   1        for (i=1;i<=20;i++)
-  53   1        {
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/16/2019 15:56:12 PAGE 2   
+  15          
+  16          // read adc ch to sense the voltage of the solar panel.     
+  17          
+  18          int voltage_is_stable(void)
+  19          {
+  20   1        unsigned int sample_voltage[10];
+  21   1        int i,ch=0;
+  22   1        for (i=0; i<10;i++)
+  23   1        {
+  24   2              sample_voltage[i]=ADC_GetResult(ch);
+  25   2        }
+  26   1        
+  27   1        for(i=1;i<=9;i++)
+  28   1        {
+  29   2              if(abs(sample_voltage[i]-sample_voltage[0])>ADC_Stable_Threshold)
+  30   2                return 0;
+  31   2        }
+  32   1        return 1;
+  33   1      }
+  34          void  Find_Real_Max(float  *current_position)
+  35          {
+  36   1        unsigned char ch=0;
+  37   1        float calib_step_move=0.5;
+  38   1        unsigned int voltage_at_scanned_pos[40],max_location;
+  39   1        int i;
+  40   1        // move/scan +direction
+  41   1        for(i=0;i<40;i++)
+  42   1        {
+  43   2          Move(calib_step_move,1);
+  44   2          *current_position=*current_position+0.5;
+  45   2          voltage_at_scanned_pos[i]=ADC_GetResult(ch);
+  46   2          // voltage_at_scanned_pos[i-1] >0 to make sure that previous position was not cloudy
+  47   2          if(i>0 && voltage_at_scanned_pos[i-1] >0 && (voltage_at_scanned_pos[i]-voltage_at_scanned_pos[i-1])>Clou
+             -dAppears_Threshold)
+  48   2          {
+  49   3            voltage_at_scanned_pos[i]=0;
+  50   3          }
+  51   2          Wait_ms(1500);
+  52   2        }
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/16/2019 16:21:49 PAGE 2   
 
-  54   1      
-  55   1            Move(calib_step_move,1);
-  56   1            *current_position=*current_position+0.5;
-  57   1            voltage_at_scanned_pos[i]=ADC_GetResult(ch);
-  58   1            Wait_ms(500);
-  59   1        }*/
-  60   1        
-  61   1        max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,39]
-  62   1        // move to the optimal position in the area of +/-10mm from JP max theorical pos
-  63   1        Move(calib_step_move*(39-max_location),0);
-  64   1        *current_position=*current_position-calib_step_move*(39-max_location);
-  65   1        Wait_ms(500);
-  66   1      
-  67   1      }
-  68          
-  69          
-  70          unsigned int Max_Value(unsigned int *input)
-  71          {
-  72   1        unsigned int max,max_location=0,i;
-  73   1        //int i;
-  74   1        for(i=0;i<=39;i++)
-  75   1        {
-  76   2          max=max>*(input+i)? max:*(input+i);
-  77   2          if (max==*(input+i))
-  78   2            max_location=i;
-  79   2        }
-  80   1        return max_location;// pos in the array
-  81   1        
-  82   1      }
-  83          //input currnt_pos is the JP max theorical position
-  84          float calibration(unsigned char mnths,unsigned char dys,
-  85                               unsigned char hurs,unsigned char mns,unsigned char sconds,
-  86                               float  *currnt_pos)
-  87          {
-  88   1        float calib_value=0;
-  89   1        float JP_max_pos=*currnt_pos;
-  90   1        // if voltage is stable 
-  91   1        if(voltage_is_stable())
-  92   1        {
-  93   2          //  move to JP theorical max position
-  94   2          Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-10);// off set is Zero means we go to  (JP max th
+  53   1        // go back to JP max theorical position
+  54   1      /*    Move(10,0);
+  55   1          *current_position=*current_position-10; 
+  56   1          Wait_ms(500);
+  57   1        // move/scan -direction
+  58   1        for (i=1;i<=20;i++)
+  59   1        {
+  60   1      
+  61   1            Move(calib_step_move,1);
+  62   1            *current_position=*current_position+0.5;
+  63   1            voltage_at_scanned_pos[i]=ADC_GetResult(ch);
+  64   1            Wait_ms(500);
+  65   1        }*/
+  66   1        
+  67   1        max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,39]
+  68   1        // move to the optimal position in the area of +/-10mm from JP max theorical pos
+  69   1        Move(calib_step_move*(39-max_location),0);
+  70   1        *current_position=*current_position-calib_step_move*(39-max_location);
+  71   1        Wait_ms(500);
+  72   1      
+  73   1      }
+  74          
+  75          
+  76          unsigned int Max_Value(unsigned int *input)
+  77          {
+  78   1        unsigned int max,max_location=0,i;
+  79   1        //int i;
+  80   1        for(i=0;i<=39;i++)
+  81   1        {
+  82   2          max=max>*(input+i)? max:*(input+i);
+  83   2          if (max==*(input+i))
+  84   2            max_location=i;
+  85   2        }
+  86   1        return max_location;// pos in the array
+  87   1        
+  88   1      }
+  89          //input currnt_pos is the JP max theorical position
+  90          float calibration(unsigned char mnths,unsigned char dys,
+  91                               unsigned char hurs,unsigned char mns,unsigned char sconds,
+  92                               float  *currnt_pos)
+  93          {
+  94   1        float calib_value=0;
+  95   1        float JP_max_pos=*currnt_pos;
+  96   1        // if voltage is stable 
+  97   1        if(voltage_is_stable())
+  98   1        {
+  99   2          //  move to JP theorical max position
+ 100   2          Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-10);// off set is Zero means we go to  (JP max th
              -eorical position -10)
-  95   2          //  find the real max value in the area of JP +/- 10mm
-  96   2          Find_Real_Max(&JP_max_pos); //find real max and move to real max position
-  97   2          calib_value=*currnt_pos-JP_max_pos;
-  98   2          *currnt_pos=JP_max_pos;
-  99   2          return calib_value;
- 100   2        }
- 101   1        else
- 102   1          return 0;
- 103   1      }
+ 101   2          //  find the real max value in the area of JP +/- 10mm
+ 102   2          Find_Real_Max(&JP_max_pos); //find real max and move to real max position
+ 103   2          calib_value=*currnt_pos-JP_max_pos;
+ 104   2          *currnt_pos=JP_max_pos;
+ 105   2          return calib_value;
+ 106   2        }
+ 107   1        else
+ 108   1          return 0;
+ 109   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    852    ----
+   CODE SIZE        =    956    ----
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/16/2019 16:21:49 PAGE 3   
+
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----     136
    PDATA SIZE       =   ----    ----
@@ -126,8 +135,6 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
-
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/16/2019 15:56:12 PAGE 3   
 
 
 C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
