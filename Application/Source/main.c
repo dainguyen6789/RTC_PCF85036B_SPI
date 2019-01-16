@@ -20,11 +20,11 @@
 
 #define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000)
-#define PointThree_mm_steps 10
+//#define PointThree_mm_steps 10
 #define PointOne_mm_steps 12
 
 #define PointTwo_mm_steps 24 //(11.5*2)
-#define PointFour_mm_steps 47 //
+#define PointFour_mm_steps 48 //
 
 
 void Delay_ms(unsigned int ms);
@@ -241,14 +241,14 @@ void main(void)
 			//WriteData(Read_VCNL4035(PS3_Data_L));
 			if (move && !auto_mode)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
-				Step_move(PointOne_mm_steps, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
+				Step_move(PointFour_mm_steps, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
 				if (direction==1)
 				{
-					current_position=current_position+0.1;
+					current_position=current_position+0.4;
 				}
 				else
 				{
-					current_position=current_position-0.1;
+					current_position=current_position-0.4;
 				}
 				prox_flag=0;
 			}
@@ -256,14 +256,14 @@ void main(void)
 			{
 				
 				//auto_mode=0;
-				Step_move(PointOne_mm_steps, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
+				Step_move(PointFour_mm_steps, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
 				if (direction==1)
 				{
-					current_position=current_position+0.1;
+					current_position=current_position+0.4;
 				}
 				else
 				{
-					current_position=current_position-0.1;
+					current_position=current_position-0.4;
 				}
 				prox_flag=0;		
 				small_move=0;				
