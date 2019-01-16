@@ -316,8 +316,8 @@ void main(void)
 		///seconds=0x00;
 		if(calib_mode && BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0)// calib every 30mins
 		{
-			//*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
-			*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
+			*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
+			//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 			*(calib_time+count)=BCDtoDec1(hours)+BCDtoDec1(mins);
 			if (BCDtoDec1(hours)>18)// do not calib after 18pm
 			{

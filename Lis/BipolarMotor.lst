@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/14/2019 17:52:10 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/15/2019 17:30:05 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -52,23 +52,24 @@ line level    source
   42   1        //unsigned char temp;
   43   1        if(bDir)  //pos direction
   44   1          {
-  45   2            dat.port5=0x00;//port5.1 is used to move the motor, port5.0 is used to control the direction.
+  45   2            dat.port5=0x00|0x40;//port5.1 is used to move the motor, port5.0 is used to control the direction, 0x40
+             - is used to set bit P52 (enable the motor driver)
   46   2            Write_PI4IOE5V96248(&dat);
   47   2            Delay_ms(2);
-  48   2            dat.port5=0x02;
+  48   2            dat.port5=0x02|0x40;
   49   2            Write_PI4IOE5V96248(&dat);
   50   2            Delay_ms(2);
   51   2            
   52   2          }
   53   1        
-  54   1        else      // neg direction
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/14/2019 17:52:10 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/15/2019 17:30:05 PAGE 2   
 
+  54   1        else      // neg direction
   55   1          {
-  56   2            dat.port5=0x01;//port5.1 is used to move the motor, port5.0 is used to control the direction.
+  56   2            dat.port5=0x01|0x40;//port5.1 is used to move the motor, port5.0 is used to control the direction.
   57   2            Write_PI4IOE5V96248(&dat);
   58   2            Delay_ms(2);
-  59   2            dat.port5=0x03;
+  59   2            dat.port5=0x03|0x40;
   60   2            Write_PI4IOE5V96248(&dat);
   61   2            Delay_ms(2);
   62   2          }
@@ -94,8 +95,7 @@ line level    source
   82          void Move(float  distance, bit direction)
   83          {
   84   1          unsigned int step;
-  85   1          step= (unsigned int)(distance*337.5/3.14159);// from practical, know the number of steps, know the real 
-             -distance => 10 steps ~0.3mm 
+  85   1          step= (unsigned int)(distance*337.5/3.14159);//
   86   1          Step_move(step,direction);
   87   1      }
   88          //=====================================================
@@ -126,7 +126,7 @@ line level    source
  113   1      }
  114              
  115          //===================================================== 
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/14/2019 17:52:10 PAGE 3   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/15/2019 17:30:05 PAGE 3   
 
  116          
  117           
@@ -190,7 +190,7 @@ line level    source
  167   1      
  168   1        
  169   1        //if (current_local_sun_time>12)
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/14/2019 17:52:10 PAGE 4   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/15/2019 17:30:05 PAGE 4   
 
  170   1        //  azimuth=360-azimuth;
  171   1        
@@ -254,9 +254,9 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/14/2019 17:52:10 PAGE 5   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/15/2019 17:30:05 PAGE 5   
 
-   CODE SIZE        =   3576    ----
+   CODE SIZE        =   3575    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =    967     303
    PDATA SIZE       =   ----    ----

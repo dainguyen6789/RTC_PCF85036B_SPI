@@ -7,6 +7,9 @@
 void ADC_Init(void)
 {
 	// P1.0 is input
+	P24=0;
+	P25=0;
+	P26=0;
 	P1M1 |=( 1<<0);  
 	P1M0 &=~( 1<<0); 
 	CLK_DIV=0x00;
