@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      11/06/2018 11:29:08 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/16/2019 17:02:17 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -62,7 +62,7 @@ line level    source
   52   1            {
   53   2                P4 |=1<<1;// P41=1 // moving distance (mm)=pi^2*step*4/675
   54   2                Wait_ms(2);
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      11/06/2018 11:29:08 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/16/2019 17:02:17 PAGE 2   
 
   55   2                P4 &= ~(1<<1);
   56   2                Wait_ms(2);
@@ -82,10 +82,10 @@ line level    source
   69   1            
   70   1            //for( i=0;i<step;i++)
   71   1            {
-  72   2                P3 |=1<<4;// P43=1 // moving distance (mm)=pi^2*step*4/675
-  73   2                Wait_ms(20);
+  72   2                P3 |=1<<4;// P34=1 // moving distance (mm)=pi^2*step*4/675
+  73   2                Wait_ms(2);
   74   2                P3 &= ~(1<<4);
-  75   2                Wait_ms(20);
+  75   2                Wait_ms(2);
   76   2            }
   77   1      }
 *** WARNING C280 IN LINE 62 OF BipolarMotor.c: 'step': unreferenced local variable
@@ -126,7 +126,7 @@ line level    source
  110   2            if(direction)
  111   2              current_position=current_position+0.0565;//2*angle*R=2*0.039/180*pi*83mm
  112   2            else
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      11/06/2018 11:29:08 PAGE 3   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/16/2019 17:02:17 PAGE 3   
 
  113   2              current_position=current_position-0.0565;
  114   2            if(i%50==0)
@@ -190,7 +190,7 @@ line level    source
  172   1        float  pos_interpolate_azimuth[num_of_azimuth_stamp],angle_interpolate_azimuth[num_of_azimuth_stamp],curr
              -ent_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
  173   1        float declination;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      11/06/2018 11:29:08 PAGE 4   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/16/2019 17:02:17 PAGE 4   
 
  174   1        struct point p1,p2;
  175   1        struct cTime time;
@@ -198,270 +198,269 @@ line level    source
  177   1        struct cSunCoordinates *sunCoord;
  178   1        //hurs=hurs-1;// change to sun time
  179   1        //dys=dys+4;
- 180   1        P4M1 =0x00;  
- 181   1        P4M0 =0xFF; 
- 182   1        location.dLongitude=-73.6495;
- 183   1        location.dLatitude=45.478889;
- 184   1        time.iYear=2018;
- 185   1        time.iMonth=BCDtoDec1(mnths);
- 186   1        time.iDay=BCDtoDec1(dys);
- 187   1        time.dHours=BCDtoDec1(hurs);
- 188   1        time.dMinutes=BCDtoDec1(mns);
- 189   1        time.dSeconds=BCDtoDec1(sconds&0x7f);
- 190   1      
- 191   1        
- 192   1        desired_distance=*currnt_pos;
- 193   1        //desired_angle=*currnt_angle;
- 194   1        //date=Day_Of_Year(mnths,dys)+4;
- 195   1        //date=237;
- 196   1        declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
-*** WARNING C182 IN LINE 196 OF BipolarMotor.c: pointer to different objects
- 197   1        time_offset=1/60*(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -   
+ 180   1      
+ 181   1        location.dLongitude=-73.6495;
+ 182   1        location.dLatitude=45.478889;
+ 183   1        time.iYear=2018;
+ 184   1        time.iMonth=BCDtoDec1(mnths);
+ 185   1        time.iDay=BCDtoDec1(dys);
+ 186   1        time.dHours=BCDtoDec1(hurs);
+ 187   1        time.dMinutes=BCDtoDec1(mns);
+ 188   1        time.dSeconds=BCDtoDec1(sconds&0x7f);
+ 189   1      
+ 190   1        
+ 191   1        desired_distance=*currnt_pos;
+ 192   1        //desired_angle=*currnt_angle;
+ 193   1        //date=Day_Of_Year(mnths,dys)+4;
+ 194   1        //date=237;
+ 195   1        declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
+*** WARNING C182 IN LINE 195 OF BipolarMotor.c: pointer to different objects
+ 196   1        time_offset=1/60*(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -   
              - 7.53*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180));
- 198   1        current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset-1;//current time=su
+ 197   1        current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset-1;//current time=su
              -n time= clock time -1
- 199   1        //=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/
+ 198   1        //=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/
              -365)*3.1416/180)    -   1.5*SIN((360*($B$8-81)/365)*3.1416/180))
- 200   1        elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
- 201   1                  cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180) 
+ 199   1        elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
+ 200   1                  cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180) 
              -          );
- 202   1        azimuth=180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin
+ 201   1        azimuth=180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin
              -((90-elevation)*pi/180)          );// JP calculation
- 203   1        //azimuth=(180/pi)*acos(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((
+ 202   1        //azimuth=(180/pi)*acos(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((
              -90-elevation)*pi/180)          );// JP calculation
- 204   1      
- 205   1        
- 206   1        if(BCDtoDec1(sconds&0x7f)%2==0)
- 207   1        {
- 208   2          // interpolate for azimuth
- 209   2          for (i=0;i<num_of_azimuth_stamp;i++)
- 210   2          {
- 211   3            if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
- 212   3            {
- 213   4              for (yy=0;yy<num_of_elevation_stamp;yy++)
- 214   4              {
- 215   5                p1.x=date_azimuth_mapping[i];
- 216   5                p2.x=date_azimuth_mapping[i+1];
- 217   5                
- 218   5                p1.y=RX_pos[yy][i];
- 219   5                p2.y=RX_pos[yy][i+1];
- 220   5                
- 221   5                pos_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
- 222   5              }
- 223   4              //break;
- 224   4            }
- 225   3            else if ((azimuth<=date_azimuth_mapping_symmetry_side[i]) && (azimuth>=date_azimuth_mapping_symmetry_si
+ 203   1      
+ 204   1        
+ 205   1        if(BCDtoDec1(sconds&0x7f)%2==0)
+ 206   1        {
+ 207   2          // interpolate for azimuth
+ 208   2          for (i=0;i<num_of_azimuth_stamp;i++)
+ 209   2          {
+ 210   3            if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
+ 211   3            {
+ 212   4              for (yy=0;yy<num_of_elevation_stamp;yy++)
+ 213   4              {
+ 214   5                p1.x=date_azimuth_mapping[i];
+ 215   5                p2.x=date_azimuth_mapping[i+1];
+ 216   5                
+ 217   5                p1.y=RX_pos[yy][i];
+ 218   5                p2.y=RX_pos[yy][i+1];
+ 219   5                
+ 220   5                pos_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
+ 221   5              }
+ 222   4              //break;
+ 223   4            }
+ 224   3            else if ((azimuth<=date_azimuth_mapping_symmetry_side[i]) && (azimuth>=date_azimuth_mapping_symmetry_si
              -de[i+1]))
- 226   3            {
- 227   4              for (yy=0;yy<num_of_elevation_stamp;yy++)
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      11/06/2018 11:29:08 PAGE 5   
+ 225   3            {
+ 226   4              for (yy=0;yy<num_of_elevation_stamp;yy++)
+ 227   4              {
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/16/2019 17:02:17 PAGE 5   
 
- 228   4              {
- 229   5                p1.x=date_azimuth_mapping_symmetry_side[i];
- 230   5                p2.x=date_azimuth_mapping_symmetry_side[i+1];
- 231   5                
- 232   5                p1.y=RX_pos[yy][i];
- 233   5                p2.y=RX_pos[yy][i+1];
- 234   5                
- 235   5                pos_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
- 236   5              }
- 237   4              //break;
- 238   4            }
- 239   3            
- 240   3          }
- 241   2      
- 242   2          // interpolate for elevation
- 243   2          for(i=0;i<num_of_elevation_stamp;i++)
- 244   2          {
- 245   3            if((elevation>=elevation_stamp[i])&&(elevation<=elevation_stamp[i+1]))
- 246   3            {
- 247   4              p1.x=elevation_stamp[i];
- 248   4              p2.x=elevation_stamp[i+1];
- 249   4              
- 250   4              p1.y=pos_interpolate_azimuth[i];
- 251   4              p2.y=pos_interpolate_azimuth[i+1];
- 252   4              
- 253   4              JP_pos=linear_interpolate(p1,p2,elevation);
- 254   4              //break;
- 255   4              
- 256   4            }
- 257   3            
- 258   3          }
- 259   2          
- 260   2          desired_distance=JP_pos;// +offset_calib;
- 261   2          //desired_distance=elevation;// +offset_calib;
- 262   2          //desired_distance=azimuth;// +offset_calib;
- 263   2          //desired_distance=declination;// +offset_calib;
- 264   2      
- 265   2          distance=desired_distance-*currnt_pos;
- 266   2          if(abs(distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more t
+ 228   5                p1.x=date_azimuth_mapping_symmetry_side[i];
+ 229   5                p2.x=date_azimuth_mapping_symmetry_side[i+1];
+ 230   5                
+ 231   5                p1.y=RX_pos[yy][i];
+ 232   5                p2.y=RX_pos[yy][i+1];
+ 233   5                
+ 234   5                pos_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
+ 235   5              }
+ 236   4              //break;
+ 237   4            }
+ 238   3            
+ 239   3          }
+ 240   2      
+ 241   2          // interpolate for elevation
+ 242   2          for(i=0;i<num_of_elevation_stamp;i++)
+ 243   2          {
+ 244   3            if((elevation>=elevation_stamp[i])&&(elevation<=elevation_stamp[i+1]))
+ 245   3            {
+ 246   4              p1.x=elevation_stamp[i];
+ 247   4              p2.x=elevation_stamp[i+1];
+ 248   4              
+ 249   4              p1.y=pos_interpolate_azimuth[i];
+ 250   4              p2.y=pos_interpolate_azimuth[i+1];
+ 251   4              
+ 252   4              JP_pos=linear_interpolate(p1,p2,elevation);
+ 253   4              //break;
+ 254   4              
+ 255   4            }
+ 256   3            
+ 257   3          }
+ 258   2          
+ 259   2          desired_distance=JP_pos;// +offset_calib;
+ 260   2          //desired_distance=elevation;// +offset_calib;
+ 261   2          //desired_distance=azimuth;// +offset_calib;
+ 262   2          //desired_distance=declination;// +offset_calib;
+ 263   2      
+ 264   2          distance=desired_distance-*currnt_pos;
+ 265   2          if(abs(distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more t
              -han 0.5mm OR >30s
- 267   2          {
- 268   3            if(distance>0)
- 269   3              Move(distance,1,*currnt_pos);
- 270   3            else if (distance<0)
- 271   3              Move(-distance,0,*currnt_pos);
- 272   3            previous_move_time=BCDtoDec1(sconds&0x7f);
- 273   3            *currnt_pos=desired_distance;
- 274   3          }
- 275   2          
- 276   2          //============================================================
- 277   2          // MOVEMENT CONTROL FOR ANGLE ROTATION
- 278   2          // Interpolate for azimuth
- 279   2          //============================================================
- 280   2          
- 281   2          for (i=0;i<num_of_azimuth_stamp;i++)
- 282   2          {
- 283   3            if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
- 284   3            {
- 285   4              for (yy=0;yy<num_of_elevation_stamp;yy++)
- 286   4              {
- 287   5                p1.x=date_azimuth_mapping[i];
- 288   5                p2.x=date_azimuth_mapping[i+1];
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      11/06/2018 11:29:08 PAGE 6   
+ 266   2          {
+ 267   3            if(distance>0)
+ 268   3              Move(distance,1,*currnt_pos);
+ 269   3            else if (distance<0)
+ 270   3              Move(-distance,0,*currnt_pos);
+ 271   3            previous_move_time=BCDtoDec1(sconds&0x7f);
+ 272   3            *currnt_pos=desired_distance;
+ 273   3          }
+ 274   2          
+ 275   2          //============================================================
+ 276   2          // MOVEMENT CONTROL FOR ANGLE ROTATION
+ 277   2          // Interpolate for azimuth
+ 278   2          //============================================================
+ 279   2          
+ 280   2          for (i=0;i<num_of_azimuth_stamp;i++)
+ 281   2          {
+ 282   3            if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
+ 283   3            {
+ 284   4              for (yy=0;yy<num_of_elevation_stamp;yy++)
+ 285   4              {
+ 286   5                p1.x=date_azimuth_mapping[i];
+ 287   5                p2.x=date_azimuth_mapping[i+1];
+ 288   5                
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/16/2019 17:02:17 PAGE 6   
 
- 289   5                
- 290   5                p1.y=RX_angle[yy][i];
- 291   5                p2.y=RX_angle[yy][i+1];
- 292   5                
- 293   5                angle_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
- 294   5              }
- 295   4              //break;
- 296   4            }
- 297   3            else if ((azimuth<=date_azimuth_mapping_symmetry_side[i]) && (azimuth>=date_azimuth_mapping_symmetry_si
+ 289   5                p1.y=RX_angle[yy][i];
+ 290   5                p2.y=RX_angle[yy][i+1];
+ 291   5                
+ 292   5                angle_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
+ 293   5              }
+ 294   4              //break;
+ 295   4            }
+ 296   3            else if ((azimuth<=date_azimuth_mapping_symmetry_side[i]) && (azimuth>=date_azimuth_mapping_symmetry_si
              -de[i+1]))
- 298   3            {
- 299   4              for (yy=0;yy<num_of_elevation_stamp;yy++)
- 300   4              {
- 301   5                p1.x=date_azimuth_mapping_symmetry_side[i];
- 302   5                p2.x=date_azimuth_mapping_symmetry_side[i+1];
- 303   5                
- 304   5                p1.y=RX_angle[yy][i];
- 305   5                p2.y=RX_angle[yy][i+1];
- 306   5                
- 307   5                angle_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
- 308   5              }
- 309   4              //break;
- 310   4            }
- 311   3            
- 312   3          }
- 313   2          // MOVEMENT CONTROL FOR ANGLE ROTATION
- 314   2          // interpolate for elevation
- 315   2          for(i=0;i<num_of_elevation_stamp;i++)
- 316   2          {
- 317   3            if((elevation>=elevation_stamp[i])&&(elevation<=elevation_stamp[i+1]))
- 318   3            {
- 319   4              p1.x=elevation_stamp[i];
- 320   4              p2.x=elevation_stamp[i+1];
- 321   4              
- 322   4              p1.y=angle_interpolate_azimuth[i];
- 323   4              p2.y=angle_interpolate_azimuth[i+1];
- 324   4              
- 325   4              JP_angle=linear_interpolate(p1,p2,elevation);
- 326   4              //break;
- 327   4              
- 328   4            }
- 329   3            
- 330   3          }
- 331   2              
- 332   2          angle_distance=JP_angle-*currnt_angle;
- 333   2          if(abs(angle_distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is 
+ 297   3            {
+ 298   4              for (yy=0;yy<num_of_elevation_stamp;yy++)
+ 299   4              {
+ 300   5                p1.x=date_azimuth_mapping_symmetry_side[i];
+ 301   5                p2.x=date_azimuth_mapping_symmetry_side[i+1];
+ 302   5                
+ 303   5                p1.y=RX_angle[yy][i];
+ 304   5                p2.y=RX_angle[yy][i+1];
+ 305   5                
+ 306   5                angle_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
+ 307   5              }
+ 308   4              //break;
+ 309   4            }
+ 310   3            
+ 311   3          }
+ 312   2          // MOVEMENT CONTROL FOR ANGLE ROTATION
+ 313   2          // interpolate for elevation
+ 314   2          for(i=0;i<num_of_elevation_stamp;i++)
+ 315   2          {
+ 316   3            if((elevation>=elevation_stamp[i])&&(elevation<=elevation_stamp[i+1]))
+ 317   3            {
+ 318   4              p1.x=elevation_stamp[i];
+ 319   4              p2.x=elevation_stamp[i+1];
+ 320   4              
+ 321   4              p1.y=angle_interpolate_azimuth[i];
+ 322   4              p2.y=angle_interpolate_azimuth[i+1];
+ 323   4              
+ 324   4              JP_angle=linear_interpolate(p1,p2,elevation);
+ 325   4              //break;
+ 326   4              
+ 327   4            }
+ 328   3            
+ 329   3          }
+ 330   2              
+ 331   2          angle_distance=JP_angle-*currnt_angle;
+ 332   2          if(abs(angle_distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is 
              -more than 0.5mm OR >30s
- 334   2          {
- 335   3            if(angle_distance>0)
- 336   3              Move_2ndMotor(angle_distance,1,*currnt_angle);
- 337   3            else if (angle_distance<0)
- 338   3              Move_2ndMotor(-angle_distance,0,*currnt_angle);
- 339   3            previous_move_time=BCDtoDec1(sconds&0x7f);
- 340   3            *currnt_angle=JP_angle;
- 341   3          }
- 342   2          
- 343   2        }
- 344   1        return;
- 345   1      
- 346   1      }
+ 333   2          {
+ 334   3            if(angle_distance>0)
+ 335   3              Move_2ndMotor(angle_distance,1,*currnt_angle);
+ 336   3            else if (angle_distance<0)
+ 337   3              Move_2ndMotor(-angle_distance,0,*currnt_angle);
+ 338   3            previous_move_time=BCDtoDec1(sconds&0x7f);
+ 339   3            *currnt_angle=JP_angle;
+ 340   3          }
+ 341   2          
+ 342   2        }
+ 343   1        return;
+ 344   1      
+ 345   1      }
 *** WARNING C280 IN LINE 167 OF BipolarMotor.c: 'offset_calib': unreferenced local variable
 *** WARNING C280 IN LINE 169 OF BipolarMotor.c: 'date': unreferenced local variable
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      11/06/2018 11:29:08 PAGE 7   
-
 *** WARNING C280 IN LINE 171 OF BipolarMotor.c: 'angle': unreferenced local variable
- 347          
- 348          void Display_Pos(float sign_dat)
- 349          {
- 350   1        unsigned char unit, ten, hundred,thousand;
- 351   1        unsigned char after_dot;
- 352   1        int dat;
- 353   1        dat=abs(sign_dat);
- 354   1        if (sign_dat>0)
- 355   1          after_dot=(unsigned char)((sign_dat-dat)*10);
- 356   1        else
- 357   1          after_dot=(unsigned char)((-sign_dat-dat)*10);
- 358   1        
- 359   1        unit =dat%10;// remainder after division
- 360   1        thousand=dat/1000;
- 361   1        hundred=(dat-thousand*1000)/100;
- 362   1        ten=(dat-thousand*1000-hundred*100)/10;
- 363   1        if (sign_dat>=0)
- 364   1        {
- 365   2          WriteData(thousand|0x30);
- 366   2          WriteData(hundred|0x30);
- 367   2          WriteData(ten|0x30);
- 368   2          WriteData(unit|0x30);
- 369   2          WriteData(0x2E);//.
- 370   2          WriteData((after_dot)|0x30);
- 371   2          if(!selected_motor)
- 372   2          {
- 373   3            WriteData(0x6D);//m
- 374   3            WriteData(0x6D);//m
- 375   3            WriteData(0x20);// "blank"
- 376   3            //WriteData(0x20);// "blank"
- 377   3            //WriteData(0x20);// "blank"
- 378   3          }
- 379   2          else
- 380   2          {
- 381   3            WriteData(0xDF);// "blank"
- 382   3            WriteData(0x20);// "blank"
- 383   3            WriteData(0x20);// "blank"
- 384   3          }
- 385   2        }
- 386   1        else
- 387   1        {
- 388   2          
- 389   2          WriteData(0x2D);// "-"
- 390   2          WriteData(thousand|0x30);
- 391   2          WriteData(hundred|0x30);
- 392   2          WriteData(ten|0x30);
- 393   2          WriteData(unit|0x30);
- 394   2          WriteData(0x2E);//"."
- 395   2          WriteData(after_dot|0x30);
- 396   2          if(!selected_motor)
- 397   2          {
- 398   3            WriteData(0x6D);//m
- 399   3            WriteData(0x6D);//m
- 400   3            WriteData(0x20);// "blank"
- 401   3            //WriteData(0x20);// "blank"
- 402   3            //WriteData(0x20);// "blank"
- 403   3          }
- 404   2          else
- 405   2          {
- 406   3            WriteData(0xDF);// "blank"
- 407   3            WriteData(0x20);// "blank"
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      11/06/2018 11:29:08 PAGE 8   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/16/2019 17:02:17 PAGE 7   
 
- 408   3            WriteData(0x20);// "blank"
- 409   3          }
+ 346          
+ 347          void Display_Pos(float sign_dat)
+ 348          {
+ 349   1        unsigned char unit, ten, hundred,thousand;
+ 350   1        unsigned char after_dot;
+ 351   1        int dat;
+ 352   1        dat=abs(sign_dat);
+ 353   1        if (sign_dat>0)
+ 354   1          after_dot=(unsigned char)((sign_dat-dat)*10);
+ 355   1        else
+ 356   1          after_dot=(unsigned char)((-sign_dat-dat)*10);
+ 357   1        
+ 358   1        unit =dat%10;// remainder after division
+ 359   1        thousand=dat/1000;
+ 360   1        hundred=(dat-thousand*1000)/100;
+ 361   1        ten=(dat-thousand*1000-hundred*100)/10;
+ 362   1        if (sign_dat>=0)
+ 363   1        {
+ 364   2          WriteData(thousand|0x30);
+ 365   2          WriteData(hundred|0x30);
+ 366   2          WriteData(ten|0x30);
+ 367   2          WriteData(unit|0x30);
+ 368   2          WriteData(0x2E);//.
+ 369   2          WriteData((after_dot)|0x30);
+ 370   2          if(!selected_motor)
+ 371   2          {
+ 372   3            WriteData(0x6D);//m
+ 373   3            WriteData(0x6D);//m
+ 374   3            WriteData(0x20);// "blank"
+ 375   3            //WriteData(0x20);// "blank"
+ 376   3            //WriteData(0x20);// "blank"
+ 377   3          }
+ 378   2          else
+ 379   2          {
+ 380   3            WriteData(0xDF);// "blank"
+ 381   3            WriteData(0x20);// "blank"
+ 382   3            WriteData(0x20);// "blank"
+ 383   3          }
+ 384   2        }
+ 385   1        else
+ 386   1        {
+ 387   2          
+ 388   2          WriteData(0x2D);// "-"
+ 389   2          WriteData(thousand|0x30);
+ 390   2          WriteData(hundred|0x30);
+ 391   2          WriteData(ten|0x30);
+ 392   2          WriteData(unit|0x30);
+ 393   2          WriteData(0x2E);//"."
+ 394   2          WriteData(after_dot|0x30);
+ 395   2          if(!selected_motor)
+ 396   2          {
+ 397   3            WriteData(0x6D);//m
+ 398   3            WriteData(0x6D);//m
+ 399   3            WriteData(0x20);// "blank"
+ 400   3            //WriteData(0x20);// "blank"
+ 401   3            //WriteData(0x20);// "blank"
+ 402   3          }
+ 403   2          else
+ 404   2          {
+ 405   3            WriteData(0xDF);// "blank"
+ 406   3            WriteData(0x20);// "blank"
+ 407   3            WriteData(0x20);// "blank"
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      01/16/2019 17:02:17 PAGE 8   
+
+ 408   3          }
+ 409   2          //WriteData(0x6D);//m
  410   2          //WriteData(0x6D);//m
- 411   2          //WriteData(0x6D);//m
- 412   2      
- 413   2        }
- 414   1        return;
- 415   1      }
+ 411   2      
+ 412   2        }
+ 413   1        return;
+ 414   1      }
+ 415          
  416          
- 417          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   6063    ----
+   CODE SIZE        =   6057    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =    971     361
    PDATA SIZE       =   ----    ----
