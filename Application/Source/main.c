@@ -299,11 +299,14 @@ void main(void)
 		{
 			
 			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
-				if(Day_Of_Year(months,days)>calib_day && Day_Of_Year(months,days)<calib_day+7 && calib_day!=0)// updated position if  and only if the system was calibrated (calib_day!=0 by line 252)
+				//if(Day_Of_Year(months,days)>calib_day && Day_Of_Year(months,days)<calib_day+7 && calib_day!=0)// updated position if  and only if the system was calibrated (calib_day!=0 by line 252)
 				{
 					//offset=calib_interpolate();
 					//Update_position(months,days,hours,mins,seconds,&current_position,calib_interpolate(hours,mins));
+						//				Update_position(months,days,hours,mins,seconds,&current_position,0);
+
 				}
+				
 				//Update_position(0x10,0x05,0x12,0x00,0x00,&current_position);
 		}
 		if (Day_Of_Year(months,days)==calib_day+7)
@@ -314,12 +317,12 @@ void main(void)
 		
 		//mins=0x30;
 		///seconds=0x00;
-		if(calib_mode && BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0)// calib every 30mins
+		if(calib_mode && BCDtoDec1(mins)%5==0 &&  BCDtoDec1(seconds&0x7f)==0)// calib every 30mins
 		{
 			*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
 			//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 			*(calib_time+count)=BCDtoDec1(hours)+BCDtoDec1(mins);
-			if (BCDtoDec1(hours)>18)// do not calib after 18pm
+			if (BCDtoDec1(hours)>17)// do not calib after 18pm
 			{
 				calib_day=Day_Of_Year(months,days);
 				calib_mode=0;

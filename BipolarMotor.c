@@ -4,8 +4,7 @@
 #include "math.h"
 #include "SunPos.h"
 #include "PI4IOE5V96248.h"
-
-//#include "PCF85963BTL.h"
+#include "spa.h"
 void Delay_ms(unsigned int ms);
 int Day_Of_Year(unsigned char months,unsigned char days);
 unsigned char BCDtoDec1(char bcd);
@@ -24,7 +23,7 @@ float
 cubic_interpolate (float *p1, float *p2, float *p3, float *p4, float x);
 
 struct DATA_FOR_IO_6PORTS dat;
-
+struct spa_data spa_data_JP;
 unsigned char BCDtoDec1(unsigned char bcd)
 {
 	unsigned char hi,lo;
@@ -138,28 +137,37 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	float  pos_interpolate_azimuth[num_of_azimuth_stamp],current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
 	float declination;
 	struct point p1,p2;
-	struct cTime time;
+	int x;
+	/*struct cTime time;
 	struct cLocation location;
 	struct cSunCoordinates *sunCoord;
 	//hurs=hurs-1;// change to sun time
 	//dys=dys+4;
 	location.dLongitude=-73.6495;
 	location.dLatitude=45.478889;
-	time.iYear=2018;
+	time.iYear=2019;
 	time.iMonth=BCDtoDec1(mnths);
 	time.iDay=BCDtoDec1(dys);
 	time.dHours=BCDtoDec1(hurs);
 	time.dMinutes=BCDtoDec1(mns);
-	time.dSeconds=BCDtoDec1(sconds&0x7f);
-
+	time.dSeconds=BCDtoDec1(sconds&0x7f);*/
+	spa_data_JP.year=2019;            // 4-digit year,      valid range: -2000 to 6000, error code: 1
+	spa_data_JP.month=BCDtoDec1(mnths);          // 2-digit month,         valid range: 1 to  12,  error code: 2
+	spa_data_JP.day=BCDtoDec1(dys);             // 2-digit day,           valid range: 1 to  31,  error code: 3
+	spa_data_JP.hour=BCDtoDec1(hurs);            // Observer local hour,   valid range: 0 to  24,  error code: 4
+	spa_data_JP.minute=BCDtoDec1(mns);          // Observer local minute, valid range: 0 to  59,  error code: 5
+	spa_data_JP.second=BCDtoDec1(sconds&0x7f);//;       // Observer local second, valid range: 0 to <60,  error code: 6
+	spa_data_JP.longitude=-73.58;
+	spa_data_JP.latitude=45.51;
+	x=spa_calculate(&spa_data_JP);
 	
 	desired_distance=*currnt_pos;
 	
 	//date=Day_Of_Year(mnths,dys)+4;
 	//date=237;
-	declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
+	/*declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
 	time_offset=1/60*(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180));
-	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset-1;//current time=sun time= clock time -1
+	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//current time=sun time= clock time -1
 	//=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/365)*3.1416/180)    -   1.5*SIN((360*($B$8-81)/365)*3.1416/180))
 	elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
 						cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180)           );
@@ -169,7 +177,8 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	
 	//if (current_local_sun_time>12)
 	//	azimuth=360-azimuth;
-	
+	*/
+	azimuth=spa_data_JP.azimuth;
 	if(BCDtoDec1(sconds&0x7f)%2==0)
 	{
 		// interpolate for azimuth
@@ -209,8 +218,8 @@ void Update_position(unsigned char mnths,unsigned char dys,
 			
 		}
 		
-		desired_distance=68+JP_pos +offset_calib;
-		
+		//desired_distance=68+JP_pos +offset_calib;
+		desired_distance=azimuth;
 		distance=desired_distance-*currnt_pos;
 		if(abs(distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more than 0.5mm OR >30s
 		{

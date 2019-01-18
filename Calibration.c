@@ -34,10 +34,11 @@ void  Find_Real_Max(float  *current_position)
 {
 	unsigned char ch=0;
 	float calib_step_move=0.5;
-	unsigned int voltage_at_scanned_pos[40],max_location;
+	unsigned int voltage_at_scanned_pos[41],max_location;
 	int i;
+	voltage_at_scanned_pos[0]=*current_position+10;// this is JP theory max position
 	// move/scan +direction
-	for(i=0;i<40;i++)
+	for(i=1;i<=40;i++)
 	{
 		Move(calib_step_move,1);
 		*current_position=*current_position+0.5;
@@ -60,9 +61,18 @@ void  Find_Real_Max(float  *current_position)
 	
 	max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,39]
 	// move to the optimal position in the area of +/-10mm from JP max theorical pos
-	Move(calib_step_move*(39-max_location),0);
-	*current_position=*current_position-calib_step_move*(39-max_location);
-	Wait_ms(500);
+	if(max_location!=0)
+	{
+		Move(calib_step_move*(40-max_location),0);
+		*current_position=*current_position-calib_step_move*(40-max_location);
+		Wait_ms(500);
+	}
+	else
+	{
+			Move(calib_step_move*(20-max_location),0);
+			*current_position=*current_position-calib_step_move*(20-max_location);
+			Wait_ms(500);
+	}
 
 }
 
@@ -71,7 +81,7 @@ unsigned int Max_Value(unsigned int *input)
 {
 	unsigned int max,max_location=0,i;
 	//int i;
-	for(i=0;i<=39;i++)
+	for(i=0;i<=40;i++)
 	{
 		max=max>*(input+i)? max:*(input+i);
 		if (max==*(input+i))

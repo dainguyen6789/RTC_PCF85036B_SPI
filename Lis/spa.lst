@@ -1,0 +1,1237 @@
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE SPA
+OBJECT MODULE PLACED IN .\Obj\spa.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Application\Source\spa.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG
+                    - OBJECTEXTEND PRINT(.\Lis\spa.lst) TABS(2) OBJECT(.\Obj\spa.obj)
+
+line level    source
+
+   1          
+   2          
+   3          /////////////////////////////////////////////
+   4          //      Solar Position Algorithm (SPA)     //
+   5          //                   for                   //
+   6          //        Solar Radiation Application      //
+   7          //                                         //
+   8          //               May 12, 2003              //
+   9          //                                         //
+  10          //   Filename: SPA.C                       //
+  11          //                                         //
+  12          //   Afshin Michael Andreas                //
+  13          //   Afshin.Andreas@NREL.gov (303)384-6383 //
+  14          //                                         //
+  15          //   Metrology Laboratory                  //
+  16          //   Solar Radiation Research Laboratory   //
+  17          //   National Renewable Energy Laboratory  //
+  18          //   15013 Denver W Pkwy, Golden, CO 80401 //
+  19          /////////////////////////////////////////////
+  20          
+  21          /////////////////////////////////////////////
+  22          //   See the SPA.H header file for usage   //
+  23          //                                         //
+  24          //   This code is based on the NREL        //
+  25          //   technical report "Solar Position      //
+  26          //   Algorithm for Solar Radiation         //
+  27          //   Application" by I. Reda & A. Andreas  //
+  28          /////////////////////////////////////////////
+  29          
+  30          ///////////////////////////////////////////////////////////////////////////////////////////////
+  31          //
+  32          //   NOTICE
+  33          //   Copyright (C) 2008-2011 Alliance for Sustainable Energy, LLC, All Rights Reserved
+  34          //
+  35          //The Solar Position Algorithm ("Software") is code in development prepared by employees of the
+  36          //Alliance for Sustainable Energy, LLC, (hereinafter the "Contractor"), under Contract No.
+  37          //DE-AC36-08GO28308 ("Contract") with the U.S. Department of Energy (the "DOE"). The United
+  38          //States Government has been granted for itself and others acting on its behalf a paid-up, non-
+  39          //exclusive, irrevocable, worldwide license in the Software to reproduce, prepare derivative
+  40          //works, and perform publicly and display publicly. Beginning five (5) years after the date
+  41          //permission to assert copyright is obtained from the DOE, and subject to any subsequent five
+  42          //(5) year renewals, the United States Government is granted for itself and others acting on
+  43          //its behalf a paid-up, non-exclusive, irrevocable, worldwide license in the Software to
+  44          //reproduce, prepare derivative works, distribute copies to the public, perform publicly and
+  45          //display publicly, and to permit others to do so. If the Contractor ceases to make this
+  46          //computer software available, it may be obtained from DOE's Office of Scientific and Technical
+  47          //Information's Energy Science and Technology Software Center (ESTSC) at P.O. Box 1020, Oak
+  48          //Ridge, TN 37831-1020. THIS SOFTWARE IS PROVIDED BY THE CONTRACTOR "AS IS" AND ANY EXPRESS OR
+  49          //IMPLIED WARRANTIES, INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+  50          //AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE CONTRACTOR OR THE
+  51          //U.S. GOVERNMENT BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  52          //WHATSOEVER, INCLUDING BUT NOT LIMITED TO CLAIMS ASSOCIATED WITH THE LOSS OF DATA OR PROFITS,
+  53          //WHICH MAY RESULT FROM AN ACTION IN CONTRACT, NEGLIGENCE OR OTHER TORTIOUS CLAIM THAT ARISES
+  54          //OUT OF OR IN CONNECTION WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 2   
+
+  55          //
+  56          //The Software is being provided for internal, noncommercial purposes only and shall not be
+  57          //re-distributed. Please contact the NREL Commercialization and Technology Transfer Office
+  58          //for information concerning a commercial license to use the Software, visit:
+  59          //http://midcdmz.nrel.gov/spa/ for the contact information.
+  60          //
+  61          //As a condition of using the Software in an application, the developer of the application
+  62          //agrees to reference the use of the Software and make this Notice readily accessible to any
+  63          //end-user in a Help|About screen or equivalent manner.
+  64          //
+  65          ///////////////////////////////////////////////////////////////////////////////////////////////
+  66          
+  67          ///////////////////////////////////////////////////////////////////////////////////////////////
+  68          // Revised 27-FEB-2004 Andreas
+  69          //         Added bounds check on inputs and return value for spa_calculate().
+  70          // Revised 10-MAY-2004 Andreas
+  71          //         Changed temperature bound check minimum from -273.15 to -273 degrees C.
+  72          // Revised 17-JUN-2004 Andreas
+  73          //         Corrected a problem that caused a bogus sunrise/set/transit on the equinox.
+  74          // Revised 18-JUN-2004 Andreas
+  75          //         Added a "function" input variable that allows the selecting of desired outputs.
+  76          // Revised 21-JUN-2004 Andreas
+  77          //         Added 3 new intermediate output values to SPA structure (srha, ssha, & sta).
+  78          // Revised 23-JUN-2004 Andreas
+  79          //         Enumerations for "function" were renamed and 2 were added.
+  80          //         Prevented bound checks on inputs that are not used (based on function).
+  81          // Revised 01-SEP-2004 Andreas
+  82          //         Changed a local variable from integer to double.
+  83          // Revised 12-JUL-2005 Andreas
+  84          //         Put a limit on the EOT calculation, so that the result is between -20 and 20.
+  85          // Revised 26-OCT-2005 Andreas
+  86          //         Set the atmos. refraction correction to zero, when sun is below horizon.
+  87          //         Made atmos_refract input a requirement for all "functions".
+  88          //         Changed atmos_refract bound check from +/- 10 to +/- 5 degrees.
+  89          // Revised 07-NOV-2006 Andreas
+  90          //         Corrected 3 earth periodic terms in the L_TERMS array.
+  91          //         Corrected 2 earth periodic terms in the R_TERMS array.
+  92          // Revised 10-NOV-2006 Andreas
+  93          //         Corrected a constant used to calculate topocentric sun declination.
+  94          //         Put a limit on observer hour angle, so result is between 0 and 360.
+  95          // Revised 13-NOV-2006 Andreas
+  96          //         Corrected calculation of topocentric sun declination.
+  97          //         Converted all floating point inputs in spa structure to doubles.
+  98          // Revised 27-FEB-2007 Andreas
+  99          //         Minor correction made as to when atmos. refraction correction is set to zero.
+ 100          // Revised 21-JAN-2008 Andreas
+ 101          //         Minor change to two variable declarations.
+ 102          // Revised 12-JAN-2009 Andreas
+ 103          //         Changed timezone bound check from +/-12 to +/-18 hours.
+ 104          // Revised 14-JAN-2009 Andreas
+ 105          //         Corrected a constant used to calculate ecliptic mean obliquity.
+ 106          // Revised 01-APR-2013 Andreas
+ 107          //       Replace floor with new integer function for tech. report consistency, no affect on results.
+ 108          //         Add "utility" function prototypes to header file for use with NREL's SAMPA.
+ 109          //         Rename 4 "utility" function names (remove "sun") for clarity with NREL's SAMPA.
+ 110          //       Added delta_ut1 as required input, which the fractional second difference between UT and UTC.
+ 111          //         Time must be input w/o delta_ut1 adjustment, instead of assuming adjustment was pre-applied.
+ 112          // Revised 10-JUL-2014 Andreas
+ 113          //         Change second in spa_data structure from an integer to double to allow fractional second
+ 114          // Revised 08-SEP-2014 Andreas
+ 115          //         Corrected description of azm_rotation in header file
+ 116          //         Limited azimuth180 to range of 0 to 360 deg (instead of -180 to 180) for tech report consistenc
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 3   
+
+             -y
+ 117          //         Changed all variables names from azimuth180 to azimuth_astro
+ 118          //         Renamed 2 "utility" function names for consistency
+ 119          ///////////////////////////////////////////////////////////////////////////////////////////////
+ 120          
+ 121          #include "math.h"
+ 122          #include "spa.h"
+ 123          
+ 124          #define PI         3.14159
+ 125          #define SUN_RADIUS 0.26667
+ 126          
+ 127          #define L_COUNT 6
+ 128          #define B_COUNT 2
+ 129          #define R_COUNT 5
+ 130          #define Y_COUNT 63
+ 131          
+ 132          #define L_MAX_SUBCOUNT 64
+ 133          #define B_MAX_SUBCOUNT 5
+ 134          #define R_MAX_SUBCOUNT 40
+ 135          
+ 136          enum {TERM_A, TERM_B, TERM_C, TERM_COUNT};
+ 137          enum {TERM_X0, TERM_X1, TERM_X2, TERM_X3, TERM_X4, TERM_X_COUNT};
+ 138          enum {TERM_PSI_A, TERM_PSI_B, TERM_EPS_C, TERM_EPS_D, TERM_PE_COUNT};
+ 139          enum {JD_MINUS, JD_ZERO, JD_PLUS, JD_COUNT};
+ 140          enum {SUN_TRANSIT, SUN_RISE, SUN_SET, SUN_COUNT};
+ 141          
+ 142          #define TERM_Y_COUNT TERM_X_COUNT
+ 143          
+ 144          const int l_subcount[L_COUNT] = {64,34,20,7,3,1};
+ 145          const int b_subcount[B_COUNT] = {5,2};
+ 146          const int r_subcount[R_COUNT] = {40,10,6,2,1};
+ 147          
+ 148          ///////////////////////////////////////////////////
+ 149          ///  Earth Periodic Terms
+ 150          ///////////////////////////////////////////////////
+ 151          const double L_TERMS[L_COUNT][L_MAX_SUBCOUNT][TERM_COUNT]=
+ 152          {
+ 153              {
+ 154                  {175347046.0,0,0},
+ 155                  {3341656.0,4.6692568,6283.07585},
+ 156                  {34894.0,4.6261,12566.1517},
+ 157                  {3497.0,2.7441,5753.3849},
+ 158                  {3418.0,2.8289,3.5231},
+ 159                  {3136.0,3.6277,77713.7715},
+ 160                  {2676.0,4.4181,7860.4194},
+ 161                  {2343.0,6.1352,3930.2097},
+ 162                  {1324.0,0.7425,11506.7698},
+ 163                  {1273.0,2.0371,529.691},
+ 164                  {1199.0,1.1096,1577.3435},
+ 165                  {990,5.233,5884.927},
+ 166                  {902,2.045,26.298},
+ 167                  {857,3.508,398.149},
+ 168                  {780,1.179,5223.694},
+ 169                  {753,2.533,5507.553},
+ 170                  {505,4.583,18849.228},
+ 171                  {492,4.205,775.523},
+ 172                  {357,2.92,0.067},
+ 173                  {317,5.849,11790.629},
+ 174                  {284,1.899,796.298},
+ 175                  {271,0.315,10977.079},
+ 176                  {243,0.345,5486.778},
+ 177                  {206,4.806,2544.314},
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 4   
+
+ 178                  {205,1.869,5573.143},
+ 179                  {202,2.458,6069.777},
+ 180                  {156,0.833,213.299},
+ 181                  {132,3.411,2942.463},
+ 182                  {126,1.083,20.775},
+ 183                  {115,0.645,0.98},
+ 184                  {103,0.636,4694.003},
+ 185                  {102,0.976,15720.839},
+ 186                  {102,4.267,7.114},
+ 187                  {99,6.21,2146.17},
+ 188                  {98,0.68,155.42},
+ 189                  {86,5.98,161000.69},
+ 190                  {85,1.3,6275.96},
+ 191                  {85,3.67,71430.7},
+ 192                  {80,1.81,17260.15},
+ 193                  {79,3.04,12036.46},
+ 194                  {75,1.76,5088.63},
+ 195                  {74,3.5,3154.69},
+ 196                  {74,4.68,801.82},
+ 197                  {70,0.83,9437.76},
+ 198                  {62,3.98,8827.39},
+ 199                  {61,1.82,7084.9},
+ 200                  {57,2.78,6286.6},
+ 201                  {56,4.39,14143.5},
+ 202                  {56,3.47,6279.55},
+ 203                  {52,0.19,12139.55},
+ 204                  {52,1.33,1748.02},
+ 205                  {51,0.28,5856.48},
+ 206                  {49,0.49,1194.45},
+ 207                  {41,5.37,8429.24},
+ 208                  {41,2.4,19651.05},
+ 209                  {39,6.17,10447.39},
+ 210                  {37,6.04,10213.29},
+ 211                  {37,2.57,1059.38},
+ 212                  {36,1.71,2352.87},
+ 213                  {36,1.78,6812.77},
+ 214                  {33,0.59,17789.85},
+ 215                  {30,0.44,83996.85},
+ 216                  {30,2.74,1349.87},
+ 217                  {25,3.16,4690.48}
+ 218              },
+ 219              {
+ 220                  {628331966747.0,0,0},
+ 221                  {206059.0,2.678235,6283.07585},
+ 222                  {4303.0,2.6351,12566.1517},
+ 223                  {425.0,1.59,3.523},
+ 224                  {119.0,5.796,26.298},
+ 225                  {109.0,2.966,1577.344},
+ 226                  {93,2.59,18849.23},
+ 227                  {72,1.14,529.69},
+ 228                  {68,1.87,398.15},
+ 229                  {67,4.41,5507.55},
+ 230                  {59,2.89,5223.69},
+ 231                  {56,2.17,155.42},
+ 232                  {45,0.4,796.3},
+ 233                  {36,0.47,775.52},
+ 234                  {29,2.65,7.11},
+ 235                  {21,5.34,0.98},
+ 236                  {19,1.85,5486.78},
+ 237                  {19,4.97,213.3},
+ 238                  {17,2.99,6275.96},
+ 239                  {16,0.03,2544.31},
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 5   
+
+ 240                  {16,1.43,2146.17},
+ 241                  {15,1.21,10977.08},
+ 242                  {12,2.83,1748.02},
+ 243                  {12,3.26,5088.63},
+ 244                  {12,5.27,1194.45},
+ 245                  {12,2.08,4694},
+ 246                  {11,0.77,553.57},
+ 247                  {10,1.3,6286.6},
+ 248                  {10,4.24,1349.87},
+ 249                  {9,2.7,242.73},
+ 250                  {9,5.64,951.72},
+ 251                  {8,5.3,2352.87},
+ 252                  {6,2.65,9437.76},
+ 253                  {6,4.67,4690.48}
+ 254              },
+ 255              {
+ 256                  {52919.0,0,0},
+ 257                  {8720.0,1.0721,6283.0758},
+ 258                  {309.0,0.867,12566.152},
+ 259                  {27,0.05,3.52},
+ 260                  {16,5.19,26.3},
+ 261                  {16,3.68,155.42},
+ 262                  {10,0.76,18849.23},
+ 263                  {9,2.06,77713.77},
+ 264                  {7,0.83,775.52},
+ 265                  {5,4.66,1577.34},
+ 266                  {4,1.03,7.11},
+ 267                  {4,3.44,5573.14},
+ 268                  {3,5.14,796.3},
+ 269                  {3,6.05,5507.55},
+ 270                  {3,1.19,242.73},
+ 271                  {3,6.12,529.69},
+ 272                  {3,0.31,398.15},
+ 273                  {3,2.28,553.57},
+ 274                  {2,4.38,5223.69},
+ 275                  {2,3.75,0.98}
+ 276              },
+ 277              {
+ 278                  {289.0,5.844,6283.076},
+ 279                  {35,0,0},
+ 280                  {17,5.49,12566.15},
+ 281                  {3,5.2,155.42},
+ 282                  {1,4.72,3.52},
+ 283                  {1,5.3,18849.23},
+ 284                  {1,5.97,242.73}
+ 285              },
+ 286              {
+ 287                  {114.0,3.142,0},
+ 288                  {8,4.13,6283.08},
+ 289                  {1,3.84,12566.15}
+ 290              },
+ 291              {
+ 292                  {1,3.14,0}
+ 293              }
+ 294          };
+ 295          
+ 296          const double B_TERMS[B_COUNT][B_MAX_SUBCOUNT][TERM_COUNT]=
+ 297          {
+ 298              {
+ 299                  {280.0,3.199,84334.662},
+ 300                  {102.0,5.422,5507.553},
+ 301                  {80,3.88,5223.69},
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 6   
+
+ 302                  {44,3.7,2352.87},
+ 303                  {32,4,1577.34}
+ 304              },
+ 305              {
+ 306                  {9,3.9,5507.55},
+ 307                  {6,1.73,5223.69}
+ 308              }
+ 309          };
+ 310          
+ 311          const double R_TERMS[R_COUNT][R_MAX_SUBCOUNT][TERM_COUNT]=
+ 312          {
+ 313              {
+ 314                  {100013989.0,0,0},
+ 315                  {1670700.0,3.0984635,6283.07585},
+ 316                  {13956.0,3.05525,12566.1517},
+ 317                  {3084.0,5.1985,77713.7715},
+ 318                  {1628.0,1.1739,5753.3849},
+ 319                  {1576.0,2.8469,7860.4194},
+ 320                  {925.0,5.453,11506.77},
+ 321                  {542.0,4.564,3930.21},
+ 322                  {472.0,3.661,5884.927},
+ 323                  {346.0,0.964,5507.553},
+ 324                  {329.0,5.9,5223.694},
+ 325                  {307.0,0.299,5573.143},
+ 326                  {243.0,4.273,11790.629},
+ 327                  {212.0,5.847,1577.344},
+ 328                  {186.0,5.022,10977.079},
+ 329                  {175.0,3.012,18849.228},
+ 330                  {110.0,5.055,5486.778},
+ 331                  {98,0.89,6069.78},
+ 332                  {86,5.69,15720.84},
+ 333                  {86,1.27,161000.69},
+ 334                  {65,0.27,17260.15},
+ 335                  {63,0.92,529.69},
+ 336                  {57,2.01,83996.85},
+ 337                  {56,5.24,71430.7},
+ 338                  {49,3.25,2544.31},
+ 339                  {47,2.58,775.52},
+ 340                  {45,5.54,9437.76},
+ 341                  {43,6.01,6275.96},
+ 342                  {39,5.36,4694},
+ 343                  {38,2.39,8827.39},
+ 344                  {37,0.83,19651.05},
+ 345                  {37,4.9,12139.55},
+ 346                  {36,1.67,12036.46},
+ 347                  {35,1.84,2942.46},
+ 348                  {33,0.24,7084.9},
+ 349                  {32,0.18,5088.63},
+ 350                  {32,1.78,398.15},
+ 351                  {28,1.21,6286.6},
+ 352                  {28,1.9,6279.55},
+ 353                  {26,4.59,10447.39}
+ 354              },
+ 355              {
+ 356                  {103019.0,1.10749,6283.07585},
+ 357                  {1721.0,1.0644,12566.1517},
+ 358                  {702.0,3.142,0},
+ 359                  {32,1.02,18849.23},
+ 360                  {31,2.84,5507.55},
+ 361                  {25,1.32,5223.69},
+ 362                  {18,1.42,1577.34},
+ 363                  {10,5.91,10977.08},
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 7   
+
+ 364                  {9,1.42,6275.96},
+ 365                  {9,0.27,5486.78}
+ 366              },
+ 367              {
+ 368                  {4359.0,5.7846,6283.0758},
+ 369                  {124.0,5.579,12566.152},
+ 370                  {12,3.14,0},
+ 371                  {9,3.63,77713.77},
+ 372                  {6,1.87,5573.14},
+ 373                  {3,5.47,18849.23}
+ 374              },
+ 375              {
+ 376                  {145.0,4.273,6283.076},
+ 377                  {7,3.92,12566.15}
+ 378              },
+ 379              {
+ 380                  {4,2.56,6283.08}
+ 381              }
+ 382          };
+ 383          
+ 384          ////////////////////////////////////////////////////////////////
+ 385          ///  Periodic Terms for the nutation in longitude and obliquity
+ 386          ////////////////////////////////////////////////////////////////
+ 387          
+ 388          const int Y_TERMS[Y_COUNT][TERM_Y_COUNT]=
+ 389          {
+ 390              {0,0,0,0,1},
+ 391              {-2,0,0,2,2},
+ 392              {0,0,0,2,2},
+ 393              {0,0,0,0,2},
+ 394              {0,1,0,0,0},
+ 395              {0,0,1,0,0},
+ 396              {-2,1,0,2,2},
+ 397              {0,0,0,2,1},
+ 398              {0,0,1,2,2},
+ 399              {-2,-1,0,2,2},
+ 400              {-2,0,1,0,0},
+ 401              {-2,0,0,2,1},
+ 402              {0,0,-1,2,2},
+ 403              {2,0,0,0,0},
+ 404              {0,0,1,0,1},
+ 405              {2,0,-1,2,2},
+ 406              {0,0,-1,0,1},
+ 407              {0,0,1,2,1},
+ 408              {-2,0,2,0,0},
+ 409              {0,0,-2,2,1},
+ 410              {2,0,0,2,2},
+ 411              {0,0,2,2,2},
+ 412              {0,0,2,0,0},
+ 413              {-2,0,1,2,2},
+ 414              {0,0,0,2,0},
+ 415              {-2,0,0,2,0},
+ 416              {0,0,-1,2,1},
+ 417              {0,2,0,0,0},
+ 418              {2,0,-1,0,1},
+ 419              {-2,2,0,2,2},
+ 420              {0,1,0,0,1},
+ 421              {-2,0,1,0,1},
+ 422              {0,-1,0,0,1},
+ 423              {0,0,2,-2,0},
+ 424              {2,0,-1,2,1},
+ 425              {2,0,1,2,2},
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 8   
+
+ 426              {0,1,0,2,2},
+ 427              {-2,1,1,0,0},
+ 428              {0,-1,0,2,2},
+ 429              {2,0,0,2,1},
+ 430              {2,0,1,0,0},
+ 431              {-2,0,2,2,2},
+ 432              {-2,0,1,2,1},
+ 433              {2,0,-2,0,1},
+ 434              {2,0,0,0,1},
+ 435              {0,-1,1,0,0},
+ 436              {-2,-1,0,2,1},
+ 437              {-2,0,0,0,1},
+ 438              {0,0,2,2,1},
+ 439              {-2,0,2,0,1},
+ 440              {-2,1,0,2,1},
+ 441              {0,0,1,-2,0},
+ 442              {-1,0,1,0,0},
+ 443              {-2,1,0,0,0},
+ 444              {1,0,0,0,0},
+ 445              {0,0,1,2,0},
+ 446              {0,0,-2,2,2},
+ 447              {-1,-1,1,0,0},
+ 448              {0,1,1,0,0},
+ 449              {0,-1,1,2,2},
+ 450              {2,-1,-1,2,2},
+ 451              {0,0,3,2,2},
+ 452              {2,-1,0,2,2},
+ 453          };
+ 454          
+ 455          const double PE_TERMS[Y_COUNT][TERM_PE_COUNT]={
+ 456              {-171996,-174.2,92025,8.9},
+ 457              {-13187,-1.6,5736,-3.1},
+ 458              {-2274,-0.2,977,-0.5},
+ 459              {2062,0.2,-895,0.5},
+ 460              {1426,-3.4,54,-0.1},
+ 461              {712,0.1,-7,0},
+ 462              {-517,1.2,224,-0.6},
+ 463              {-386,-0.4,200,0},
+ 464              {-301,0,129,-0.1},
+ 465              {217,-0.5,-95,0.3},
+ 466              {-158,0,0,0},
+ 467              {129,0.1,-70,0},
+ 468              {123,0,-53,0},
+ 469              {63,0,0,0},
+ 470              {63,0.1,-33,0},
+ 471              {-59,0,26,0},
+ 472              {-58,-0.1,32,0},
+ 473              {-51,0,27,0},
+ 474              {48,0,0,0},
+ 475              {46,0,-24,0},
+ 476              {-38,0,16,0},
+ 477              {-31,0,13,0},
+ 478              {29,0,0,0},
+ 479              {29,0,-12,0},
+ 480              {26,0,0,0},
+ 481              {-22,0,0,0},
+ 482              {21,0,-10,0},
+ 483              {17,-0.1,0,0},
+ 484              {16,0,-8,0},
+ 485              {-16,0.1,7,0},
+ 486              {-15,0,9,0},
+ 487              {-13,0,7,0},
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 9   
+
+ 488              {-12,0,6,0},
+ 489              {11,0,0,0},
+ 490              {-10,0,5,0},
+ 491              {-8,0,3,0},
+ 492              {7,0,-3,0},
+ 493              {-7,0,0,0},
+ 494              {-7,0,3,0},
+ 495              {-7,0,3,0},
+ 496              {6,0,0,0},
+ 497              {6,0,-3,0},
+ 498              {6,0,-3,0},
+ 499              {-6,0,3,0},
+ 500              {-6,0,3,0},
+ 501              {5,0,0,0},
+ 502              {-5,0,3,0},
+ 503              {-5,0,3,0},
+ 504              {-5,0,3,0},
+ 505              {4,0,0,0},
+ 506              {4,0,0,0},
+ 507              {4,0,0,0},
+ 508              {-4,0,0,0},
+ 509              {-4,0,0,0},
+ 510              {-4,0,0,0},
+ 511              {3,0,0,0},
+ 512              {-3,0,0,0},
+ 513              {-3,0,0,0},
+ 514              {-3,0,0,0},
+ 515              {-3,0,0,0},
+ 516              {-3,0,0,0},
+ 517              {-3,0,0,0},
+ 518              {-3,0,0,0},
+ 519          };
+ 520          
+ 521          ///////////////////////////////////////////////
+ 522          
+ 523          double rad2deg(double radians)
+ 524          {
+ 525   1          return (180.0/PI)*radians;
+ 526   1      }
+ 527          
+ 528          double deg2rad(double degrees)
+ 529          {
+ 530   1          return (PI/180.0)*degrees;
+ 531   1      }
+ 532          
+ 533          int integer(double value)
+ 534          {
+ 535   1        return value;
+ 536   1      }
+ 537          
+ 538          double limit_degrees(double degrees)
+ 539          {
+ 540   1          double limited;
+ 541   1      
+ 542   1          degrees /= 360.0;
+ 543   1          limited = 360.0*(degrees-floor(degrees));
+ 544   1          if (limited < 0) limited += 360.0;
+ 545   1      
+ 546   1          return limited;
+ 547   1      }
+ 548          
+ 549          double limit_degrees180pm(double degrees)
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 10  
+
+ 550          {
+ 551   1          double limited;
+ 552   1      
+ 553   1          degrees /= 360.0;
+ 554   1          limited = 360.0*(degrees-floor(degrees));
+ 555   1          if      (limited < -180.0) limited += 360.0;
+ 556   1          else if (limited >  180.0) limited -= 360.0;
+ 557   1      
+ 558   1          return limited;
+ 559   1      }
+ 560          
+ 561          double limit_degrees180(double degrees)
+ 562          {
+ 563   1          double limited;
+ 564   1      
+ 565   1          degrees /= 180.0;
+ 566   1          limited = 180.0*(degrees-floor(degrees));
+ 567   1          if (limited < 0) limited += 180.0;
+ 568   1      
+ 569   1          return limited;
+ 570   1      }
+ 571          
+ 572          double limit_zero2one(double value)
+ 573          {
+ 574   1          double limited;
+ 575   1      
+ 576   1          limited = value - floor(value);
+ 577   1          if (limited < 0) limited += 1.0;
+ 578   1      
+ 579   1          return limited;
+ 580   1      }
+ 581          
+ 582          double limit_minutes(double minutes)
+ 583          {
+ 584   1          double limited=minutes;
+ 585   1      
+ 586   1          if      (limited < -20.0) limited += 1440.0;
+ 587   1          else if (limited >  20.0) limited -= 1440.0;
+ 588   1      
+ 589   1          return limited;
+ 590   1      }
+ 591          
+ 592          double dayfrac_to_local_hr(double dayfrac, double timezone)
+ 593          {
+ 594   1          return 24.0*limit_zero2one(dayfrac + timezone/24.0);
+ 595   1      }
+ 596          
+ 597          double third_order_polynomial(double a, double b, double c, double d, double x)
+ 598          {
+ 599   1          return ((a*x + b)*x + c)*x + d;
+ 600   1      }
+ 601          
+ 602          ///////////////////////////////////////////////////////////////////////////////////////////////
+ 603          int validate_inputs(struct spa_data *spa)
+ 604          {
+ 605   1          if ((spa->year        < -2000) || (spa->year        > 6000)) return 1;
+ 606   1          if ((spa->month       < 1    ) || (spa->month       > 12  )) return 2;
+ 607   1          if ((spa->day         < 1    ) || (spa->day         > 31  )) return 3;
+ 608   1          if ((spa->hour        < 0    ) || (spa->hour        > 24  )) return 4;
+ 609   1          if ((spa->minute      < 0    ) || (spa->minute      > 59  )) return 5;
+ 610   1          if ((spa->second      < 0    ) || (spa->second      >=60  )) return 6;
+ 611   1          if ((spa->pressure    < 0    ) || (spa->pressure    > 5000)) return 12;
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 11  
+
+ 612   1          if ((spa->temperature <= -273) || (spa->temperature > 6000)) return 13;
+ 613   1          if ((spa->delta_ut1   <= -1  ) || (spa->delta_ut1   >= 1  )) return 17;
+ 614   1        if ((spa->hour        == 24  ) && (spa->minute      > 0   )) return 5;
+ 615   1          if ((spa->hour        == 24  ) && (spa->second      > 0   )) return 6;
+ 616   1      
+ 617   1          if (fabs(spa->delta_t)       > 8000    ) return 7;
+ 618   1          if (fabs(spa->timezone)      > 18      ) return 8;
+ 619   1          if (fabs(spa->longitude)     > 180     ) return 9;
+ 620   1          if (fabs(spa->latitude)      > 90      ) return 10;
+ 621   1          if (fabs(spa->atmos_refract) > 5       ) return 16;
+ 622   1          if (     spa->elevation      < -6500000) return 11;
+ 623   1      
+ 624   1          if ((spa->function == SPA_ZA_INC) || (spa->function == SPA_ALL))
+ 625   1          {
+ 626   2              if (fabs(spa->slope)         > 360) return 14;
+ 627   2              if (fabs(spa->azm_rotation)  > 360) return 15;
+ 628   2          }
+ 629   1      
+ 630   1          return 0;
+ 631   1      }
+ 632          ///////////////////////////////////////////////////////////////////////////////////////////////
+ 633          double julian_day (int year, int month, int day, int hour, int minute, double second, double dut1, double 
+             -tz)
+ 634          {
+ 635   1          double day_decimal, julian_day, a;
+ 636   1      
+ 637   1          day_decimal = day + (hour - tz + (minute + (second + dut1)/60.0)/60.0)/24.0;
+ 638   1      
+ 639   1          if (month < 3) {
+ 640   2              month += 12;
+ 641   2              year--;
+ 642   2          }
+ 643   1      
+ 644   1          julian_day = integer(365.25*(year+4716.0)) + integer(30.6001*(month+1)) + day_decimal - 1524.5;
+ 645   1      
+ 646   1          if (julian_day > 2299160.0) {
+ 647   2              a = integer(year/100);
+ 648   2              julian_day += (2 - a + integer(a/4));
+ 649   2          }
+ 650   1      
+ 651   1          return julian_day;
+ 652   1      }
+ 653          
+ 654          double julian_century(double jd)
+ 655          {
+ 656   1          return (jd-2451545.0)/36525.0;
+ 657   1      }
+ 658          
+ 659          double julian_ephemeris_day(double jd, double delta_t)
+ 660          {
+ 661   1          return jd+delta_t/86400.0;
+ 662   1      }
+ 663          
+ 664          double julian_ephemeris_century(double jde)
+ 665          {
+ 666   1          return (jde - 2451545.0)/36525.0;
+ 667   1      }
+ 668          
+ 669          double julian_ephemeris_millennium(double jce)
+ 670          {
+ 671   1          return (jce/10.0);
+ 672   1      }
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 12  
+
+ 673          
+ 674          double earth_periodic_term_summation(const double terms[][TERM_COUNT], int count, double jme)
+ 675          {
+ 676   1          int i;
+ 677   1          double sum=0;
+ 678   1      
+ 679   1          for (i = 0; i < count; i++)
+ 680   1              sum += terms[i][TERM_A]*cos(terms[i][TERM_B]+terms[i][TERM_C]*jme);
+ 681   1      
+ 682   1          return sum;
+ 683   1      }
+ 684          
+ 685          double earth_values(double term_sum[], int count, double jme)
+ 686          {
+ 687   1          int i;
+ 688   1          double sum=0;
+ 689   1      
+ 690   1          for (i = 0; i < count; i++)
+ 691   1              sum += term_sum[i]*pow(jme, i);
+ 692   1      
+ 693   1          sum /= 1.0e8;
+ 694   1      
+ 695   1          return sum;
+ 696   1      }
+ 697          
+ 698          double earth_heliocentric_longitude(double jme)
+ 699          {
+ 700   1          double sum[L_COUNT];
+ 701   1          int i;
+ 702   1      
+ 703   1          for (i = 0; i < L_COUNT; i++)
+ 704   1              sum[i] = earth_periodic_term_summation(L_TERMS[i], l_subcount[i], jme);
+ 705   1      
+ 706   1          return limit_degrees(rad2deg(earth_values(sum, L_COUNT, jme)));
+ 707   1      
+ 708   1      }
+ 709          
+ 710          double earth_heliocentric_latitude(double jme)
+ 711          {
+ 712   1          double sum[B_COUNT];
+ 713   1          int i;
+ 714   1      
+ 715   1          for (i = 0; i < B_COUNT; i++)
+ 716   1              sum[i] = earth_periodic_term_summation(B_TERMS[i], b_subcount[i], jme);
+ 717   1      
+ 718   1          return rad2deg(earth_values(sum, B_COUNT, jme));
+ 719   1      
+ 720   1      }
+ 721          
+ 722          double earth_radius_vector(double jme)
+ 723          {
+ 724   1          double sum[R_COUNT];
+ 725   1          int i;
+ 726   1      
+ 727   1          for (i = 0; i < R_COUNT; i++)
+ 728   1              sum[i] = earth_periodic_term_summation(R_TERMS[i], r_subcount[i], jme);
+ 729   1      
+ 730   1          return earth_values(sum, R_COUNT, jme);
+ 731   1      
+ 732   1      }
+ 733          
+ 734          double geocentric_longitude(double l)
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 13  
+
+ 735          {
+ 736   1          double theta = l + 180.0;
+ 737   1      
+ 738   1          if (theta >= 360.0) theta -= 360.0;
+ 739   1      
+ 740   1          return theta;
+ 741   1      }
+ 742          
+ 743          double geocentric_latitude(double b)
+ 744          {
+ 745   1          return -b;
+ 746   1      }
+ 747          
+ 748          double mean_elongation_moon_sun(double jce)
+ 749          {
+ 750   1          return third_order_polynomial(1.0/189474.0, -0.0019142, 445267.11148, 297.85036, jce);
+ 751   1      }
+ 752          
+ 753          double mean_anomaly_sun(double jce)
+ 754          {
+ 755   1          return third_order_polynomial(-1.0/300000.0, -0.0001603, 35999.05034, 357.52772, jce);
+ 756   1      }
+ 757          
+ 758          double mean_anomaly_moon(double jce)
+ 759          {
+ 760   1          return third_order_polynomial(1.0/56250.0, 0.0086972, 477198.867398, 134.96298, jce);
+ 761   1      }
+ 762          
+ 763          double argument_latitude_moon(double jce)
+ 764          {
+ 765   1          return third_order_polynomial(1.0/327270.0, -0.0036825, 483202.017538, 93.27191, jce);
+ 766   1      }
+ 767          
+ 768          double ascending_longitude_moon(double jce)
+ 769          {
+ 770   1          return third_order_polynomial(1.0/450000.0, 0.0020708, -1934.136261, 125.04452, jce);
+ 771   1      }
+ 772          
+ 773          double xy_term_summation(int i, double x[TERM_X_COUNT])
+ 774          {
+ 775   1          int j;
+ 776   1          double sum=0;
+ 777   1      
+ 778   1          for (j = 0; j < TERM_Y_COUNT; j++)
+ 779   1              sum += x[j]*Y_TERMS[i][j];
+ 780   1      
+ 781   1          return sum;
+ 782   1      }
+ 783          
+ 784          void nutation_longitude_and_obliquity(double jce, double x[TERM_X_COUNT], double *del_psi,
+ 785                                                                                    double *del_epsilon)
+ 786          {
+ 787   1          int i;
+ 788   1          double xy_term_sum, sum_psi=0, sum_epsilon=0;
+ 789   1      
+ 790   1          for (i = 0; i < Y_COUNT; i++) {
+ 791   2              xy_term_sum  = deg2rad(xy_term_summation(i, x));
+ 792   2              sum_psi     += (PE_TERMS[i][TERM_PSI_A] + jce*PE_TERMS[i][TERM_PSI_B])*sin(xy_term_sum);
+ 793   2              sum_epsilon += (PE_TERMS[i][TERM_EPS_C] + jce*PE_TERMS[i][TERM_EPS_D])*cos(xy_term_sum);
+ 794   2          }
+ 795   1      
+ 796   1          *del_psi     = sum_psi     / 36000000.0;
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 14  
+
+ 797   1          *del_epsilon = sum_epsilon / 36000000.0;
+ 798   1      }
+ 799          
+ 800          double ecliptic_mean_obliquity(double jme)
+ 801          {
+ 802   1          double u = jme/10.0;
+ 803   1      
+ 804   1          return 84381.448 + u*(-4680.93 + u*(-1.55 + u*(1999.25 + u*(-51.38 + u*(-249.67 +
+ 805   1                             u*(  -39.05 + u*( 7.12 + u*(  27.87 + u*(  5.79 + u*2.45)))))))));
+ 806   1      }
+ 807          
+ 808          double ecliptic_true_obliquity(double delta_epsilon, double epsilon0)
+ 809          {
+ 810   1          return delta_epsilon + epsilon0/3600.0;
+ 811   1      }
+ 812          
+ 813          double aberration_correction(double r)
+ 814          {
+ 815   1          return -20.4898 / (3600.0*r);
+ 816   1      }
+ 817          
+ 818          double apparent_sun_longitude(double theta, double delta_psi, double delta_tau)
+ 819          {
+ 820   1          return theta + delta_psi + delta_tau;
+ 821   1      }
+ 822          
+ 823          double greenwich_mean_sidereal_time (double jd, double jc)
+ 824          {
+ 825   1          return limit_degrees(280.46061837 + 360.98564736629 * (jd - 2451545.0) +
+ 826   1                                             jc*jc*(0.000387933 - jc/38710000.0));
+ 827   1      }
+ 828          
+ 829          double greenwich_sidereal_time (double nu0, double delta_psi, double epsilon)
+ 830          {
+ 831   1          return nu0 + delta_psi*cos(deg2rad(epsilon));
+ 832   1      }
+ 833          
+ 834          double geocentric_right_ascension(double lamda, double epsilon, double beta)
+ 835          {
+ 836   1          double lamda_rad   = deg2rad(lamda);
+ 837   1          double epsilon_rad = deg2rad(epsilon);
+ 838   1      
+ 839   1          return limit_degrees(rad2deg(atan2(sin(lamda_rad)*cos(epsilon_rad) -
+ 840   1                                             tan(deg2rad(beta))*sin(epsilon_rad), cos(lamda_rad))));
+ 841   1      }
+ 842          
+ 843          double geocentric_declination(double beta, double epsilon, double lamda)
+ 844          {
+ 845   1          double beta_rad    = deg2rad(beta);
+ 846   1          double epsilon_rad = deg2rad(epsilon);
+ 847   1      
+ 848   1          return rad2deg(asin(sin(beta_rad)*cos(epsilon_rad) +
+ 849   1                              cos(beta_rad)*sin(epsilon_rad)*sin(deg2rad(lamda))));
+ 850   1      }
+ 851          
+ 852          double observer_hour_angle(double nu, double longitude, double alpha_deg)
+ 853          {
+ 854   1          return limit_degrees(nu + longitude - alpha_deg);
+ 855   1      }
+ 856          
+ 857          double sun_equatorial_horizontal_parallax(double r)
+ 858          {
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 15  
+
+ 859   1          return 8.794 / (3600.0 * r);
+ 860   1      }
+ 861          
+ 862          void right_ascension_parallax_and_topocentric_dec(double latitude, double elevation,
+ 863                   double xi, double h, double delta, double *delta_alpha, double *delta_prime)
+ 864          {
+ 865   1          double delta_alpha_rad;
+ 866   1          double lat_rad   = deg2rad(latitude);
+ 867   1          double xi_rad    = deg2rad(xi);
+ 868   1          double h_rad     = deg2rad(h);
+ 869   1          double delta_rad = deg2rad(delta);
+ 870   1          double u = atan(0.99664719 * tan(lat_rad));
+ 871   1          double y = 0.99664719 * sin(u) + elevation*sin(lat_rad)/6378140.0;
+ 872   1          double x =              cos(u) + elevation*cos(lat_rad)/6378140.0;
+ 873   1      
+ 874   1          delta_alpha_rad =      atan2(                - x*sin(xi_rad) *sin(h_rad),
+ 875   1                                        cos(delta_rad) - x*sin(xi_rad) *cos(h_rad));
+ 876   1      
+ 877   1          *delta_prime = rad2deg(atan2((sin(delta_rad) - y*sin(xi_rad))*cos(delta_alpha_rad),
+ 878   1                                        cos(delta_rad) - x*sin(xi_rad) *cos(h_rad)));
+ 879   1      
+ 880   1          *delta_alpha = rad2deg(delta_alpha_rad);
+ 881   1      }
+ 882          
+ 883          double topocentric_right_ascension(double alpha_deg, double delta_alpha)
+ 884          {
+ 885   1          return alpha_deg + delta_alpha;
+ 886   1      }
+ 887          
+ 888          double topocentric_local_hour_angle(double h, double delta_alpha)
+ 889          {
+ 890   1          return h - delta_alpha;
+ 891   1      }
+ 892          
+ 893          double topocentric_elevation_angle(double latitude, double delta_prime, double h_prime)
+ 894          {
+ 895   1          double lat_rad         = deg2rad(latitude);
+ 896   1          double delta_prime_rad = deg2rad(delta_prime);
+ 897   1      
+ 898   1          return rad2deg(asin(sin(lat_rad)*sin(delta_prime_rad) +
+ 899   1                              cos(lat_rad)*cos(delta_prime_rad) * cos(deg2rad(h_prime))));
+ 900   1      }
+ 901          
+ 902          double atmospheric_refraction_correction(double pressure, double temperature,
+ 903                                                 double atmos_refract, double e0)
+ 904          {
+ 905   1          double del_e = 0;
+ 906   1      
+ 907   1          if (e0 >= -1*(SUN_RADIUS + atmos_refract))
+ 908   1              del_e = (pressure / 1010.0) * (283.0 / (273.0 + temperature)) *
+ 909   1                       1.02 / (60.0 * tan(deg2rad(e0 + 10.3/(e0 + 5.11))));
+ 910   1      
+ 911   1          return del_e;
+ 912   1      }
+ 913          
+ 914          double topocentric_elevation_angle_corrected(double e0, double delta_e)
+ 915          {
+ 916   1          return e0 + delta_e;
+ 917   1      }
+ 918          
+ 919          double topocentric_zenith_angle(double e)
+ 920          {
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 16  
+
+ 921   1          return 90.0 - e;
+ 922   1      }
+ 923          
+ 924          double topocentric_azimuth_angle_astro(double h_prime, double latitude, double delta_prime)
+ 925          {
+ 926   1          double h_prime_rad = deg2rad(h_prime);
+ 927   1          double lat_rad     = deg2rad(latitude);
+ 928   1      
+ 929   1          return limit_degrees(rad2deg(atan2(sin(h_prime_rad),
+ 930   1                               cos(h_prime_rad)*sin(lat_rad) - tan(deg2rad(delta_prime))*cos(lat_rad))));
+ 931   1      }
+ 932          
+ 933          double topocentric_azimuth_angle(double azimuth_astro)
+ 934          {
+ 935   1          return limit_degrees(azimuth_astro + 180.0);
+ 936   1      }
+ 937          
+ 938          double surface_incidence_angle(double zenith, double azimuth_astro, double azm_rotation,
+ 939                                                                            double slope)
+ 940          {
+ 941   1          double zenith_rad = deg2rad(zenith);
+ 942   1          double slope_rad  = deg2rad(slope);
+ 943   1      
+ 944   1          return rad2deg(acos(cos(zenith_rad)*cos(slope_rad)  +
+ 945   1                              sin(slope_rad )*sin(zenith_rad) * cos(deg2rad(azimuth_astro - azm_rotation))));
+ 946   1      }
+ 947          
+ 948          double sun_mean_longitude(double jme)
+ 949          {
+ 950   1          return limit_degrees(280.4664567 + jme*(360007.6982779 + jme*(0.03032028 +
+ 951   1                          jme*(1/49931.0   + jme*(-1/15300.0     + jme*(-1/2000000.0))))));
+ 952   1      }
+ 953          
+ 954          double eot(double m, double alpha, double del_psi, double epsilon)
+ 955          {
+ 956   1          return limit_minutes(4.0*(m - 0.0057183 - alpha + del_psi*cos(deg2rad(epsilon))));
+ 957   1      }
+ 958          
+ 959          double approx_sun_transit_time(double alpha_zero, double longitude, double nu)
+ 960          {
+ 961   1          return (alpha_zero - longitude - nu) / 360.0;
+ 962   1      }
+ 963          
+ 964          double sun_hour_angle_at_rise_set(double latitude, double delta_zero, double h0_prime)
+ 965          {
+ 966   1          double h0             = -99999;
+ 967   1          double latitude_rad   = deg2rad(latitude);
+ 968   1          double delta_zero_rad = deg2rad(delta_zero);
+ 969   1          double argument       = (sin(deg2rad(h0_prime)) - sin(latitude_rad)*sin(delta_zero_rad)) /
+ 970   1                                                           (cos(latitude_rad)*cos(delta_zero_rad));
+ 971   1      
+ 972   1          if (fabs(argument) <= 1) h0 = limit_degrees180(rad2deg(acos(argument)));
+ 973   1      
+ 974   1          return h0;
+ 975   1      }
+ 976          
+ 977          void approx_sun_rise_and_set(double *m_rts, double h0)
+ 978          {
+ 979   1          double h0_dfrac = h0/360.0;
+ 980   1      
+ 981   1          m_rts[SUN_RISE]    = limit_zero2one(m_rts[SUN_TRANSIT] - h0_dfrac);
+ 982   1          m_rts[SUN_SET]     = limit_zero2one(m_rts[SUN_TRANSIT] + h0_dfrac);
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 17  
+
+ 983   1          m_rts[SUN_TRANSIT] = limit_zero2one(m_rts[SUN_TRANSIT]);
+ 984   1      }
+ 985          
+ 986          double rts_alpha_delta_prime(double *ad, double n)
+ 987          {
+ 988   1          double a = ad[JD_ZERO] - ad[JD_MINUS];
+ 989   1          double b = ad[JD_PLUS] - ad[JD_ZERO];
+ 990   1      
+ 991   1          if (fabs(a) >= 2.0) a = limit_zero2one(a);
+ 992   1          if (fabs(b) >= 2.0) b = limit_zero2one(b);
+ 993   1      
+ 994   1          return ad[JD_ZERO] + n * (a + b + (b-a)*n)/2.0;
+ 995   1      }
+ 996          
+ 997          double rts_sun_altitude(double latitude, double delta_prime, double h_prime)
+ 998          {
+ 999   1          double latitude_rad    = deg2rad(latitude);
+1000   1          double delta_prime_rad = deg2rad(delta_prime);
+1001   1      
+1002   1          return rad2deg(asin(sin(latitude_rad)*sin(delta_prime_rad) +
+1003   1                              cos(latitude_rad)*cos(delta_prime_rad)*cos(deg2rad(h_prime))));
+1004   1      }
+1005          
+1006          double sun_rise_and_set(double *m_rts,   double *h_rts,   double *delta_prime, double latitude,
+1007                                  double *h_prime, double h0_prime, int sun)
+1008          {
+1009   1          return m_rts[sun] + (h_rts[sun] - h0_prime) /
+1010   1                (360.0*cos(deg2rad(delta_prime[sun]))*cos(deg2rad(latitude))*sin(deg2rad(h_prime[sun])));
+1011   1      }
+1012          
+1013          ////////////////////////////////////////////////////////////////////////////////////////////////
+1014          // Calculate required SPA parameters to get the right ascension (alpha) and declination (delta)
+1015          // Note: JD must be already calculated and in structure
+1016          ////////////////////////////////////////////////////////////////////////////////////////////////
+1017          void calculate_geocentric_sun_right_ascension_and_declination(struct spa_data *spa)
+1018          {
+1019   1          double x[TERM_X_COUNT];
+1020   1      
+1021   1          spa->jc = julian_century(spa->jd);
+1022   1      
+1023   1          spa->jde = julian_ephemeris_day(spa->jd, spa->delta_t);
+1024   1          spa->jce = julian_ephemeris_century(spa->jde);
+1025   1          spa->jme = julian_ephemeris_millennium(spa->jce);
+1026   1      
+1027   1          spa->l = earth_heliocentric_longitude(spa->jme);
+1028   1          spa->b = earth_heliocentric_latitude(spa->jme);
+1029   1          spa->r = earth_radius_vector(spa->jme);
+1030   1      
+1031   1          spa->theta = geocentric_longitude(spa->l);
+1032   1          spa->beta  = geocentric_latitude(spa->b);
+1033   1      
+1034   1          x[TERM_X0] = spa->x0 = mean_elongation_moon_sun(spa->jce);
+1035   1          x[TERM_X1] = spa->x1 = mean_anomaly_sun(spa->jce);
+1036   1          x[TERM_X2] = spa->x2 = mean_anomaly_moon(spa->jce);
+1037   1          x[TERM_X3] = spa->x3 = argument_latitude_moon(spa->jce);
+1038   1          x[TERM_X4] = spa->x4 = ascending_longitude_moon(spa->jce);
+1039   1      
+1040   1          nutation_longitude_and_obliquity(spa->jce, x, &(spa->del_psi), &(spa->del_epsilon));
+1041   1      
+1042   1          spa->epsilon0 = ecliptic_mean_obliquity(spa->jme);
+1043   1          spa->epsilon  = ecliptic_true_obliquity(spa->del_epsilon, spa->epsilon0);
+1044   1      
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 18  
+
+1045   1          spa->del_tau   = aberration_correction(spa->r);
+1046   1          spa->lamda     = apparent_sun_longitude(spa->theta, spa->del_psi, spa->del_tau);
+1047   1          spa->nu0       = greenwich_mean_sidereal_time (spa->jd, spa->jc);
+1048   1          spa->nu        = greenwich_sidereal_time (spa->nu0, spa->del_psi, spa->epsilon);
+1049   1      
+1050   1          spa->alpha = geocentric_right_ascension(spa->lamda, spa->epsilon, spa->beta);
+1051   1          spa->delta = geocentric_declination(spa->beta, spa->epsilon, spa->lamda);
+1052   1      }
+1053          
+1054          ////////////////////////////////////////////////////////////////////////
+1055          // Calculate Equation of Time (EOT) and Sun Rise, Transit, & Set (RTS)
+1056          ////////////////////////////////////////////////////////////////////////
+1057          
+1058          void calculate_eot_and_sun_rise_transit_set(struct spa_data *spa)
+1059          {
+1060   1          struct spa_data sun_rts;
+1061   1          double nu, m, h0, n;
+1062   1          double alpha[JD_COUNT], delta[JD_COUNT];
+1063   1          double m_rts[SUN_COUNT], nu_rts[SUN_COUNT], h_rts[SUN_COUNT];
+1064   1          double alpha_prime[SUN_COUNT], delta_prime[SUN_COUNT], h_prime[SUN_COUNT];
+1065   1          double h0_prime = -1*(SUN_RADIUS + spa->atmos_refract);
+1066   1          int i;
+1067   1      
+1068   1        sun_rts  = *spa;
+1069   1          m        = sun_mean_longitude(spa->jme);
+1070   1          spa->eot = eot(m, spa->alpha, spa->del_psi, spa->epsilon);
+1071   1      
+1072   1          sun_rts.hour = sun_rts.minute = sun_rts.second = 0;
+1073   1        sun_rts.delta_ut1 = sun_rts.timezone = 0.0;
+1074   1      
+1075   1          sun_rts.jd = julian_day (sun_rts.year,   sun_rts.month,  sun_rts.day,       sun_rts.hour,
+1076   1                               sun_rts.minute, sun_rts.second, sun_rts.delta_ut1, sun_rts.timezone);
+1077   1      
+1078   1          calculate_geocentric_sun_right_ascension_and_declination(&sun_rts);
+1079   1          nu = sun_rts.nu;
+1080   1      
+1081   1          sun_rts.delta_t = 0;
+1082   1          sun_rts.jd--;
+1083   1          for (i = 0; i < JD_COUNT; i++) {
+1084   2              calculate_geocentric_sun_right_ascension_and_declination(&sun_rts);
+1085   2              alpha[i] = sun_rts.alpha;
+1086   2              delta[i] = sun_rts.delta;
+1087   2              sun_rts.jd++;
+1088   2          }
+1089   1      
+1090   1          m_rts[SUN_TRANSIT] = approx_sun_transit_time(alpha[JD_ZERO], spa->longitude, nu);
+1091   1          h0 = sun_hour_angle_at_rise_set(spa->latitude, delta[JD_ZERO], h0_prime);
+1092   1      
+1093   1          if (h0 >= 0) {
+1094   2      
+1095   2              approx_sun_rise_and_set(m_rts, h0);
+1096   2      
+1097   2              for (i = 0; i < SUN_COUNT; i++) {
+1098   3      
+1099   3                  nu_rts[i]      = nu + 360.985647*m_rts[i];
+1100   3      
+1101   3                  n              = m_rts[i] + spa->delta_t/86400.0;
+1102   3                  alpha_prime[i] = rts_alpha_delta_prime(alpha, n);
+1103   3                  delta_prime[i] = rts_alpha_delta_prime(delta, n);
+1104   3      
+1105   3                  h_prime[i]     = limit_degrees180pm(nu_rts[i] + spa->longitude - alpha_prime[i]);
+1106   3      
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 19  
+
+1107   3                  h_rts[i]       = rts_sun_altitude(spa->latitude, delta_prime[i], h_prime[i]);
+1108   3              }
+1109   2      
+1110   2              spa->srha = h_prime[SUN_RISE];
+1111   2              spa->ssha = h_prime[SUN_SET];
+1112   2              spa->sta  = h_rts[SUN_TRANSIT];
+1113   2      
+1114   2              spa->suntransit = dayfrac_to_local_hr(m_rts[SUN_TRANSIT] - h_prime[SUN_TRANSIT] / 360.0,
+1115   2                                                    spa->timezone);
+1116   2      
+1117   2              spa->sunrise = dayfrac_to_local_hr(sun_rise_and_set(m_rts, h_rts, delta_prime,
+1118   2                                spa->latitude, h_prime, h0_prime, SUN_RISE), spa->timezone);
+1119   2      
+1120   2              spa->sunset  = dayfrac_to_local_hr(sun_rise_and_set(m_rts, h_rts, delta_prime,
+1121   2                                spa->latitude, h_prime, h0_prime, SUN_SET),  spa->timezone);
+1122   2      
+1123   2          } else spa->srha= spa->ssha= spa->sta= spa->suntransit= spa->sunrise= spa->sunset= -99999;
+1124   1      
+1125   1      }
+1126          
+1127          ///////////////////////////////////////////////////////////////////////////////////////////
+1128          // Calculate all SPA parameters and put into structure
+1129          // Note: All inputs values (listed in header file) must already be in structure
+1130          ///////////////////////////////////////////////////////////////////////////////////////////
+1131          int spa_calculate(struct spa_data *spa)
+1132          {
+1133   1          int result;
+1134   1      
+1135   1          result = validate_inputs(spa);
+1136   1      
+1137   1          if (result == 0)
+1138   1          {
+1139   2              spa->jd = julian_day (spa->year,   spa->month,  spa->day,       spa->hour,
+1140   2                              spa->minute, spa->second, spa->delta_ut1, spa->timezone);
+1141   2      
+1142   2              calculate_geocentric_sun_right_ascension_and_declination(spa);
+1143   2      
+1144   2              spa->h  = observer_hour_angle(spa->nu, spa->longitude, spa->alpha);
+1145   2              spa->xi = sun_equatorial_horizontal_parallax(spa->r);
+1146   2      
+1147   2              right_ascension_parallax_and_topocentric_dec(spa->latitude, spa->elevation, spa->xi,
+1148   2                                      spa->h, spa->delta, &(spa->del_alpha), &(spa->delta_prime));
+1149   2      
+1150   2              spa->alpha_prime = topocentric_right_ascension(spa->alpha, spa->del_alpha);
+1151   2              spa->h_prime     = topocentric_local_hour_angle(spa->h, spa->del_alpha);
+1152   2      
+1153   2              spa->e0      = topocentric_elevation_angle(spa->latitude, spa->delta_prime, spa->h_prime);
+1154   2              spa->del_e   = atmospheric_refraction_correction(spa->pressure, spa->temperature,
+1155   2                                                               spa->atmos_refract, spa->e0);
+1156   2              spa->e       = topocentric_elevation_angle_corrected(spa->e0, spa->del_e);
+1157   2      
+1158   2              spa->zenith        = topocentric_zenith_angle(spa->e);
+1159   2              spa->azimuth_astro = topocentric_azimuth_angle_astro(spa->h_prime, spa->latitude,
+1160   2                                                                                 spa->delta_prime);
+1161   2              spa->azimuth       = topocentric_azimuth_angle(spa->azimuth_astro);
+1162   2      
+1163   2              if ((spa->function == SPA_ZA_INC) || (spa->function == SPA_ALL))
+1164   2                  spa->incidence  = surface_incidence_angle(spa->zenith, spa->azimuth_astro,
+1165   2                                                            spa->azm_rotation, spa->slope);
+1166   2      
+1167   2              if ((spa->function == SPA_ZA_RTS) || (spa->function == SPA_ALL))
+1168   2                  calculate_eot_and_sun_rise_transit_set(spa);
+C51 COMPILER V9.52.0.0   SPA                                                               01/18/2019 12:52:25 PAGE 20  
+
+1169   2          }
+1170   1      
+1171   1          return result;
+1172   1      }
+1173          ///////////////////////////////////////////////////////////////////////////////////////////
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =  13617    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   8792    1074
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
