@@ -143,9 +143,9 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	struct cSunCoordinates *sunCoord;
 	//hurs=hurs-1;// change to sun time
 	//dys=dys+4;
-	location.dLongitude=-73.6495;
-	location.dLatitude=45.478889;
-	time.iYear=2018;
+	location.dLongitude=-73.58;
+	location.dLatitude=45.5;
+	time.iYear=2019;
 	time.iMonth=BCDtoDec1(mnths);
 	time.iDay=BCDtoDec1(dys);
 	time.dHours=BCDtoDec1(hurs);
@@ -159,7 +159,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	//date=237;
 	declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
 	time_offset=1/60*(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180));
-	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset-1;//current time=sun time= clock time -1
+	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//-1;//current time=sun time= clock time -1
 	//=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/365)*3.1416/180)    -   1.5*SIN((360*($B$8-81)/365)*3.1416/180))
 	elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
 						cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180)           );
@@ -189,6 +189,21 @@ void Update_position(unsigned char mnths,unsigned char dys,
 				}
 				//break;
 			}
+			
+			/*else if ((azimuth>=low_date_azimuth_mapping[i+1]) && (azimuth<=low_date_azimuth_mapping[i]))
+			{
+				for (yy=0;yy<num_of_elevation_stamp;yy++)
+				{
+					p1.x=low_date_azimuth_mapping[i];
+					p2.x=low_date_azimuth_mapping[i+1];
+					
+					p1.y=RX_pos[yy][i];
+					p2.y=RX_pos[yy][i+1];
+					
+					pos_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
+				}
+				//break;
+			}*/
 		}
 
 		// interpolate for elevation
@@ -209,15 +224,15 @@ void Update_position(unsigned char mnths,unsigned char dys,
 			
 		}
 		
-		desired_distance=68+JP_pos +offset_calib;
-		
+		desired_distance=JP_pos;// +offset_calib;
+		//desired_distance=azimuth;
 		distance=desired_distance-*currnt_pos;
-		if(abs(distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more than 0.5mm OR >30s
+		//if(abs(distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more than 0.5mm OR >30s
 		{
-			if(distance>0)
-				Move(distance,1);
-			else if (distance<0)
-				Move(-distance,0);
+			//if(distance>0)
+				//Move(distance,1);
+			//else if (distance<0)
+				//Move(-distance,0);
 			previous_move_time=BCDtoDec1(sconds&0x7f);
 			*currnt_pos=desired_distance;
 		}
