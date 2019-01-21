@@ -2,10 +2,12 @@
 //
 #define num_of_elevation_stamp 11
 #define num_of_azimuth_stamp 	10
-#define Dai_to_JP_Zero 179;
-#define declination_offset -0.4829;// calculate from data of 31July2018
+//#define Dai_to_JP_Zero 179;
+//#define declination_offset -0.4829;// calculate from data of 31July2018
 //#define time_offset -1.14;// calculate from data of 31July2018
 float date_azimuth_mapping[num_of_azimuth_stamp]={180,190,200,210,220,230,240,250,260,270};
+float low_date_azimuth_mapping[num_of_azimuth_stamp]={180,170,160,150,140,130,120,110,100,90};
+
 //extern char  num_of_elevation_stamp=15;
 
 float RX_pos[num_of_elevation_stamp][num_of_azimuth_stamp]=
@@ -30,7 +32,7 @@ float RX_pos[num_of_elevation_stamp][num_of_azimuth_stamp]=
 
 
 	
-};
+};//
 float RX_pos_test[4][num_of_azimuth_stamp]=
 {
 		{-28.23,-29.54,-33.23,-39.61,-48.23,-60.09,-74.63,-90.88,-108.63,-127.54},
