@@ -133,7 +133,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 										 float  *currnt_pos, float offset_calib)
 {
 	unsigned int date,i=0,yy=0;
-	
+	//char num_of_elevation_stamp=15;
 	float  desired_distance=0,distance=0,JP_pos=0;
 	float  pos_interpolate_azimuth[num_of_azimuth_stamp],current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
 	float declination;
@@ -143,12 +143,12 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	struct cSunCoordinates *sunCoord;
 	//hurs=hurs-1;// change to sun time
 	//dys=dys+4;
-	location.dLongitude=-73.58;
-	location.dLatitude=45.5;
+	location.dLongitude=-73.59;
+	location.dLatitude=45.1;
 	time.iYear=2019;
-	time.iMonth=BCDtoDec1(mnths);
-	time.iDay=BCDtoDec1(dys);
-	time.dHours=BCDtoDec1(hurs);
+	time.iMonth=1;
+	time.iDay=17;
+	time.dHours=17;
 	time.dMinutes=BCDtoDec1(mns);
 	time.dSeconds=BCDtoDec1(sconds&0x7f);
 
@@ -159,7 +159,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	//date=237;
 	declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
 	time_offset=1/60*(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180));
-	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//-1;//current time=sun time= clock time -1
+	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60-time_offset;//-1;//current time=sun time= clock time -1
 	//=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/365)*3.1416/180)    -   1.5*SIN((360*($B$8-81)/365)*3.1416/180))
 	elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
 						cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180)           );
@@ -217,7 +217,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 				p1.y=pos_interpolate_azimuth[i];
 				p2.y=pos_interpolate_azimuth[i+1];
 				
-				JP_pos=linear_interpolate(p1,p2,elevation);
+				JP_pos=linear_interpolate(p2,p1,elevation);
 				//break;
 				
 			}

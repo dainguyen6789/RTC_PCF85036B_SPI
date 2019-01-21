@@ -5,7 +5,7 @@
 
 
 // Declaration of some constants 
-#define pi    3.14159265358979323846
+#define pi    3.14159//265358979323846
 #define twopi (2*pi)
 #define rad   (pi/180)
 #define dEarthMeanRadius     6371.01	// In km
