@@ -309,44 +309,41 @@ void main(void)
 				
 				//Update_position(0x10,0x05,0x12,0x00,0x00,&current_position);
 		}
-		if (Day_Of_Year(months,days)==calib_day+7)
+		/*if (Day_Of_Year(months,days)==calib_day+7)
 		{
 			calib_mode=1;
 			count=0;
-		}
+		}*/
 		
 		//mins=0x30;
 		///seconds=0x00;
-		if(calib_mode && BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0)// calib every 30mins
+		//if(count==0)// 1st day of calibration
 		{
-			*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
-			//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
-			*(calib_time+count)=BCDtoDec1(hours)+BCDtoDec1(mins);
-			if (BCDtoDec1(hours)>18)// do not calib after 18pm
-			{
-				calib_day=Day_Of_Year(months,days);
-				calib_mode=0;
-				//count=0;
-			}
-			
-			count++;			
+				// calib every 30mins, from 7AM to 17PM
+				if(BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0 && BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
+				{
+					*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
+					//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
+					*(calib_time+count)=BCDtoDec1(hours)+BCDtoDec1(mins);
+					if (BCDtoDec1(hours)>18)// do not calib after 18pm
+					{
+						//calib_day=Day_Of_Year(months,days);
+						//calib_mode=0;
+						//count=0;
+					}
+					
+					count++;			
+				}
+				else
+				{
+					// in the UPDATE function, we only update the motor position when the distance >0.5mm
+					Update_position(months,days,hours,mins,seconds,&current_position,*(calib_value+count-1));
+				}
 		}
-		//==================================================		
-		// This is for UART to set the time									
-		//==================================================				
-	/*	if(st_time)
-		{
-			SPI_WriteTime(hour_count,Hours);		// data , register address
-			SPI_WriteTime(min_count,Minutes);
-			st_time=0;
-			SendUART1(hour_count);
-			SendUART1(min_count);
-		}	
-		else
-		{
-			//UART
-			//Delay_ms(1200);
-		}*/
+		// how to update for next day and use the calib value from the previous day???
+
+
+		
 	}
 	
 } 
