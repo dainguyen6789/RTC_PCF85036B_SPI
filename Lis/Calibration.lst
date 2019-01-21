@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/21/2019 15:16:41 PAGE 1   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/21/2019 16:59:46 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE CALIBRATION
@@ -62,7 +62,7 @@ line level    source
   51   1        // move/scan -direction
   52   1        for (i=1;i<=20;i++)
   53   1        {
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/21/2019 15:16:41 PAGE 2   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/21/2019 16:59:46 PAGE 2   
 
   54   1      
   55   1            Move(calib_step_move,1);
@@ -104,8 +104,8 @@ line level    source
   91   1        if(voltage_is_stable())
   92   1        {
   93   2          //  move to JP theorical max position
-  94   2          Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-10);// off set is Zero means we go to  (JP max th
-             -eorical position -10)
+  94   2          Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-10);// off set is Zero means we go to  (first, go
+             - to JP max theorical position -10)
   95   2          //  find the real max value in the area of JP +/- 10mm
   96   2          Find_Real_Max(&JP_max_pos); //find real max and move to real max position
   97   2          calib_value=*currnt_pos-JP_max_pos;
@@ -127,7 +127,7 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
 
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/21/2019 15:16:41 PAGE 3   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/21/2019 16:59:46 PAGE 3   
 
 
 C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
