@@ -91,7 +91,7 @@ float calibration(unsigned char mnths,unsigned char dys,
 	if(voltage_is_stable())
 	{
 		// 	move to JP theorical max position
-		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-10);// off set is Zero means we go to  (JP max theorical position -10)
+		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-10);// off set is Zero means we go to  (first, go to JP max theorical position -10)
 		// 	find the real max value in the area of JP +/- 10mm
 		Find_Real_Max(&JP_max_pos); //find real max and move to real max position
 		calib_value=*currnt_pos-JP_max_pos;

@@ -61,6 +61,7 @@ unsigned char BCDtoDec1(unsigned char bcd);
 float calib_interpolate(float hours, float mins);
 float  linear_interpolate(struct point p1,struct point p2, float  x);
 void Write_PI4IOE5V96248(struct DATA_FOR_IO_6PORTS *xdat);
+float  linear_interpolate(struct point p1,struct point p2, float  x);
 
 
 bit busy;
@@ -73,7 +74,7 @@ static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 float calib_value[24],calib_time[24];
 unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
 float current_position=0;
-int lcd=0;
+//int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);
 
@@ -85,7 +86,7 @@ int lcd=0;
 void tm0_isr() interrupt 1 using 1
 {
 	//Display_time(&months,&days,&hours,&mins,&seconds);
-			lcd++;
+			//lcd++;
 /*		if(lcd==15000)
 		{
 			lcd=0;
@@ -138,9 +139,11 @@ void main(void)
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 	char prox_flag=1;
+	int iUse_prevday_calib_value=0;
+	struct point calib_point1,calib_point2;
 //	unsigned char KeyNum;
 	int calib_day=0;
-	char numStr[5];
+//	char numStr[5];
 	
 //	float current_position=0;
 	calib_mode=1;
@@ -149,7 +152,6 @@ void main(void)
 	small_move=0;
 	
 	auto_mode=0;
-
 	//=======================================
 	/*float a=-7.0014e-5;
 	float b=1.1071e-2;
@@ -299,54 +301,67 @@ void main(void)
 		{
 			
 			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
-				//if(Day_Of_Year(months,days)>calib_day && Day_Of_Year(months,days)<calib_day+7 && calib_day!=0)// updated position if  and only if the system was calibrated (calib_day!=0 by line 252)
-				{
-					//offset=calib_interpolate();
-					//Update_position(months,days,hours,mins,seconds,&current_position,calib_interpolate(hours,mins));
-					Update_position(months,days,hours,mins,seconds,&current_position,0);
-
-				}
-				
-				//Update_position(0x10,0x05,0x12,0x00,0x00,&current_position);
-		}
-		/*if (Day_Of_Year(months,days)==calib_day+7)
-		{
-			calib_mode=1;
-			count=0;
-		}*/
-		
-		//mins=0x30;
-		///seconds=0x00;
-		//if(count==0)// 1st day of calibration
-		{
-				// calib every 30mins, from 7AM to 17PM
-				if(BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0 && BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
-				{
-					*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
-					//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
-					*(calib_time+count)=BCDtoDec1(hours)+BCDtoDec1(mins);
-					if (BCDtoDec1(hours)>18)// do not calib after 18pm
+					if(iUse_prevday_calib_value==0)// 1st day of calibration
 					{
-						//calib_day=Day_Of_Year(months,days);
-						//calib_mode=0;
-						//count=0;
+							// calib every 30mins, from 7AM to 17PM
+							if(BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0 && BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
+							{
+								*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
+								//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
+								*(calib_time+count)=BCDtoDec1(hours)+BCDtoDec1(mins)/60;
+								if (BCDtoDec1(hours)>=17)// do not calib after 17pm
+								{
+									iUse_prevday_calib_value=1;
+									count=0;
+								}
+								
+								count++;			
+							}
+							else
+							{
+								// in the UPDATE function, we only update the motor position when the distance >0.5mm
+								Update_position(months,days,hours,mins,seconds,&current_position,*(calib_value+count-1));
+							}
 					}
 					
-					count++;			
-				}
-				else
-				{
-					// in the UPDATE function, we only update the motor position when the distance >0.5mm
-					Update_position(months,days,hours,mins,seconds,&current_position,*(calib_value+count-1));
-				}
+					// how to update for next day and use the calib value from the previous day???
+					else
+					{
+						
+							if(BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0 && BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
+							{
+								*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
+								//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
+								*(calib_time+count)=BCDtoDec1(hours)+BCDtoDec1(mins)/60;
+								if (BCDtoDec1(hours)>=17)// do not calib after 17pm
+								{
+									count=0;
+								}
+								
+								count++;			
+							}
+							else
+							{
+								calib_point1.x=*(calib_time+count-1);
+								calib_point1.y=*(calib_value+count-1);
+								calib_point2.x=*(calib_time+count);// this is from previous day
+								calib_point2.y=*(calib_value+count);// this is from previous day								
+								// in the UPDATE function, we only update the motor position when the distance >0.5mm
+								Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,BCDtoDec1(hours)+BCDtoDec1(mins)/60));
+							}
+					}
+
+				}				
 		}
-		// how to update for next day and use the calib value from the previous day???
+
+		
+
 
 
 		
 	}
 	
-} 
+ 
 
 
 
