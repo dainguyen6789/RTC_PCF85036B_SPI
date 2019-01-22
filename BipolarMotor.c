@@ -224,16 +224,16 @@ void Update_position(unsigned char mnths,unsigned char dys,
 			
 		}
 		
-		desired_distance=JP_pos;// +offset_calib;
+		desired_distance=JP_pos+71+offset_calib;
 		//desired_distance=elevation;
 		distance=desired_distance-*currnt_pos;
 		if(abs(distance)>=0.5 )// move if the change is more than 0.5mm
 		{
-			//if(distance>0)
-				//Move(distance,1);
-			//else if (distance<0)
-				//Move(-distance,0);
-			previous_move_time=BCDtoDec1(sconds&0x7f);
+			if(distance>0)
+				Move(distance,1);
+			else if (distance<0)
+				Move(-distance,0);
+			//previous_move_time=BCDtoDec1(sconds&0x7f);
 			*currnt_pos=desired_distance;
 		}
 	}

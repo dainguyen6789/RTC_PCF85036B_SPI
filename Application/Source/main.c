@@ -71,7 +71,7 @@ int st_time=0;
 int count=0;
 static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
-float calib_value[24],calib_time[24];
+float calib_value[21],calib_time[21];
 unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
 float current_position=0;
 //int lcd=0;
@@ -85,51 +85,6 @@ float current_position=0;
 
 void tm0_isr() interrupt 1 using 1
 {
-	//Display_time(&months,&days,&hours,&mins,&seconds);
-			//lcd++;
-/*		if(lcd==15000)
-		{
-			lcd=0;
-			LCD_return_home();
-			Display_Line(1);	
-			WriteData(0x68);//display "h"
-			WriteData(0x68);//display "h"
-			WriteData(0x6D);//display "m"
-			WriteData(0x6D);//display "m"
-			WriteData(0x23);//display "#" SETTIME_KEY
-			Command(0x08);
-			Command(0x05);
-			
-			WriteData(0x50);//display "P"
-			WriteData(0x4F);//display "O"
-			WriteData(0x53);//display "S"	
-			WriteData(0x3A);//display ":"	*/
-			//LCD_clear();
-			//Command(0x0A);
-			//Command(0x10);
-			//Display_Pos(current_position);
-			//==============================================================
-			/*Display_Line(2);
-			DisplayLCD(hours);
-			WriteData(0x3A);//display ":"
-			DisplayLCD(mins);
-			WriteData(0x3A);//display ":"
-			DisplayLCD(seconds&0x7f);
-			WriteData(0x3B);//display ";"
-			DisplayLCD(months);
-			//WriteData(0x2D);//display "-"
-			DisplayLCD(days);	
-			WriteData(0x3B);//display ";"
-			if(auto_mode)
-			{
-				WriteData(0x41);//display "A"
-			}
-			else if (!auto_mode)
-			{
-				WriteData(0x4D);//display "M"
-			}	
-		
-		}*/
 }
 
 void main(void)
@@ -142,7 +97,7 @@ void main(void)
 	int iUse_prevday_calib_value=0;
 	struct point calib_point1,calib_point2;
 //	unsigned char KeyNum;
-	int calib_day=0;
+	int calib_day=0, calib_count;
 //	char numStr[5];
 	
 //	float current_position=0;
@@ -193,6 +148,10 @@ void main(void)
 	WriteData(0x23);//display "#" SETTIME_KEY*/
 	//WriteData((int) rx_pos_12h);
 	//Step_move(200, 1);// 1.8* step angle, 200 steps ~ 1 round
+	for(calib_count=0;calib_count<=20;calibcount++)
+	{
+		calib_value[calib_count]=0;
+	}
 	while(1)                                      
 	{
 		Key_Process();
@@ -304,7 +263,7 @@ void main(void)
 					if(iUse_prevday_calib_value==0)// 1st day of calibration
 					{
 							// calib every 30mins, from 7AM to 17PM
-							if(BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0 && BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
+							if(BCDtoDec1(mins)%10==0 &&  BCDtoDec1(seconds&0x7f)==0 && BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
 							{
 								*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
 								//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
@@ -320,7 +279,14 @@ void main(void)
 							else
 							{
 								// in the UPDATE function, we only update the motor position when the distance >0.5mm
-								Update_position(months,days,hours,mins,seconds,&current_position,*(calib_value+count-1));
+								if(count==1||count==0)
+								{
+									Update_position(months,days,hours,mins,seconds,&current_position,0);
+								}
+								else
+								{
+									Update_position(months,days,hours,mins,seconds,&current_position,*(calib_value+count-1));
+								}
 							}
 					}
 					
@@ -328,7 +294,7 @@ void main(void)
 					else
 					{
 						
-							if(BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0 && BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
+							if(BCDtoDec1(mins)%10==0 &&  BCDtoDec1(seconds&0x7f)==0 && BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
 							{
 								*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
 								//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
