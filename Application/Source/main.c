@@ -148,7 +148,7 @@ void main(void)
 	WriteData(0x23);//display "#" SETTIME_KEY*/
 	//WriteData((int) rx_pos_12h);
 	//Step_move(200, 1);// 1.8* step angle, 200 steps ~ 1 round
-	for(calib_count=0;calib_count<=20;calibcount++)
+	for(calib_count=0;calib_count<=20;calib_count++)
 	{
 		calib_value[calib_count]=0;
 	}
@@ -279,14 +279,7 @@ void main(void)
 							else
 							{
 								// in the UPDATE function, we only update the motor position when the distance >0.5mm
-								if(count==1||count==0)
-								{
-									Update_position(months,days,hours,mins,seconds,&current_position,0);
-								}
-								else
-								{
 									Update_position(months,days,hours,mins,seconds,&current_position,*(calib_value+count-1));
-								}
 							}
 					}
 					
