@@ -71,13 +71,13 @@ int st_time=0;
 int count=0;
 static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
-float calib_value[21],calib_time[21];
+float calib_value[21],calib_time[21];// 600/calib_stamp+1
 unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
 float current_position=0;
 //int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);
-
+unsigned char calib_stamp =30;// calib every 30 mins 
 
 
 
@@ -263,20 +263,22 @@ void main(void)
 					if(iUse_prevday_calib_value==0)// 1st day of calibration
 					{
 							// calib every 30mins, from 7AM to 17PM
-							if(BCDtoDec1(mins)%10==0 &&  BCDtoDec1(seconds&0x7f)==0 )
+							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
 							{
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
+									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
+									//count++;
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
 								{
 									iUse_prevday_calib_value=1;
-									count=0;
+									//count=0;
 								}
-								count++;
+								
 
 											
 							}
@@ -284,13 +286,8 @@ void main(void)
 							{
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
-									if(count==0)
-									// in the UPDATE function, we only update the motor position when the distance >0.5mm
-										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[0]);
-									else
-									{
-										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count-1]);
-									}
+										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
 							}
 							}
 					}
@@ -300,46 +297,40 @@ void main(void)
 					{
 						
 							// calib every 30mins, from 7AM to 17PM
-							if(BCDtoDec1(mins)%10==0 &&  BCDtoDec1(seconds&0x7f)==0 )
+							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
 							{
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
+									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
+									//count++;
+
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
 								{
 									iUse_prevday_calib_value=1;
-									count=0;
+									//count=0;
 								}
-								count++;
 
 											
 							}
 							else
 							{
 								
-								if(BCDtoDec1(mins)%10==0 &&  BCDtoDec1(seconds&0x7f)==0 )
+								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)								
 								{
-									if(count>0)
-									{
-										calib_point1.x=calib_time[count-1];
-										calib_point1.y=calib_value[count-1];
-										calib_point2.x=calib_time[count];// this is from previous day
-										calib_point2.y=calib_value[count];// this is from previous day								
+										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+
+										calib_point1.x=calib_time[count];
+										calib_point1.y=calib_value[count];
+										calib_point2.x=calib_time[count+1];// this is from previous day
+										calib_point2.y=calib_value[count+1];// this is from previous day								
 										// in the UPDATE function, we only update the motor position when the distance >0.5mm
 										Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
-									}
-									else
-									{
-											calib_point1.x=calib_time[0];
-											calib_point1.y=calib_value[0];
-											calib_point2.x=calib_time[1];// this is from previous day
-											calib_point2.y=calib_value[1];// this is from previous day								
-											// in the UPDATE function, we only update the motor position when the distance >0.5mm
-											Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
-									}
+
+
 							}
 							}
 					}

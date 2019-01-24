@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/22/2019 15:09:27 PAGE 1   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/24/2019 14:29:16 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE CALIBRATION
@@ -62,7 +62,7 @@ line level    source
   51   1        // move/scan -direction
   52   1        for (i=1;i<=20;i++)
   53   1        {
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/22/2019 15:09:27 PAGE 2   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/24/2019 14:29:16 PAGE 2   
 
   54   1      
   55   1            Move(calib_step_move,1);
@@ -98,7 +98,7 @@ line level    source
   85                               unsigned char hurs,unsigned char mns,unsigned char sconds,
   86                               float  *currnt_pos)
   87          {
-  88   1        float calib_value=0;
+  88   1        float calib_value=0,theorical_max_pos;
   89   1        float JP_max_pos=*currnt_pos;
   90   1        // if voltage is stable 
   91   1        if(voltage_is_stable())
@@ -106,28 +106,29 @@ line level    source
   93   2          //  move to JP theorical max position
   94   2          Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-5);// off set is Zero means we go to  (first, go 
              -to JP max theorical position -5)
-  95   2          //  find the real max value in the area of JP +/- 10mm
-  96   2          Find_Real_Max(&JP_max_pos); //find real max and move to real max position
-  97   2          calib_value=*currnt_pos-JP_max_pos;
-  98   2          *currnt_pos=JP_max_pos;
-  99   2          return calib_value;
- 100   2        }
- 101   1        else
- 102   1          return 0;
- 103   1      }
+  95   2          theorical_max_pos=JP_max_pos+5;
+  96   2          //  find the real max value in the area of JP +/- 10mm
+  97   2          Find_Real_Max(&JP_max_pos); //find real max and move to real max position
+  98   2          calib_value=JP_max_pos-theorical_max_pos;
+  99   2          *currnt_pos=JP_max_pos;
+ 100   2          return calib_value;
+ 101   2        }
+ 102   1        else
+ 103   1          return 0;
+ 104   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    855    ----
+   CODE SIZE        =    883    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----      96
+   XDATA SIZE       =   ----     100
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
-END OF MODULE INFORMATION.
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/24/2019 14:29:16 PAGE 3   
 
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       01/22/2019 15:09:27 PAGE 3   
+END OF MODULE INFORMATION.
 
 
 C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
