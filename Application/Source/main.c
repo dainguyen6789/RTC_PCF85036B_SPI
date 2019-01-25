@@ -133,9 +133,9 @@ void main(void)
 	ET0=1;
 	//========================================
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
-	//SPI_WriteTime(0x12,Hours);		// data , register address
+	SPI_WriteTime(0x12,Hours);		// data , register address
 	Delay_ms(500);
-	//SPI_WriteTime(0x12,Minutes);
+	SPI_WriteTime(0x00,Minutes);
 	Delay_ms(500);
 	//==============================================================
 	// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
@@ -151,6 +151,7 @@ void main(void)
 	for(calib_count=0;calib_count<=20;calib_count++)
 	{
 		calib_value[calib_count]=0;
+		//calib_time[calib_count]=7+(float)calib_count/2;
 	}
 	while(1)                                      
 	{
@@ -270,7 +271,7 @@ void main(void)
 									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
-									calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
+									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
@@ -304,7 +305,7 @@ void main(void)
 									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
-									calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
+									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;
 
 								}
@@ -331,7 +332,7 @@ void main(void)
 										Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
 
 
-							}
+								}
 							}
 					}
 
