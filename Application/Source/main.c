@@ -151,7 +151,7 @@ void main(void)
 	for(calib_count=0;calib_count<=20;calib_count++)
 	{
 		calib_value[calib_count]=0;
-		//calib_time[calib_count]=7+(float)calib_count/2;
+		calib_time[calib_count]=7+(float)calib_count/2;
 	}
 	while(1)                                      
 	{
