@@ -350,7 +350,7 @@ void main(void)
 
 
 
-void Uart() interrupt 4 using 1
+/*void Uart() interrupt 4 using 1
 {
 	if(RI) 
 	{
@@ -383,10 +383,10 @@ void Uart() interrupt 4 using 1
 		TI=0;
 		busy=0;
 	}
-}
+}*/
 
 
-float calib_interpolate(float hours, float mins)
+/*float calib_interpolate(float hours, float mins)
 {
 	struct point p_calib1,p_calib2;
 	int i;
@@ -408,16 +408,16 @@ float calib_interpolate(float hours, float mins)
 	}
 	return 0;// for debugging only
 	//return linear_interpolate(p_calib1,p_calib2,current_time);	
-}
+}*/
 
 
-void SendUART1(unsigned char dat)
+/*void SendUART1(unsigned char dat)
 {
 	while(busy);
 	busy=1;
 	ACC=dat;
 	SBUF=ACC;
-}
+}*/
 
 
 void Display_Prox(unsigned int dat)
