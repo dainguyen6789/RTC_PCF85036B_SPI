@@ -69,7 +69,7 @@ void  Find_Real_Max(float  *current_position)
 
 unsigned int Max_Value(unsigned int *input)
 {
-	unsigned int max,max_location=9,i;
+	unsigned int max,max_location=29,i;
 	//int i;
 	for(i=0;i<=59;i++)
 	{
@@ -90,10 +90,10 @@ float calibration(unsigned char mnths,unsigned char dys,
 	// if voltage is stable 
 	if(voltage_is_stable())
 	{
-		// 	move to JP theorical max position
-		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-5);// off set is Zero means we go to  (first, go to JP max theorical position -5)
-		theorical_max_pos=JP_max_pos+5;
-		// 	find the real max value in the area of JP +/- 10mm
+		// 	move to JP theorical max position-15
+		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-15);// off set is Zero means we go to  (first, go to JP max theorical position -5)
+		theorical_max_pos=JP_max_pos+15;// compensate +15 because of previous line.
+		// 	find the real max value in the area of JP +/- 15mm
 		Find_Real_Max(&JP_max_pos); //find real max and move to real max position
 		calib_value=JP_max_pos-theorical_max_pos;
 		*currnt_pos=JP_max_pos;
