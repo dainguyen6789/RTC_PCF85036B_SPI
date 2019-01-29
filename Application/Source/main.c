@@ -129,7 +129,7 @@ void main(void)
 	ADC_Init();
 	//Timer0===================================
 	AUXR|=0x80;
-	AUXR &= 0xFF;
+	//AUXR &= 0xFF;
 	TL0=T1MS;
 	TH0=T1MS>>8;
 	TMOD=0x00;
