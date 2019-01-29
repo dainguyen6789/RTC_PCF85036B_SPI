@@ -36,7 +36,7 @@ void  Find_Real_Max(float  *current_position)
 	float calib_step_move=0.5;
 	unsigned int voltage_at_scanned_pos[60],max_location;
 	int i;
-	// move/scan +direction
+	// move/scan +`
 	for(i=0;i<60;i++)
 	{
 		Move(calib_step_move,1);

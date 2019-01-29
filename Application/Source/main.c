@@ -336,7 +336,13 @@ void main(void)
 							}
 					}
 
-				}				
+				}	
+				
+				// Code for the PUMP, enable PUMP from 7AM tp 5PM
+				if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
+						P55=1;
+				else
+						P55=0;
 		}
 
 		
