@@ -5,6 +5,7 @@
 #include "SunPos.h"
 #include "PI4IOE5V96248.h"
 
+
 //#include "PCF85963BTL.h"
 void Delay_ms(unsigned int ms);
 int Day_Of_Year(unsigned char months,unsigned char days);
@@ -135,7 +136,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	unsigned int date,i=0,yy=0;
 	//char num_of_elevation_stamp=15;
 	float  desired_distance=0,distance=0,JP_pos=0;
-	double  pos_interpolate_azimuth[num_of_azimuth_stamp],current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
+	float  pos_interpolate_azimuth[num_of_azimuth_stamp],current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
 	float declination;
 	struct point p1,p2;
 	struct cTime time;
@@ -172,6 +173,8 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	
 	if(BCDtoDec1(sconds&0x7f)%2==0)
 	{
+		//if(elevation>=2.2 && elevation <=49.2)
+		{
 		// interpolate for azimuth
 		for (i=0;i<num_of_azimuth_stamp;i++)
 		{
@@ -224,8 +227,65 @@ void Update_position(unsigned char mnths,unsigned char dys,
 			
 		}
 		
-		desired_distance=JP_pos+71+offset_calib;
-		//desired_distance=elevation;
+		//desired_distance=JP_pos+71+offset_calib;
+		}
+		/*else if (elevation >=49.2 && elevation <=68)
+		{
+					// interpolate for azimuth
+		for (i=0;i<num_of_azimuth_stamp;i++)
+		{
+			if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
+			{
+				for (yy=0;yy<num_of_elevation_stamp;yy++)
+				{
+					p1.x=date_azimuth_mapping[i];
+					p2.x=date_azimuth_mapping[i+1];
+					
+					p1.y=RX_pos_extra[yy][i];
+					p2.y=RX_pos_extra[yy][i+1];
+					
+					pos_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
+				}
+				//break;
+			}
+			
+			else if ((azimuth>=low_date_azimuth_mapping[i+1]) && (azimuth<=low_date_azimuth_mapping[i]))
+			{
+				for (yy=0;yy<num_of_elevation_stamp;yy++)
+				{
+					p1.x=low_date_azimuth_mapping[i];
+					p2.x=low_date_azimuth_mapping[i+1];
+					
+					p1.y=RX_pos_extra[yy][i];
+					p2.y=RX_pos_extra[yy][i+1];
+					
+					pos_interpolate_azimuth[yy]=linear_interpolate(p2,p1,azimuth);
+				}
+				//break;
+			}
+		}
+
+		// interpolate for elevation
+		for(i=0;i<num_of_elevation_stamp_extra;i++)
+		{
+			if((elevation>=elevation_stamp_extra[i])&&(elevation<=elevation_stamp_extra[i+1]))
+			{
+				p1.x=elevation_stamp_extra[i];
+				p2.x=elevation_stamp_extra[i+1];
+				
+				p1.y=pos_interpolate_azimuth[i];
+				p2.y=pos_interpolate_azimuth[i+1];
+				
+				JP_pos=linear_interpolate(p1,p2,elevation);
+				//break;
+				
+			}
+			
+		}
+	}*/
+		//desired_distance=JP_pos+71+offset_calib;
+		
+		desired_distance=elevation;
 		distance=desired_distance-*currnt_pos;
 		if(abs(distance)>=0.5 && desired_distance>=-15 &&desired_distance<=210 )// move if the change is more than 0.5mm
 		{

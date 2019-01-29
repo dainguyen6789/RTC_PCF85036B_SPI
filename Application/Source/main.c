@@ -87,6 +87,7 @@ void tm0_isr() interrupt 1 using 1
 {
 }
 
+
 void main(void)
 {
 //	unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
@@ -115,6 +116,8 @@ void main(void)
 	float dd=138;*/
 //	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
 	//=======================================
+	
+
 	P3M1=0x00;
 	P3M0=0xFF;
 	P3=0x4C;
@@ -126,6 +129,7 @@ void main(void)
 	ADC_Init();
 	//Timer0===================================
 	AUXR|=0x80;
+	AUXR &= 0xFF;
 	TL0=T1MS;
 	TH0=T1MS>>8;
 	TMOD=0x00;
