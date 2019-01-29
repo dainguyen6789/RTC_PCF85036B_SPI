@@ -135,7 +135,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	unsigned int date,i=0,yy=0;
 	//char num_of_elevation_stamp=15;
 	float  desired_distance=0,distance=0,JP_pos=0;
-	double  pos_interpolate_azimuth[num_of_azimuth_stamp],current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
+	double  pos_interpolate_azimuth[num_of_elevation_stamp],current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
 	float declination;
 	struct point p1,p2;
 	struct cTime time;
@@ -225,9 +225,9 @@ void Update_position(unsigned char mnths,unsigned char dys,
 		}
 		
 		desired_distance=JP_pos+71+offset_calib;
-		//desired_distance=elevation;
+		//desired_distance=azimuth;
 		distance=desired_distance-*currnt_pos;
-		if(abs(distance)>=0.5 && desired_distance>=-15 &&desired_distance<=210 )// move if the change is more than 0.5mm
+		if(abs(distance)>=0.5)// && desired_distance>=-15 &&desired_distance<=210 )// move if the change is more than 0.5mm
 		{
 			/*if(distance>0)
 				Move(distance,1);
