@@ -11,7 +11,7 @@ float low_date_azimuth_mapping[num_of_azimuth_stamp]={180,170,160,150,140,130,12
 //extern const char  num_of_elevation_stamp=15;
 //float *RX_pos;
 //RX_pos = (float*) malloc(1500*sizeof(float));
-
+//float test[15][10];
 float RX_pos[num_of_elevation_stamp][num_of_azimuth_stamp]=
 {
 

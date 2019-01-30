@@ -170,7 +170,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	//if (current_local_sun_time>12)
 	//	azimuth=360-azimuth;
 	
-	if(BCDtoDec1(sconds&0x7f)%2==0)
+	if(BCDtoDec1(sconds&0x7f)%2==0 && elevation >=2.2 && elevation <=68)
 	{
 		// interpolate for azimuth
 		for (i=0;i<num_of_azimuth_stamp;i++)
@@ -227,12 +227,12 @@ void Update_position(unsigned char mnths,unsigned char dys,
 		desired_distance=JP_pos+71+offset_calib;
 		//desired_distance=azimuth;
 		distance=desired_distance-*currnt_pos;
-		if(abs(distance)>=0.5)// && desired_distance>=-15 &&desired_distance<=210 )// move if the change is more than 0.5mm
+		if(abs(distance)>=0.5&& desired_distance>=-15 &&desired_distance<=210 )// move if the change is more than 0.5mm
 		{
-			/*if(distance>0)
+			if(distance>0)
 				Move(distance,1);
 			else if (distance<0)
-				Move(-distance,0);*/
+				Move(-distance,0);
 			//previous_move_time=BCDtoDec1(sconds&0x7f);
 			*currnt_pos=desired_distance;
 		}
