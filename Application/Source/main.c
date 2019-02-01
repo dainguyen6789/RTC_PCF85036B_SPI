@@ -62,7 +62,9 @@ float calib_interpolate(float hours, float mins);
 float  linear_interpolate(struct point p1,struct point p2, float  x);
 void Write_PI4IOE5V96248(struct DATA_FOR_IO_6PORTS *xdat);
 float  linear_interpolate(struct point p1,struct point p2, float  x);
+unsigned int ADC_GetResult(unsigned char ch);
 
+void ADC_Init(void);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -90,7 +92,7 @@ void tm0_isr() interrupt 1 using 1
 void main(void)
 {
 //	unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
-	unsigned int prox_data;
+	unsigned int ADC_data;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 	char prox_flag=1;
@@ -169,7 +171,7 @@ void main(void)
 			WriteData(0x53);//display "S"	
 			WriteData(0x3A);//display ":"	
 			//LCD_clear();
-			Display_Pos(current_position);
+			Display_Pos(ADC_data);
 			//==============================================================
 			Display_Line(2);
 			DisplayLCD(hours);
@@ -190,6 +192,7 @@ void main(void)
 			{
 				WriteData(0x4D);//display "M"
 			}			
+			ADC_data=ADC_GetResult(0);
 			//count=0;
 			//prox_data=Read_VCNL4035(PS1_Data_L);
 			//Display_Prox(prox_data);// this is RAW data from the Prox Sensor
@@ -201,7 +204,7 @@ void main(void)
 		
 			//Delay_ms(1);
 			//WriteData(Read_VCNL4035(PS3_Data_L));
-			if (move && !auto_mode)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+			/*if (move && !auto_mode)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
 				Step_move(PointFour_mm_steps, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
 				if (direction==1)
@@ -231,12 +234,7 @@ void main(void)
 				small_move=0;				
 			}
 
-			/*if (prox_data<=300 && prox_flag==0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
-			{
-				current_position=0;
-				prox_flag=1;
-				move=0;
-			}*/
+
 			
 		if (P23 && prox_flag==0 && current_position<=0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
@@ -333,7 +331,7 @@ void main(void)
 
 
 								}
-							}
+							}*/
 					}
 
 				}	
@@ -349,8 +347,6 @@ void main(void)
 
 
 
-		
-	}
 	
  
 
