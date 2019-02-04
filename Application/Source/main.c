@@ -62,7 +62,7 @@ float calib_interpolate(float hours, float mins);
 float  linear_interpolate(struct point p1,struct point p2, float  x);
 void Write_PI4IOE5V96248(struct DATA_FOR_IO_6PORTS *xdat);
 float  linear_interpolate(struct point p1,struct point p2, float  x);
-
+unsigned int ADC_GetResult(unsigned char ch);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -82,7 +82,6 @@ unsigned char calib_stamp =30;// calib every 30 mins
 
 
 
-
 void tm0_isr() interrupt 1 using 1
 {
 }
@@ -90,7 +89,7 @@ void tm0_isr() interrupt 1 using 1
 void main(void)
 {
 //	unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
-	unsigned int prox_data;
+	unsigned int sunlight_ADC;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 	char prox_flag=1;
@@ -98,6 +97,7 @@ void main(void)
 	struct point calib_point1,calib_point2;
 //	unsigned char KeyNum;
 	int calib_day=0, calib_count;
+
 //	char numStr[5];
 	
 //	float current_position=0;
@@ -170,6 +170,8 @@ void main(void)
 			WriteData(0x3A);//display ":"	
 			//LCD_clear();
 			Display_Pos(current_position);
+			WriteData(0x6D);//m
+			WriteData(0x6D);//m
 			//==============================================================
 			Display_Line(2);
 			DisplayLCD(hours);
@@ -259,12 +261,12 @@ void main(void)
 		//Read_time(&months,&days,&hours,&mins,&seconds);
 		if(auto_mode)
 		{
-			
+			sunlight_ADC=ADC_GetResult(2);
 			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
-					if(iUse_prevday_calib_value==0)// 1st day of calibration
+					if(iUse_prevday_calib_value==0)// FIRST day of calibration
 					{
-							// calib every 30mins, from 7AM to 17PM
-							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
+							// CALIBRATION every 30mins, from 7AM to 17PM
+							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 && sunlight_ADC>=sunlight_ADC_Threshold)
 							{
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
@@ -289,7 +291,7 @@ void main(void)
 								{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
-							}
+								}
 							}
 					}
 					
@@ -298,7 +300,7 @@ void main(void)
 					{
 						
 							// calib every 30mins, from 7AM to 17PM
-							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
+							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 && sunlight_ADC>=sunlight_ADC_Threshold)
 							{
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
@@ -336,21 +338,21 @@ void main(void)
 							}
 					}
 
-				}	
+		}	
 				
 				// Code for the PUMP, enable PUMP from 7AM tp 5PM
-				if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
-						P55=1;
-				else
-						P55=0;
-		}
-
-		
-
-
-
-		
+		if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
+				P55=1;
+		else
+				P55=0;
 	}
+
+		
+
+
+
+		
+}
 	
  
 
@@ -465,9 +467,9 @@ void Display_Pos(float sign_dat)
 		WriteData(unit|0x30);
 		WriteData(0x2E);//.
 		WriteData((after_dot)|0x30);
-		WriteData(0x6D);//m
-		WriteData(0x6D);//m
-		WriteData(0x20);// "blank"
+		//WriteData(0x6D);//m
+		//WriteData(0x6D);//m
+		//WriteData(0x20);// "blank"
 	}
 	else
 	{
@@ -478,8 +480,8 @@ void Display_Pos(float sign_dat)
 		WriteData(unit|0x30);
 		WriteData(0x2E);//.
 		WriteData(after_dot|0x30);
-		WriteData(0x6D);//m
-		WriteData(0x6D);//m
+		//WriteData(0x6D);//m
+		//WriteData(0x6D);//m
 
 	}
 	return;

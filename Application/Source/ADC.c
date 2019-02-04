@@ -13,7 +13,7 @@ void ADC_Init(void)
 	P1M1 |=( 1<<0);  
 	P1M0 &=~( 1<<0); 
 	CLK_DIV=0x00;//set ADRJ=0
-	P1ASF |=P1_0_ADC_FUNCTION;  
+	P1ASF |=P1_0_ADC_FUNCTION|P1_2_ADC_FUNCTION;  
 
 	ADC_RES=0;
 	ADC_RESL=0;

@@ -5,10 +5,13 @@
 
 #define P1_0_ADC_FUNCTION 	0x01
 #define P1_1_ADC_FUNCTION 	0x02
+#define P1_2_ADC_FUNCTION 	0x04
+
 #define ADC_FLAG     	0x10
 #define ADC_SPEEDLL 0x00
 //#define P1_0_INPUT_P1M0 0x00
 //#define P1_0_INPUT_P1M0 0x01
+#define sunlight_ADC_Threshold 512 //820
 
 extern int adc_data;
 //extern int  calib_mode=1;
