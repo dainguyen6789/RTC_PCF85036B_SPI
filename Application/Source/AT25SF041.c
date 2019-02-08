@@ -82,5 +82,6 @@ char  AT25SF041_Read((char opcode,unsigned long int addr)
 	
 	///////////////////////////////////////
 	AT25SF041_CS_Set();	
+	return dat;
 
 }
