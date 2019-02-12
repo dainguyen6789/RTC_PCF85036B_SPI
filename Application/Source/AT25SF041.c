@@ -43,7 +43,7 @@ void AT25SF041_Write(char opcode, unsigned long int addr,char dat)
 	
 }
 
-char  AT25SF041_Read((char opcode,unsigned long int addr)
+char  AT25SF041_Read(char opcode,unsigned long int addr)
 {
 	char dat=0;
 	AT25SF041_CS_Clr();
@@ -56,7 +56,7 @@ char  AT25SF041_Read((char opcode,unsigned long int addr)
 			AT25SF041_SCK_Set();
 	}
 	// SEND THE ADDR (24-bit)
-		for(int i=0;i<23;i++)
+	for(int i=0;i<23;i++)
 	{
 			AT25SF041_SCK_Clr();
 			AT25SF041_SDO=(addr<<i)&0x01;
