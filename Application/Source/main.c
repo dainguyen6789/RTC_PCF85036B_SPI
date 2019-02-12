@@ -15,6 +15,7 @@
 #include "ADCh.h"
 #include "SunPos.h"
 #include "PI4IOE5V96248.h"
+#include "AT25SF041.h"
 
 //#include "Receiver_Position_Data.h"
 
@@ -92,7 +93,7 @@ void main(void)
 	unsigned int sunlight_ADC;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
-	char prox_flag=1;
+	char prox_flag=1,SPI_NOR_DATA;
 	int iUse_prevday_calib_value=0;
 	struct point calib_point1,calib_point2;
 //	unsigned char KeyNum;
@@ -144,8 +145,8 @@ void main(void)
 	WriteData(0x68);//display "h"
 	WriteData(0x68);//display "h"
 	WriteData(0x6D);//display "m"
-	WriteData(0x6D);//display "m"
-	WriteData(0x23);//display "#" SETTIME_KEY*/
+	//WriteData(0x6D);//display "m"
+	//WriteData(0x23);//display "#" SETTIME_KEY*/
 	//WriteData((int) rx_pos_12h);
 	//Step_move(200, 1);// 1.8* step angle, 200 steps ~ 1 round
 	for(calib_count=0;calib_count<=20;calib_count++)
@@ -153,206 +154,13 @@ void main(void)
 		calib_value[calib_count]=0;
 		calib_time[calib_count]=7+(float)calib_count/2;
 	}
-	
-	
-		Key_Process();
-		//count++;
-		//if (count==20)
-		{
-			//move cursor to line 1, pos 6
-			//Write_PI4IOE5V96248(&dat);
-			Command(0x08);
-			Command(0x05);
-			
-			WriteData(0x50);//display "P"
-			WriteData(0x4F);//display "O"
-			WriteData(0x53);//display "S"	
-			WriteData(0x3A);//display ":"	
-			//LCD_clear();
-			Display_Pos(current_position);
-			WriteData(0x6D);//m
-			WriteData(0x6D);//m
-			//==============================================================
-			Display_Line(2);
-			DisplayLCD(hours);
-			WriteData(0x3A);//display ":"
-			DisplayLCD(mins);
-			WriteData(0x3A);//display ":"
-			DisplayLCD(seconds&0x7f);
-			WriteData(0x3B);//display ";"
-			DisplayLCD(months);
-			//WriteData(0x2D);//display "-"
-			DisplayLCD(days);	
-			WriteData(0x3B);//display ";"
-			if(auto_mode)
-			{
-				WriteData(0x41);//display "A"
-			}
-			else if (!auto_mode)
-			{
-				WriteData(0x4D);//display "M"
-			}			
-			//count=0;
-			//prox_data=Read_VCNL4035(PS1_Data_L);
-			//Display_Prox(prox_data);// this is RAW data from the Prox Sensor
-			// 	y = 12.051x2 - 546.97x + 7153.8;   	 	x in [1015:2880] 	=> 	distance: 	10-20mm
-			// 	y = 2.4242x2 - 174.89x + 3545.5;			x in [473:941] 		=> 	distance:		20-30mm
-			// 	y = 0.5038x2 - 54.417x + 1651.1; 		  x in [277:455] 		=> 	distance:		30-40mm
-			//	y = 0.303x2 - 37.642x + 1302.4; 		  x in [177:269]	 	=> 	distance:		40-50mm
-		
-		
-			//Delay_ms(1);
-			//WriteData(Read_VCNL4035(PS3_Data_L));
-			if (move && !auto_mode)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
-			{
-				Step_move(PointFour_mm_steps, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
-				if (direction==1)
-				{
-					current_position=current_position+0.4;
-				}
-				else
-				{
-					current_position=current_position-0.4;
-				}
-				prox_flag=0;
-			}
-			if (small_move && !auto_mode)
-			{
-				
-				//auto_mode=0;
-				Step_move(PointFour_mm_steps, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
-				if (direction==1)
-				{
-					current_position=current_position+0.4;
-				}
-				else
-				{
-					current_position=current_position-0.4;
-				}
-				prox_flag=0;		
-				small_move=0;				
-			}
+	AT25SF041_WriteEnable();
+	AT25SF041_Write(Byte_Page_Program,0x00000001,0x68);
+	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0x00000001);
+	WriteData(SPI_NOR_DATA);//display "m"
 
-			/*if (prox_data<=300 && prox_flag==0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
-			{
-				current_position=0;
-				prox_flag=1;
-				move=0;
-			}*/
-			
-		if (P23 && prox_flag==0 && current_position<=0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
-			{
-				current_position=0;
-				prox_flag=1;
-				move=0;
-				small_move=0;
-				direction=1;
-			}			
-			LCD_return_home();
-			
-		}
-		hours2=hours1;
-		hours1=hours;
-		mins2=mins1;
-		mins1=mins;
-		Read_time(&months,&days,&hours,&mins,&seconds);
-
-		//Read_time(&months,&days,&hours,&mins,&seconds);
-		//Read_time(&months,&days,&hours,&mins,&seconds);
-		if(auto_mode)
-		{
-			sunlight_ADC=ADC_GetResult(2);
-			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
-					if(iUse_prevday_calib_value==0)// FIRST day of calibration
-					{
-							// CALIBRATION every 30mins, from 7AM to 17PM
-							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 && sunlight_ADC>=sunlight_ADC_Threshold)
-							{
-								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
-								{
-									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
-									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
-									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
-									//count++;
-								}
-								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
-								{
-									iUse_prevday_calib_value=1;
-									//count=0;
-								}
-								
-
-											
-							}
-							else 
-							{
-								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
-								{
-										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
-								}
-							}
-					}
-					
-					// how to update for next day and use the calib value from the previous day???
-					else
-					{
-						
-							// calib every 30mins, from 7AM to 17PM
-							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 && sunlight_ADC>=sunlight_ADC_Threshold)
-							{
-								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
-								{
-									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
-									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
-									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
-									//count++;
-
-								}
-								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
-								{
-									iUse_prevday_calib_value=1;
-									//count=0;
-								}
-
-											
-							}
-							else
-							{
-								
-								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)								
-								{
-										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-
-										calib_point1.x=calib_time[count];
-										calib_point1.y=calib_value[count];
-										calib_point2.x=calib_time[count+1];// this is from previous day
-										calib_point2.y=calib_value[count+1];// this is from previous day								
-										// in the UPDATE function, we only update the motor position when the distance >0.5mm
-										Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
-
-
-								}
-							}
-					}
-
-		}	
-				
-				// Code for the PUMP, enable PUMP from 7AM tp 5PM
-		if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
-				P55=1;
-		else
-				P55=0;
-	}
-
-		
-
-
-
-		
 }
+
 	
  
 

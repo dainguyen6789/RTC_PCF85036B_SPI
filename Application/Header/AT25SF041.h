@@ -2,7 +2,7 @@
 //
 #define  Byte_Page_Program 	0x02
 #define  Read_Array 				0x03
-#define  Write_Enable 			0x06h
+#define  Write_Enable 			0x06
 //The PCF85063BTL contains 18 8-bit registers with an auto-incrementing register address, 
  sbit 			AT25SF041_CS	=	P4^1;	   
  sbit 			AT25SF041_SCK	=	P4^2;	   
@@ -20,3 +20,9 @@
 
  #define		AT25SF041_SDO_Clr()		{AT25SF041_SDO=0;} 
  #define		AT25SF041_SDO_Set()		{AT25SF041_SDO=1;}
+ 
+void AT25SF041_WriteEnable(void);
+void AT25SF041_Write(char opcode, unsigned long int addr,char dat);
+char  AT25SF041_Read(char opcode,unsigned long int addr);
+ void Wait_ms_i2c(int ms);
+

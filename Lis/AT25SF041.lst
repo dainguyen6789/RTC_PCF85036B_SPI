@@ -1,0 +1,150 @@
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/12/2019 11:04:59 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE AT25SF041
+OBJECT MODULE PLACED IN .\Obj\AT25SF041.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Application\Source\AT25SF041.c LARGE BROWSE INCDIR(.\Application\Header)
+                    - DEBUG OBJECTEXTEND PRINT(.\Lis\AT25SF041.lst) TABS(2) OBJECT(.\Obj\AT25SF041.obj)
+
+line level    source
+
+   1          #include "AT25SF041.h"
+   2          //
+   3          void AT25SF041_WriteEnable(void)
+   4          {
+   5   1        int i;
+   6   1        AT25SF041_CS_Clr();
+   7   1      Wait_ms_i2c(2);
+   8   1        
+   9   1        for(i=0;i<8;i++)
+  10   1        {
+  11   2            AT25SF041_SCK_Clr();
+  12   2            Wait_ms_i2c(2);
+  13   2            AT25SF041_SDO=(Write_Enable<<i)&0x01;
+  14   2            AT25SF041_SCK_Set();
+  15   2            Wait_ms_i2c(2);
+  16   2      
+  17   2        }
+  18   1        AT25SF041_CS_Set();
+  19   1        Wait_ms_i2c();
+*** WARNING C209 IN LINE 19 OF Application\Source\AT25SF041.c: '_Wait_ms_i2c': too few actual parameters
+  20   1        
+  21   1      }
+  22          
+  23          
+  24          void AT25SF041_Write(char opcode, unsigned long int addr,char dat)
+  25          {
+  26   1        int i;
+  27   1        AT25SF041_CS_Clr();
+  28   1      Wait_ms_i2c(2);
+  29   1      
+  30   1        //////////////////////////////////////////
+  31   1        for( i=0;i<8;i++)
+  32   1        {
+  33   2            AT25SF041_SCK_Clr();
+  34   2          Wait_ms_i2c(2);
+  35   2            AT25SF041_SDO=(opcode<<i)&0x01;
+  36   2            AT25SF041_SCK_Set();
+  37   2          Wait_ms_i2c(2);
+  38   2          
+  39   2        }
+  40   1        
+  41   1          for( i=0;i<23;i++)
+  42   1        {
+  43   2            AT25SF041_SCK_Clr();
+  44   2            Wait_ms_i2c(2);
+  45   2            AT25SF041_SDO=(addr<<i)&0x01;
+  46   2            AT25SF041_SCK_Set();
+  47   2          Wait_ms_i2c(2);
+  48   2      
+  49   2        }
+  50   1        
+  51   1          for( i=0;i<8;i++)
+  52   1        {
+  53   2            AT25SF041_SCK_Clr();
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/12/2019 11:04:59 PAGE 2   
+
+  54   2            Wait_ms_i2c(2);
+  55   2            AT25SF041_SDO=(dat<<i)&0x01;
+  56   2            AT25SF041_SCK_Set();
+  57   2            Wait_ms_i2c(2);
+  58   2      
+  59   2        }
+  60   1        ///////////////////////////////////////
+  61   1        AT25SF041_CS_Set();
+  62   1        Wait_ms_i2c(2);
+  63   1        
+  64   1      }
+  65          
+  66          char  AT25SF041_Read(char opcode,unsigned long int addr)
+  67          {
+  68   1        char dat=0;
+  69   1        int i;
+  70   1        AT25SF041_CS_Clr();
+  71   1        Wait_ms_i2c(2);
+  72   1      
+  73   1        //////////////////////////////////////////
+  74   1        // Send the OPCODE
+  75   1        for( i=0;i<8;i++)
+  76   1        {
+  77   2            AT25SF041_SCK_Clr();
+  78   2            Wait_ms_i2c(2);
+  79   2            AT25SF041_SDO=(opcode<<i)&0x01;
+  80   2            AT25SF041_SCK_Set();
+  81   2            Wait_ms_i2c(2);
+  82   2      
+  83   2        }
+  84   1        // SEND THE ADDR (24-bit)
+  85   1        for( i=0;i<23;i++)
+  86   1        {
+  87   2            AT25SF041_SCK_Clr();
+  88   2            Wait_ms_i2c(2);
+  89   2            AT25SF041_SDO=(addr<<i)&0x01;
+  90   2            AT25SF041_SCK_Set();
+  91   2            Wait_ms_i2c(2);
+  92   2      
+  93   2        }
+  94   1        /////////////////////////////////////////
+  95   1        // Store the output data from NOR FLash
+  96   1        for( i=0;i<8;i++)
+  97   1        {
+  98   2            AT25SF041_SCK_Clr();
+  99   2          Wait_ms_i2c(2);
+ 100   2      
+ 101   2            if(AT25SF041_SDI)
+ 102   2            {
+ 103   3              // INPUT BIT =1
+ 104   3              dat|=1<<i;
+ 105   3            }
+ 106   2            else
+ 107   2            {
+ 108   3              // INPUT BIT =0
+ 109   3              dat&=~(1<<i);
+ 110   3            }
+ 111   2            AT25SF041_SCK_Set();
+ 112   2            Wait_ms_i2c(2);
+ 113   2      
+ 114   2        } 
+ 115   1        
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/12/2019 11:04:59 PAGE 3   
+
+ 116   1        ///////////////////////////////////////
+ 117   1        AT25SF041_CS_Set(); 
+ 118   1        Wait_ms_i2c(2);
+ 119   1        return dat;
+ 120   1      
+ 121   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    678    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      18
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
