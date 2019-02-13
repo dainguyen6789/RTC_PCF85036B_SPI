@@ -13,8 +13,10 @@ void AT25SF041_ChipErase(void)
 	int i;
 	char opcode;
 	opcode=Chip_Erase;
-	P4M1|=0x10;
-	P4M0&=~(1<<4);
+	//P4M1|=0x10;
+	//P4M0&=~(1<<4);
+	P4M1&=~(1<<1 |1<<2|1<<3);
+	P4M0|=0x07;
 	AT25SF041_CS_Clr();
 	Wait_ms_SPINOR(2);
 	
@@ -40,7 +42,7 @@ void AT25SF041_ChipErase(void)
 	}
 	
 	AT25SF041_CS_Set();
-	Wait_ms_SPINOR(2);
+	Wait_ms_SPINOR(10);
 	Read_Status_Register_Byte1();
 	
 }
@@ -202,6 +204,8 @@ char  AT25SF041_Read(char opcode,unsigned long int addr)
 	}
 	/////////////////////////////////////////
 	// Store the output data from NOR FLash
+	Wait_ms_SPINOR(10);
+
 	AT25SF041_SDO_Set();
 	for( i=0;i<8;i++)
 	{
@@ -235,7 +239,7 @@ char  AT25SF041_Read(char opcode,unsigned long int addr)
 char Read_Status_Register_Byte1(void)
 {
 	char dat=0,opcode,count=0;
-	int i;
+	int i=0;
 	opcode=Read_Stat_Register_Byte1;
 	AT25SF041_CS_Clr();
 	Wait_ms_SPINOR(2);
@@ -265,8 +269,10 @@ char Read_Status_Register_Byte1(void)
 
 	/////////////////////////////////////////
 	// Store the output data from NOR FLash
+	Wait_ms_SPINOR(10);
+
 	AT25SF041_SDO_Set();
-	while(dat&0x01==0x01 |count==0)// check the #RDY/BSY Flag or collect the first data
+	while((dat&0x01)==0x01 |count==0)// check the #RDY/BSY Flag or collect the first data
 	{	
 		count=1;
 		if(i==8)// this condition is used to separate two consecutive read of status register
@@ -277,9 +283,9 @@ char Read_Status_Register_Byte1(void)
 		{
 				dat <<= 1;	              //
 				AT25SF041_SCK_Set();
-				Wait_ms_SPINOR(2);
+				Wait_ms_SPINOR(4);
 				AT25SF041_SCK_Clr();
-				Wait_ms_SPINOR(2);
+				Wait_ms_SPINOR(4);
 
 				if(AT25SF041_SDO)
 				{
