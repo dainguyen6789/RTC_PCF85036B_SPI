@@ -27,7 +27,7 @@
 void AT25SF041_WriteEnable(void);
 void AT25SF041_Write(char opcode, unsigned long int addr,char dat);
 char  AT25SF041_Read(char opcode,unsigned long int addr);
-void Wait_ms_i2c(int ms);
+void Wait_ms_SPINOR(int ms);
 void AT25SF041_ChipErase(void);
 char Read_Status_Register_Byte1(void);
 

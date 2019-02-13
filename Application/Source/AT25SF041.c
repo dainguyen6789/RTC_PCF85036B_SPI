@@ -269,6 +269,10 @@ char Read_Status_Register_Byte1(void)
 	while(dat&0x01==0x01 |count==0)// check the #RDY/BSY Flag or collect the first data
 	{	
 		count=1;
+		if(i==8)// this condition is used to separate two consecutive read of status register
+		{
+			dat=0;
+		}
 		for( i=0;i<8;i++)
 		{
 				dat <<= 1;	              //

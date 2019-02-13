@@ -163,10 +163,15 @@ void main(void)
 	if(Read_Status_Register_Byte1()&0x01!=0x01)// busy => LSB = 1
 		break;
 	}*/
+	//Wait_ms_SPINOR(2000);
+	//Wait_ms_SPINOR(2000);
+	//Wait_ms_SPINOR(2000);
+	//Wait_ms_SPINOR(2000);
+	//Wait_ms_SPINOR(2000);
 	
 	AT25SF041_WriteEnable();
 
-	AT25SF041_Write(Byte_Page_Program,0x00000001,0x6D);
+	AT25SF041_Write(Byte_Page_Program,0x00000001,0x65);
 	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0x00000001);
 	WriteData(SPI_NOR_DATA);//display "h"
 
