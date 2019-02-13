@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/12/2019 13:31:22 PAGE 1   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/13/2019 14:25:13 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE AT25SF041
@@ -9,207 +9,317 @@ COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Application\Source\AT25SF041.c L
 line level    source
 
    1          #include "AT25SF041.h"
-   2          //
-   3          void AT25SF041_WriteEnable(void)
+   2          #include "stc15f2k60s2.h"
+   3          void Wait_ms_SPINOR(int ms)
    4          {
-   5   1        int i;
-   6   1        char write_en;
-   7   1        write_en=Write_Enable;
-   8   1      //  AT25SF041_CS_Clr();
-   9   1      //Wait_ms_i2c(2);
-  10   1        
-  11   1        for( i=0;i<8;i++)
-  12   1        {
-  13   2              AT25SF041_SCK_Clr();
-  14   2              Wait_ms_i2c(2);
-  15   2              if( (write_en&0x80)==0x80 )      //
-  16   2              {
-  17   3                  AT25SF041_SDI_Set();
-  18   3              } 
-  19   2                else
-  20   2              {
-  21   3                  AT25SF041_SDI_Clr();
-  22   3      
-  23   3              }
-  24   2              Wait_ms_i2c(2);     
-  25   2              AT25SF041_SCK_Set();
-  26   2              Wait_ms_i2c(2);
-  27   2              write_en <<= 1;                   //
-  28   2      
-  29   2      
-  30   2        }
-  31   1        //AT25SF041_CS_Set();
-  32   1        //Wait_ms_i2c();
-  33   1        
-  34   1      }
-  35          
-  36          
-  37          void AT25SF041_Write(char opcode, unsigned long int addr,char dat)
-  38          {
-  39   1        int i;
-  40   1        AT25SF041_CS_Clr();
-  41   1        Wait_ms_i2c(2);
-  42   1      
-  43   1        //////////////////////////////////////////
-  44   1        for( i=0;i<8;i++)
-  45   1          {
-  46   2              AT25SF041_SCK_Clr();
-  47   2              Wait_ms_i2c(2);
-  48   2              if( (opcode&0x80)==0x80 )      //
-  49   2              {
-  50   3                  AT25SF041_SDI_Set();
-  51   3              } 
-  52   2                else
-  53   2              {
-  54   3                  AT25SF041_SDI_Clr();
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/12/2019 13:31:22 PAGE 2   
+   5   1        unsigned int De_Cnt;
+   6   1        while( (ms--) != 0)
+   7   1        {
+   8   2          for(De_Cnt = 0; De_Cnt < 9; De_Cnt++); 
+   9   2        }   
+  10   1      }
+  11          void AT25SF041_ChipErase(void)
+  12          {
+  13   1        int i;
+  14   1        char opcode;
+  15   1        opcode=Chip_Erase;
+  16   1        P4M1|=0x10;
+  17   1        P4M0&=~(1<<4);
+  18   1        AT25SF041_CS_Clr();
+  19   1        Wait_ms_SPINOR(2);
+  20   1        
+  21   1        for( i=0;i<8;i++)
+  22   1        {
+  23   2              AT25SF041_SCK_Clr();
+  24   2              Wait_ms_SPINOR(2);
+  25   2              if( (opcode&0x80)==0x80 )      //
+  26   2              {
+  27   3                  AT25SF041_SDI_Set();
+  28   3              } 
+  29   2                else
+  30   2              {
+  31   3                  AT25SF041_SDI_Clr();
+  32   3      
+  33   3              }
+  34   2              Wait_ms_SPINOR(2);    
+  35   2              AT25SF041_SCK_Set();
+  36   2              Wait_ms_SPINOR(2);
+  37   2              opcode <<= 1;                   //
+  38   2      
+  39   2      
+  40   2        }
+  41   1        
+  42   1        AT25SF041_CS_Set();
+  43   1        Wait_ms_SPINOR(2);
+  44   1        Read_Status_Register_Byte1();
+  45   1        
+  46   1      }
+  47          void AT25SF041_WriteEnable(void)
+  48          {
+  49   1        int i;
+  50   1        char write_en;
+  51   1        write_en=Write_Enable;
+  52   1        AT25SF041_CS_Clr();
+  53   1      //Wait_ms_SPINOR(2);
+  54   1        
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/13/2019 14:25:13 PAGE 2   
 
-  55   3      
-  56   3              }
-  57   2              Wait_ms_i2c(2);     
-  58   2              AT25SF041_SCK_Set();
-  59   2              Wait_ms_i2c(2);
-  60   2              opcode <<= 1;                   //
-  61   2      
-  62   2      
-  63   2          }
-  64   1        // SEND THE ADDR (24-bit)
-  65   1        for( i=0;i<24;i++)
-  66   1        {
-  67   2            AT25SF041_SCK_Clr();
-  68   2            Wait_ms_i2c(2);
-  69   2            if( (addr&0x80)==0x80 )      //
-  70   2            {
-  71   3                AT25SF041_SDI_Set();
-  72   3            } 
-  73   2              else
-  74   2            {
-  75   3                AT25SF041_SDI_Clr();
-  76   3      
-  77   3            }
-  78   2            Wait_ms_i2c(2);     
-  79   2            AT25SF041_SCK_Set();
-  80   2            Wait_ms_i2c(2);
-  81   2            addr <<= 1;
-  82   2      
-  83   2        }
-  84   1        
-  85   1          for( i=0;i<8;i++)
-  86   1        {
-  87   2            AT25SF041_SCK_Clr();
-  88   2            Wait_ms_i2c(2);
-  89   2            if( (dat&0x80)==0x80 )       //
-  90   2            {
-  91   3                AT25SF041_SDI_Set();
-  92   3            } 
-  93   2              else
-  94   2            {
-  95   3                AT25SF041_SDI_Clr();
-  96   3      
-  97   3            }
-  98   2            Wait_ms_i2c(2);     
-  99   2            AT25SF041_SCK_Set();
- 100   2            Wait_ms_i2c(2);
- 101   2            dat <<= 1;
- 102   2      
- 103   2        }
- 104   1        ///////////////////////////////////////
- 105   1        //AT25SF041_CS_Set();
- 106   1        //Wait_ms_i2c(2);
- 107   1        
- 108   1      }
- 109          
- 110          char  AT25SF041_Read(char opcode,unsigned long int addr)
- 111          {
- 112   1        char dat=0;
- 113   1        int i;
- 114   1        AT25SF041_CS_Clr();
- 115   1        Wait_ms_i2c(2);
- 116   1      
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/12/2019 13:31:22 PAGE 3   
+  55   1        for( i=0;i<8;i++)
+  56   1        {
+  57   2              AT25SF041_SCK_Clr();
+  58   2              Wait_ms_SPINOR(2);
+  59   2              if( (write_en&0x80)==0x80 )      //
+  60   2              {
+  61   3                  AT25SF041_SDI_Set();
+  62   3              } 
+  63   2                else
+  64   2              {
+  65   3                  AT25SF041_SDI_Clr();
+  66   3      
+  67   3              }
+  68   2              Wait_ms_SPINOR(2);    
+  69   2              AT25SF041_SCK_Set();
+  70   2              Wait_ms_SPINOR(2);
+  71   2              write_en <<= 1;                   //
+  72   2      
+  73   2      
+  74   2        }
+  75   1        AT25SF041_CS_Set();
+  76   1        Wait_ms_SPINOR(2);
+  77   1        
+  78   1      }
+  79          
+  80          
+  81          void AT25SF041_Write(char opcode, unsigned long int addr,char dat)
+  82          {
+  83   1        int i;
+  84   1        AT25SF041_CS_Clr();
+  85   1        Wait_ms_SPINOR(2);
+  86   1      
+  87   1        //////////////////////////////////////////
+  88   1        for( i=0;i<8;i++)
+  89   1          {
+  90   2              AT25SF041_SCK_Clr();
+  91   2              Wait_ms_SPINOR(2);
+  92   2              if( (opcode&0x80)==0x80 )      //
+  93   2              {
+  94   3                  AT25SF041_SDI_Set();
+  95   3              } 
+  96   2                else
+  97   2              {
+  98   3                  AT25SF041_SDI_Clr();
+  99   3      
+ 100   3              }
+ 101   2              Wait_ms_SPINOR(2);    
+ 102   2              AT25SF041_SCK_Set();
+ 103   2              Wait_ms_SPINOR(2);
+ 104   2              opcode <<= 1;                   //
+ 105   2      
+ 106   2      
+ 107   2          }
+ 108   1        // SEND THE ADDR (24-bit)
+ 109   1        for( i=0;i<24;i++)
+ 110   1        {
+ 111   2            AT25SF041_SCK_Clr();
+ 112   2            Wait_ms_SPINOR(2);
+ 113   2            if( (addr&0x80)==0x80 )      //
+ 114   2            {
+ 115   3                AT25SF041_SDI_Set();
+ 116   3            } 
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/13/2019 14:25:13 PAGE 3   
 
- 117   1        //////////////////////////////////////////
- 118   1        // Send the OPCODE
- 119   1        for( i=0;i<8;i++)
- 120   1        {
- 121   2            AT25SF041_SCK_Clr();
- 122   2            Wait_ms_i2c(2);
- 123   2            if( (opcode&0x80)==0x80 )      //
- 124   2            {
- 125   3                AT25SF041_SDI_Set();
- 126   3            } 
- 127   2              else
- 128   2            {
- 129   3                AT25SF041_SDI_Clr();
- 130   3      
- 131   3            }
- 132   2            Wait_ms_i2c(2);     
- 133   2            AT25SF041_SCK_Set();
- 134   2            Wait_ms_i2c(2);
- 135   2            opcode <<= 1;                   //
- 136   2      
- 137   2      
- 138   2        }
- 139   1        // SEND THE ADDR (24-bit)
- 140   1        for( i=0;i<24;i++)
- 141   1        {
- 142   2            AT25SF041_SCK_Clr();
- 143   2            Wait_ms_i2c(2);
- 144   2            if( (addr&0x80)==0x80 )      //
- 145   2            {
- 146   3                AT25SF041_SDI_Set();
- 147   3            } 
- 148   2              else
- 149   2            {
- 150   3                AT25SF041_SDI_Clr();
- 151   3      
- 152   3            }
- 153   2            Wait_ms_i2c(2);     
- 154   2            AT25SF041_SCK_Set();
- 155   2            Wait_ms_i2c(2);
- 156   2            addr <<= 1;
- 157   2      
- 158   2        }
- 159   1        /////////////////////////////////////////
- 160   1        // Store the output data from NOR FLash
- 161   1        AT25SF041_SDO_Set();
- 162   1        for( i=0;i<8;i++)
- 163   1        {
- 164   2            dat <<= 1;                //
- 165   2            AT25SF041_SCK_Set();
- 166   2            Wait_ms_i2c(2);
- 167   2            AT25SF041_SCK_Clr();
- 168   2            Wait_ms_i2c(2);
- 169   2      
- 170   2            if(AT25SF041_SDO)
- 171   2            {
- 172   3              // INPUT BIT =1
- 173   3              dat |= 0x01;            //
- 174   3            }
- 175   2      
- 176   2            //Wait_ms_i2c(2); 
- 177   2            //AT25SF041_SCK_Set();
- 178   2            //Wait_ms_i2c(2);
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/12/2019 13:31:22 PAGE 4   
+ 117   2              else
+ 118   2            {
+ 119   3                AT25SF041_SDI_Clr();
+ 120   3      
+ 121   3            }
+ 122   2            Wait_ms_SPINOR(2);    
+ 123   2            AT25SF041_SCK_Set();
+ 124   2            Wait_ms_SPINOR(2);
+ 125   2            addr <<= 1;
+ 126   2      
+ 127   2        }
+ 128   1        
+ 129   1          for( i=0;i<8;i++)
+ 130   1        {
+ 131   2            AT25SF041_SCK_Clr();
+ 132   2            Wait_ms_SPINOR(2);
+ 133   2            if( (dat&0x80)==0x80 )       //
+ 134   2            {
+ 135   3                AT25SF041_SDI_Set();
+ 136   3            } 
+ 137   2              else
+ 138   2            {
+ 139   3                AT25SF041_SDI_Clr();
+ 140   3      
+ 141   3            }
+ 142   2            Wait_ms_SPINOR(2);    
+ 143   2            AT25SF041_SCK_Set();
+ 144   2            Wait_ms_SPINOR(2);
+ 145   2            dat <<= 1;
+ 146   2      
+ 147   2        }
+ 148   1        ///////////////////////////////////////
+ 149   1        AT25SF041_CS_Set();
+ 150   1        Wait_ms_SPINOR(2);
+ 151   1        
+ 152   1      }
+ 153          
+ 154          char  AT25SF041_Read(char opcode,unsigned long int addr)
+ 155          {
+ 156   1        char dat=0;
+ 157   1        int i;
+ 158   1        AT25SF041_CS_Clr();
+ 159   1        Wait_ms_SPINOR(2);
+ 160   1      
+ 161   1        //////////////////////////////////////////
+ 162   1        // Send the OPCODE
+ 163   1        for( i=0;i<8;i++)
+ 164   1        {
+ 165   2            AT25SF041_SCK_Clr();
+ 166   2            Wait_ms_SPINOR(2);
+ 167   2            if( (opcode&0x80)==0x80 )      //
+ 168   2            {
+ 169   3                AT25SF041_SDI_Set();
+ 170   3            } 
+ 171   2              else
+ 172   2            {
+ 173   3                AT25SF041_SDI_Clr();
+ 174   3      
+ 175   3            }
+ 176   2            Wait_ms_SPINOR(2);    
+ 177   2            AT25SF041_SCK_Set();
+ 178   2            Wait_ms_SPINOR(2);
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/13/2019 14:25:13 PAGE 4   
 
- 179   2      
- 180   2        } 
- 181   1        
- 182   1        ///////////////////////////////////////
- 183   1        AT25SF041_CS_Set(); 
- 184   1        Wait_ms_i2c(2);
- 185   1        return dat;
- 186   1      
- 187   1      }
+ 179   2            opcode <<= 1;                   //
+ 180   2      
+ 181   2      
+ 182   2        }
+ 183   1        // SEND THE ADDR (24-bit)
+ 184   1        for( i=0;i<24;i++)
+ 185   1        {
+ 186   2            AT25SF041_SCK_Clr();
+ 187   2            Wait_ms_SPINOR(2);
+ 188   2            if( (addr&0x80)==0x80 )      //
+ 189   2            {
+ 190   3                AT25SF041_SDI_Set();
+ 191   3            } 
+ 192   2              else
+ 193   2            {
+ 194   3                AT25SF041_SDI_Clr();
+ 195   3      
+ 196   3            }
+ 197   2            Wait_ms_SPINOR(2);    
+ 198   2            AT25SF041_SCK_Set();
+ 199   2            Wait_ms_SPINOR(2);
+ 200   2            addr <<= 1;
+ 201   2      
+ 202   2        }
+ 203   1        /////////////////////////////////////////
+ 204   1        // Store the output data from NOR FLash
+ 205   1        AT25SF041_SDO_Set();
+ 206   1        for( i=0;i<8;i++)
+ 207   1        {
+ 208   2            dat <<= 1;                //
+ 209   2            AT25SF041_SCK_Set();
+ 210   2            Wait_ms_SPINOR(2);
+ 211   2            AT25SF041_SCK_Clr();
+ 212   2            Wait_ms_SPINOR(2);
+ 213   2      
+ 214   2            if(AT25SF041_SDO)
+ 215   2            {
+ 216   3              // INPUT BIT =1
+ 217   3              dat |= 0x01;            //
+ 218   3            }
+ 219   2      
+ 220   2            //Wait_ms_SPINOR(2); 
+ 221   2            //AT25SF041_SCK_Set();
+ 222   2            //Wait_ms_SPINOR(2);
+ 223   2      
+ 224   2        } 
+ 225   1        
+ 226   1        ///////////////////////////////////////
+ 227   1        AT25SF041_CS_Set(); 
+ 228   1        Wait_ms_SPINOR(2);
+ 229   1        return dat;
+ 230   1      
+ 231   1      }
+ 232          
+ 233          
+ 234          
+ 235          char Read_Status_Register_Byte1(void)
+ 236          {
+ 237   1        char dat=0,opcode,count=0;
+ 238   1        int i;
+ 239   1        opcode=Read_Stat_Register_Byte1;
+ 240   1        AT25SF041_CS_Clr();
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/13/2019 14:25:13 PAGE 5   
+
+ 241   1        Wait_ms_SPINOR(2);
+ 242   1      
+ 243   1        //////////////////////////////////////////
+ 244   1        // Send the OPCODE
+ 245   1        for( i=0;i<8;i++)
+ 246   1        {
+ 247   2            AT25SF041_SCK_Clr();
+ 248   2            Wait_ms_SPINOR(2);
+ 249   2            if( (opcode&0x80)==0x80 )      //
+ 250   2            {
+ 251   3                AT25SF041_SDI_Set();
+ 252   3            } 
+ 253   2              else
+ 254   2            {
+ 255   3                AT25SF041_SDI_Clr();
+ 256   3      
+ 257   3            }
+ 258   2            Wait_ms_SPINOR(2);    
+ 259   2            AT25SF041_SCK_Set();
+ 260   2            Wait_ms_SPINOR(2);
+ 261   2            opcode <<= 1;                   //
+ 262   2      
+ 263   2      
+ 264   2        }
+ 265   1      
+ 266   1        /////////////////////////////////////////
+ 267   1        // Store the output data from NOR FLash
+ 268   1        AT25SF041_SDO_Set();
+ 269   1        while(dat&0x01==0x01 |count==0)// check the #RDY/BSY Flag or collect the first data
+ 270   1        { 
+ 271   2          count=1;
+ 272   2          for( i=0;i<8;i++)
+ 273   2          {
+ 274   3              dat <<= 1;                //
+ 275   3              AT25SF041_SCK_Set();
+ 276   3              Wait_ms_SPINOR(2);
+ 277   3              AT25SF041_SCK_Clr();
+ 278   3              Wait_ms_SPINOR(2);
+ 279   3      
+ 280   3              if(AT25SF041_SDO)
+ 281   3              {
+ 282   4                // INPUT BIT =1
+ 283   4                dat |= 0x01;            //
+ 284   4              }
+ 285   3      
+ 286   3          } 
+ 287   2        }
+ 288   1        
+ 289   1        ///////////////////////////////////////
+ 290   1        AT25SF041_CS_Set(); 
+ 291   1        Wait_ms_SPINOR(2);
+ 292   1        return dat;
+ 293   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    700    ----
+   CODE SIZE        =    856    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----      19
+   XDATA SIZE       =   ----      23
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/13/2019 14:25:13 PAGE 6   
+
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
 

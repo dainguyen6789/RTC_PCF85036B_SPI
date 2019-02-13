@@ -1,8 +1,11 @@
 #include "stc15f2k60s2.h"
 //
-#define  Byte_Page_Program 	0x02
-#define  Read_Array 				0x03
-#define  Write_Enable 			0x06
+#define  	Byte_Page_Program 								0x02
+#define  	Read_Array 												0x03
+#define  	Write_Enable 											0x06
+#define  	Chip_Erase 												0x60
+#define  	Read_Stat_Register_Byte1 					0x05
+
 //The PCF85063BTL contains 18 8-bit registers with an auto-incrementing register address, 
  sbit 			AT25SF041_CS	=	P4^1;	   
  sbit 			AT25SF041_SCK	=	P4^3;	   
@@ -25,4 +28,8 @@ void AT25SF041_WriteEnable(void);
 void AT25SF041_Write(char opcode, unsigned long int addr,char dat);
 char  AT25SF041_Read(char opcode,unsigned long int addr);
 void Wait_ms_i2c(int ms);
+void AT25SF041_ChipErase(void);
+char Read_Status_Register_Byte1(void);
+
+
 

@@ -93,7 +93,7 @@ void main(void)
 	unsigned int sunlight_ADC;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
-	char prox_flag=1,SPI_NOR_DATA;
+	char prox_flag=1,SPI_NOR_DATA=0;
 	int iUse_prevday_calib_value=0;
 	struct point calib_point1,calib_point2;
 //	unsigned char KeyNum;
@@ -154,10 +154,23 @@ void main(void)
 		calib_value[calib_count]=0;
 		calib_time[calib_count]=7+(float)calib_count/2;
 	}
+	
 	AT25SF041_WriteEnable();
-	AT25SF041_Write(Byte_Page_Program,0x00000001,0x68);
+
+	AT25SF041_ChipErase();
+	/*while(1)
+	{
+	if(Read_Status_Register_Byte1()&0x01!=0x01)// busy => LSB = 1
+		break;
+	}*/
+	
+	AT25SF041_WriteEnable();
+
+	AT25SF041_Write(Byte_Page_Program,0x00000001,0x6D);
 	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0x00000001);
-	WriteData(SPI_NOR_DATA);//display "m"
+	WriteData(SPI_NOR_DATA);//display "h"
+
+	//Display_Pos(SPI_NOR_DATA);//display "m"
 
 }
 
