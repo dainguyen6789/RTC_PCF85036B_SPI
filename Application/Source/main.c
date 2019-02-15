@@ -157,7 +157,9 @@ void main(void)
 	
 	AT25SF041_WriteEnable();
 
-	//AT25SF041_ChipErase();
+	AT25SF041_ChipErase();
+	Wait_ms_SPINOR(5);
+
 	/*while(1)
 	{
 	if(Read_Status_Register_Byte1()&0x01!=0x01)// busy => LSB = 1
@@ -169,30 +171,34 @@ void main(void)
 	//Wait_ms_SPINOR(2000);
 	//Wait_ms_SPINOR(2000);
 	WriteData(0x23);//display "#"
+	Wait_ms_SPINOR(5);
 	AT25SF041_WriteEnable();
 
-	AT25SF041_Write(Byte_Page_Program,0x00000FF1,0x40);
+	AT25SF041_Write(Byte_Page_Program,0x00000FF1,0x32);
 	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0x00000FF1);
 	WriteData(SPI_NOR_DATA);//display "h"
 	Wait_ms_SPINOR(50);
 	AT25SF041_WriteEnable();
 
-	AT25SF041_Write(Byte_Page_Program,0x00000002,0x41);
+	AT25SF041_Write(Byte_Page_Program,0x00000002,0x44);
 	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0x00000002);
-	WriteData(SPI_NOR_DATA);
-Wait_ms_SPINOR(50);
-	AT25SF041_WriteEnable();
-
-	AT25SF041_Write(Byte_Page_Program,0x000000F0,0x4D);
-	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0x000000F0);
 	WriteData(SPI_NOR_DATA);
 	Wait_ms_SPINOR(50);
 	AT25SF041_WriteEnable();
 
-	AT25SF041_Write(Byte_Page_Program,0x000000F1,0x4E);
-	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0x000000F1);
+	AT25SF041_Write(Byte_Page_Program,0x000000F0,0x5E);
+	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0x000000F0);
 	WriteData(SPI_NOR_DATA);
+	Wait_ms_SPINOR(50);
+	
+	AT25SF041_WriteEnable();
+
+	AT25SF041_Write(Byte_Page_Program,0x000F00FF,0x46);
+	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0x000F00FF);
+	WriteData(SPI_NOR_DATA);
+	Wait_ms_SPINOR(50);
 	//Display_Pos(SPI_NOR_DATA);//display "m"
+	//https://www.mouser.ca/datasheet/2/291/NHD-0216K1Z-FL-YBW-42789.pdf
 
 }
 
