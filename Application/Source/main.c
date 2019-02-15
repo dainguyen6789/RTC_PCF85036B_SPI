@@ -192,7 +192,9 @@ void main(void)
 			else
 			{	
 				error=1;
+				
 				WriteData(0x45);// print "E"
+				
 				WriteData(0x45);// print "E"
 
 				WriteData(0x45);// print "E"
@@ -219,7 +221,8 @@ void main(void)
 			WriteData(0x44);// print "D"
 			WriteData(0x44);// print "D"
 		}
-		else{
+		else
+		{
 			Display_Line(1);	
 
 			WriteData(0x45);// print "E"
