@@ -91,9 +91,10 @@ void main(void)
 {
 //	unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
 	unsigned int sunlight_ADC;
+	unsigned long int address=1;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
-	char prox_flag=1,SPI_NOR_DATA=0;
+	char prox_flag=1,SPI_NOR_DATA=0,error=0;
 	int iUse_prevday_calib_value=0;
 	struct point calib_point1,calib_point2;
 //	unsigned char KeyNum;
@@ -138,67 +139,95 @@ void main(void)
 	Delay_ms(500);
 	SPI_WriteTime(0x00,Minutes);
 	Delay_ms(500);
-	//==============================================================
-	// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
-	//==============================================================
-	Display_Line(1);	
-	WriteData(0x68);//display "h"
-	WriteData(0x68);//display "h"
-	WriteData(0x6D);//display "m"
-	//WriteData(0x6D);//display "m"
-	//WriteData(0x23);//display "#" SETTIME_KEY*/
-	//WriteData((int) rx_pos_12h);
-	//Step_move(200, 1);// 1.8* step angle, 200 steps ~ 1 round
-	for(calib_count=0;calib_count<=20;calib_count++)
+	while(address<=0x0007FFFF)
 	{
-		calib_value[calib_count]=0;
-		calib_time[calib_count]=7+(float)calib_count/2;
+			//==============================================================
+			// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
+			//==============================================================
+			Display_Line(1);	
+			WriteData(0x68);//display "h"
+			WriteData(0x68);//display "h"
+			WriteData(0x6D);//display "m"
+			//WriteData(0x6D);//display "m"
+			//WriteData(0x23);//display "#" SETTIME_KEY*/
+			//WriteData((int) rx_pos_12h);
+			//Step_move(200, 1);// 1.8* step angle, 200 steps ~ 1 round
+			for(calib_count=0;calib_count<=20;calib_count++)
+			{
+				calib_value[calib_count]=0;
+				calib_time[calib_count]=7+(float)calib_count/2;
+			}
+			
+			
+			AT25SF041_WriteEnable();
+
+			AT25SF041_ChipErase();
+			Wait_ms_SPINOR(5);
+
+			/*while(1)
+			{
+			if(Read_Status_Register_Byte1()&0x01!=0x01)// busy => LSB = 1
+				break;
+			}*/
+			//Wait_ms_SPINOR(2000);
+			//Wait_ms_SPINOR(2000);
+			//Wait_ms_SPINOR(2000);
+			//Wait_ms_SPINOR(2000);
+			//Wait_ms_SPINOR(2000);
+			WriteData(0x23);//display "#"
+			Wait_ms_SPINOR(5);
+			AT25SF041_WriteEnable();
+
+			AT25SF041_Write(Byte_Page_Program,address,0x32);
+			SPI_NOR_DATA=AT25SF041_Read(Read_Array,address);
+			if(SPI_NOR_DATA==0x32)
+			{
+				WriteData(SPI_NOR_DATA);//
+				WriteData(0x41+address%2);//
+				address++;
+				WriteData(SPI_NOR_DATA);//
+	
+				Wait_ms_SPINOR(50);
+			}
+			else
+			{	
+				error=1;
+				WriteData(0x45);// print "E"
+				WriteData(0x45);// print "E"
+
+				WriteData(0x45);// print "E"
+
+				WriteData(0x45);// print "E"
+
+				WriteData(0x45);// print "E"
+
+				WriteData(0x45);// print "E"
+
+				break;
+			}
+	
+
+			//Display_Pos(SPI_NOR_DATA);//display "m"
+			//https://www.mouser.ca/datasheet/2/291/NHD-0216K1Z-FL-YBW-42789.pdf
+	}
+	while(1)
+	{
+		if(error!=1)
+		{
+			Display_Line(1);	
+
+			WriteData(0x44);// print "D"
+			WriteData(0x44);// print "D"
+		}
+		else{
+			Display_Line(1);	
+
+			WriteData(0x45);// print "E"
+			WriteData(0x45);// print "E"
+		}
+
 	}
 	
-	AT25SF041_WriteEnable();
-
-	AT25SF041_ChipErase();
-	Wait_ms_SPINOR(5);
-
-	/*while(1)
-	{
-	if(Read_Status_Register_Byte1()&0x01!=0x01)// busy => LSB = 1
-		break;
-	}*/
-	//Wait_ms_SPINOR(2000);
-	//Wait_ms_SPINOR(2000);
-	//Wait_ms_SPINOR(2000);
-	//Wait_ms_SPINOR(2000);
-	//Wait_ms_SPINOR(2000);
-	WriteData(0x23);//display "#"
-	Wait_ms_SPINOR(5);
-	AT25SF041_WriteEnable();
-
-	AT25SF041_Write(Byte_Page_Program,0x00000FF1,0x32);
-	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0x00000FF1);
-	WriteData(SPI_NOR_DATA);//display "h"
-	Wait_ms_SPINOR(50);
-	AT25SF041_WriteEnable();
-
-	AT25SF041_Write(Byte_Page_Program,0x00000002,0x44);
-	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0x00000002);
-	WriteData(SPI_NOR_DATA);
-	Wait_ms_SPINOR(50);
-	AT25SF041_WriteEnable();
-
-	AT25SF041_Write(Byte_Page_Program,0x000000F0,0x5E);
-	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0x000000F0);
-	WriteData(SPI_NOR_DATA);
-	Wait_ms_SPINOR(50);
-	
-	AT25SF041_WriteEnable();
-
-	AT25SF041_Write(Byte_Page_Program,0x000F00FF,0x46);
-	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0x000F00FF);
-	WriteData(SPI_NOR_DATA);
-	Wait_ms_SPINOR(50);
-	//Display_Pos(SPI_NOR_DATA);//display "m"
-	//https://www.mouser.ca/datasheet/2/291/NHD-0216K1Z-FL-YBW-42789.pdf
 
 }
 
