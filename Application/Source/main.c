@@ -15,7 +15,7 @@
 #include "ADCh.h"
 #include "SunPos.h"
 #include "PI4IOE5V96248.h"
-
+#include "AT25SF041.h"
 //#include "Receiver_Position_Data.h"
 
 #define FOSC 18432000L 	 
@@ -93,8 +93,9 @@ void main(void)
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 	char prox_flag=1;
-	int iUse_prevday_calib_value=0;
+	int iUse_prevday_calib_value=0,max_ADC_Val=0;
 	struct point calib_point1,calib_point2;
+	struct data_to_store dat_to_store;
 //	unsigned char KeyNum;
 	int calib_day=0, calib_count;
 
@@ -271,7 +272,7 @@ void main(void)
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
 									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
+									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val);// find the real max value within JP max +/- 10mm
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;
@@ -281,8 +282,21 @@ void main(void)
 									iUse_prevday_calib_value=1;
 									//count=0;
 								}
+								dat_to_store.month=months;
+								dat_to_store.date=days;
+								dat_to_store.hour=hours;
 								
-
+								dat_to_store.min=mins;
+								/*dat_to_store.calib_max_voltage_ADC=max_ADC_Val;
+								dat_to_store.calib_max_pos_floor=current_position;
+							
+								dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
+								dat_to_store.light_ADC=sunlight_ADC;
+								dat_to_store.Voltage_at_LUT_pos;
+							
+								dat_to_store.LUT_max_pos_floor;
+								dat_to_store.LUT_max_pos_float;					*/			
+								SPI_NOR_Write_Data(&dat_to_store,0);
 											
 							}
 							else 
@@ -305,7 +319,7 @@ void main(void)
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
 									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position);// find the real max value within JP max +/- 10mm
+									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val);// find the real max value within JP max +/- 10mm
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;
@@ -316,7 +330,7 @@ void main(void)
 									iUse_prevday_calib_value=1;
 									//count=0;
 								}
-
+								
 											
 							}
 							else
