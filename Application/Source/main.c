@@ -55,7 +55,7 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 void Display_Pos(float sign_dat);
 float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos);
+										 float  *currnt_pos,int *max_ADC_Val,float *theorical_max_pos,int *max_ADC_JP_value);
 unsigned int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd); // this function is used to count the date in a year example: 22 March is the 80th day of the year
 unsigned char BCDtoDec1(unsigned char bcd);
 float calib_interpolate(float hours, float mins);
@@ -93,12 +93,12 @@ void main(void)
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 	char prox_flag=1;
-	int iUse_prevday_calib_value=0,max_ADC_Val=0;
+	int iUse_prevday_calib_value=0,max_ADC_Val=0,max_ADC_Val_JP;
 	struct point calib_point1,calib_point2;
 	struct data_to_store dat_to_store;
 //	unsigned char KeyNum;
 	int calib_day=0, calib_count;
-
+	float theorical_JP_max_pos=0;
 //	char numStr[5];
 	
 //	float current_position=0;
@@ -272,7 +272,7 @@ void main(void)
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
 									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val);// find the real max value within JP max +/- 10mm
+									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP);// find the real max value within JP max +/- 10mm
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;
@@ -287,16 +287,16 @@ void main(void)
 								dat_to_store.hour=hours;
 								
 								dat_to_store.min=mins;
-								/*dat_to_store.calib_max_voltage_ADC=max_ADC_Val;
+								dat_to_store.calib_max_voltage_ADC=max_ADC_Val;
 								dat_to_store.calib_max_pos_floor=current_position;
 							
 								dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
 								dat_to_store.light_ADC=sunlight_ADC;
-								dat_to_store.Voltage_at_LUT_pos;
+								dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP;
 							
-								dat_to_store.LUT_max_pos_floor;
-								dat_to_store.LUT_max_pos_float;					*/			
-								SPI_NOR_Write_Data(&dat_to_store,0);
+								dat_to_store.LUT_max_pos_floor=theorical_JP_max_pos;
+								dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;			
+								SPI_NOR_Write_Data(&dat_to_store,0);//0 is the starting address of SPI NOR
 											
 							}
 							else 
@@ -319,7 +319,7 @@ void main(void)
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
 									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val);// find the real max value within JP max +/- 10mm
+									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP);// find the real max value within JP max +/- 10mm
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;

@@ -32,7 +32,7 @@ int voltage_is_stable(void)
 	}
 	return 1;
 }
-void  Find_Real_Max(float  *current_position, int *max_ADC_value)
+void  Find_Real_Max(float  *current_position, int *max_ADC_value,int *max_ADC_JP_value)
 {
 		unsigned char ch=0;
 		float calib_step_move=0.5;
@@ -50,6 +50,11 @@ void  Find_Real_Max(float  *current_position, int *max_ADC_value)
 					Move(calib_step_move,1);
 					*current_position=*current_position+0.5;
 					voltage_at_scanned_pos[i]=ADC_GetResult(ch);
+					if(i==29)
+					{
+						*max_ADC_JP_value=voltage_at_scanned_pos[29];
+					}
+						
 				}
 				else
 				{
@@ -110,21 +115,23 @@ unsigned int Max_Value(unsigned int *input)
 //input currnt_pos is the JP max theorical position
 float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos,int *max_ADC_Val)
+										 float  *currnt_pos,int *max_ADC_Val,float *theorical_max_pos,int *max_ADC_JP_value)
 {
-	float calib_value=0,theorical_max_pos;
+	float calib_value=0;//
 	
 	float JP_max_pos=*currnt_pos;
 	*max_ADC_Val=0;
+	*max_ADC_JP_value=0;
+	*theorical_max_pos=0;
 	// if voltage is stable 
 	if(voltage_is_stable())
 	{
 		// 	move to JP theorical max position-15
 		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-15);// off set is Zero means we go to  (first, go to JP max theorical position -5)
-		theorical_max_pos=JP_max_pos+15;// compensate +15 because of previous line.
+		*theorical_max_pos=JP_max_pos+15;// compensate +15 because of previous line.
 		// 	find the real max value in the area of JP +/- 15mm
-		Find_Real_Max(&JP_max_pos,&max_ADC_Val); //find real max and move to real max position
-		calib_value=JP_max_pos-theorical_max_pos;
+		Find_Real_Max(&JP_max_pos,&max_ADC_Val,&max_ADC_JP_value); //find real max and move to real max position
+		calib_value=JP_max_pos-*theorical_max_pos;
 		*currnt_pos=JP_max_pos;
 		return calib_value;
 	}
