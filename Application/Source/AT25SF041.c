@@ -8,7 +8,7 @@ void Wait_ms_SPINOR(int ms)
     for(De_Cnt = 0; De_Cnt < 4; De_Cnt++); 
   }  	
 }
-void AT25SF041_ChipErase(void)
+/*void AT25SF041_ChipErase(void)
 {
 	int i;
 	char opcode;
@@ -300,12 +300,7 @@ char Read_Status_Register_Byte1(void)
 
 void SPI_NOR_Write_Data(struct data_to_store *dat,unsigned long int *addr)
 {
-	/*if(addr==1)
-	{
-		AT25SF041_WriteEnable();
-		AT25SF041_ChipErase();
-		Wait_ms_SPINOR(5);
-	}*/
+
 	
 	AT25SF041_WriteEnable();
 	AT25SF041_Write(Byte_Page_Program, addr,dat->month);
@@ -356,6 +351,7 @@ void SPI_NOR_Write_Data(struct data_to_store *dat,unsigned long int *addr)
 	*addr++;
 	AT25SF041_WriteEnable();
 	AT25SF041_Write(Byte_Page_Program, addr,dat->LUT_max_pos_float);	
+	*addr++;
 
 
-}
+}*/

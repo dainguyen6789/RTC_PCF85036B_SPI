@@ -99,6 +99,7 @@ void main(void)
 //	unsigned char KeyNum;
 	int calib_day=0, calib_count;
 	float theorical_JP_max_pos=0;
+	unsigned long int spi_nor_mem_addr=0;
 //	char numStr[5];
 	
 //	float current_position=0;
@@ -134,15 +135,15 @@ void main(void)
 	ET0=1;
 	//========================================
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
-	SPI_WriteTime(0x12,Hours);		// data , register address
+	SPI_WriteTime(0x20,Hours);		// data , register address
 	Delay_ms(500);
-	SPI_WriteTime(0x00,Minutes);
+	SPI_WriteTime(0x29,Minutes);
 	Delay_ms(500);
 	//==============================================================
 	// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
 	//==============================================================
 	Display_Line(1);	
-	WriteData(0x68);//display "h"
+	WriteData(0x67);//display "h"
 	WriteData(0x68);//display "h"
 	WriteData(0x6D);//display "m"
 	WriteData(0x6D);//display "m"
@@ -276,7 +277,7 @@ void main(void)
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;
-									dat_to_store.month=months;
+									/*dat_to_store.month=months;
 									dat_to_store.date=days;
 									dat_to_store.hour=hours;
 									
@@ -290,7 +291,7 @@ void main(void)
 								
 									dat_to_store.LUT_max_pos_floor=theorical_JP_max_pos;
 									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;			
-									SPI_NOR_Write_Data(&dat_to_store,0);//0 is the starting address of SPI NOR
+									SPI_NOR_Write_Data(&dat_to_store,&spi_nor_mem_addr);//0 is the starting address of SPI NOR*/
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
 								{
@@ -324,7 +325,7 @@ void main(void)
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;
-									dat_to_store.month=months;
+								/*	dat_to_store.month=months;
 									dat_to_store.date=days;
 									dat_to_store.hour=hours;
 									
@@ -332,13 +333,13 @@ void main(void)
 									dat_to_store.calib_max_voltage_ADC=max_ADC_Val;
 									dat_to_store.calib_max_pos_floor=current_position;
 								
-									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
+									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digits after "."
 									dat_to_store.light_ADC=sunlight_ADC;
 									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP;
 								
 									dat_to_store.LUT_max_pos_floor=theorical_JP_max_pos;
 									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;			
-									SPI_NOR_Write_Data(&dat_to_store,0);//0 is the starting address of SPI NOR									
+									SPI_NOR_Write_Data(&dat_to_store,&spi_nor_mem_addr);//0 is the starting address of SPI NOR			*/						
 
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
