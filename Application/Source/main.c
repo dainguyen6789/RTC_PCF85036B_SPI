@@ -276,27 +276,28 @@ void main(void)
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;
+									dat_to_store.month=months;
+									dat_to_store.date=days;
+									dat_to_store.hour=hours;
+									
+									dat_to_store.min=mins;
+									dat_to_store.calib_max_voltage_ADC=max_ADC_Val;
+									dat_to_store.calib_max_pos_floor=current_position;
+								
+									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
+									dat_to_store.light_ADC=sunlight_ADC;
+									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP;
+								
+									dat_to_store.LUT_max_pos_floor=theorical_JP_max_pos;
+									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;			
+									SPI_NOR_Write_Data(&dat_to_store,0);//0 is the starting address of SPI NOR
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
 								{
 									iUse_prevday_calib_value=1;
 									//count=0;
 								}
-								dat_to_store.month=months;
-								dat_to_store.date=days;
-								dat_to_store.hour=hours;
-								
-								dat_to_store.min=mins;
-								dat_to_store.calib_max_voltage_ADC=max_ADC_Val;
-								dat_to_store.calib_max_pos_floor=current_position;
-							
-								dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
-								dat_to_store.light_ADC=sunlight_ADC;
-								dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP;
-							
-								dat_to_store.LUT_max_pos_floor=theorical_JP_max_pos;
-								dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;			
-								SPI_NOR_Write_Data(&dat_to_store,0);//0 is the starting address of SPI NOR
+
 											
 							}
 							else 
@@ -323,6 +324,21 @@ void main(void)
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;
+									dat_to_store.month=months;
+									dat_to_store.date=days;
+									dat_to_store.hour=hours;
+									
+									dat_to_store.min=mins;
+									dat_to_store.calib_max_voltage_ADC=max_ADC_Val;
+									dat_to_store.calib_max_pos_floor=current_position;
+								
+									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
+									dat_to_store.light_ADC=sunlight_ADC;
+									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP;
+								
+									dat_to_store.LUT_max_pos_floor=theorical_JP_max_pos;
+									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;			
+									SPI_NOR_Write_Data(&dat_to_store,0);//0 is the starting address of SPI NOR									
 
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
