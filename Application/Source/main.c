@@ -189,6 +189,7 @@ void main(void)
 	
 				Wait_ms_SPINOR(50);
 			}
+			// Board #6: remove 1k resistor at OE pin of TXS0108, if we keep this resistor,there will be high possibility of error Read/Write.
 			else
 			{	
 				error=1;
