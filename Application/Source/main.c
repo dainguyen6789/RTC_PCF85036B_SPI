@@ -189,10 +189,10 @@ void main(void)
 	
 				Wait_ms_SPINOR(50);
 			}
-			// Board #6: remove 1k resistor at OE pin of TXS0108, if we keep this resistor,there will be high possibility of error Read/Write.
-			// is is not because of resistor, when the 1117M3 LDO GND pin is not connected to PCb GND pin, the output voltage will be ~3.7V, otherwise, it is 3.18V
-			// on board  #3, with a correct connection of 1117M3, output voltage is 3.27V
-			//3.18V is not a good value for the Hw of TXs0108, 1117M3 and SPI NOR AT25SF041
+			// 	Board #6: remove 1k resistor at OE pin of TXS0108, if we keep this resistor,there will be high possibility of error Read/Write.
+			// 	it is not because of resistor, when the 1117M3 LDO GND pin is not connected to PCb GND pin, the output voltage will be ~3.7V, otherwise, it is 3.18V
+			// 	on board  #3, with a correct connection of 1117M3, output voltage is 3.27V
+			//	3.18V is not a good value for the Hw of TXs0108, 1117M3 and SPI NOR AT25SF041
 			else
 			{	
 				error=1;
