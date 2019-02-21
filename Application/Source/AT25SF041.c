@@ -298,7 +298,7 @@ char Read_Status_Register_Byte1(void)
 	return dat;
 }
 
-void SPI_NOR_Write_Data(struct data_to_store *dat,unsigned long int *addr)
+void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
 {
 	if(*addr==0)
 	{
@@ -308,54 +308,54 @@ void SPI_NOR_Write_Data(struct data_to_store *dat,unsigned long int *addr)
 	}
 	
 	AT25SF041_WriteEnable();
-	AT25SF041_Write(Byte_Page_Program, *addr,dat->month);
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.month);
 	*addr++;
 	AT25SF041_WriteEnable();
-	AT25SF041_Write(Byte_Page_Program, *addr,dat->date);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.date);	
 	Wait_ms_SPINOR(5);
 
 	*addr++;
 	AT25SF041_WriteEnable();
-	AT25SF041_Write(Byte_Page_Program, *addr,dat->hour);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.hour);	
 	Wait_ms_SPINOR(5);
 
 	*addr++;
 	AT25SF041_WriteEnable();
-	AT25SF041_Write(Byte_Page_Program, *addr,dat->min);
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.min);
 	Wait_ms_SPINOR(5);
 
 	*addr++;
 	AT25SF041_WriteEnable();
-	AT25SF041_Write(Byte_Page_Program, *addr,dat->calib_max_voltage_ADC);		
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_voltage_ADC);		
 	Wait_ms_SPINOR(5);
 	
 	*addr++;
 	AT25SF041_WriteEnable();
-	AT25SF041_Write(Byte_Page_Program, *addr,dat->calib_max_pos_floor);
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_floor);
 	Wait_ms_SPINOR(5);
 	*addr++;
 	AT25SF041_WriteEnable();
-	AT25SF041_Write(Byte_Page_Program, *addr,dat->calib_max_pos_float);
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_float);
 	Wait_ms_SPINOR(5);
 	
 	*addr++;
 	AT25SF041_WriteEnable();
-	AT25SF041_Write(Byte_Page_Program, *addr,dat->light_ADC);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.light_ADC);	
 	Wait_ms_SPINOR(5);	
 
 	*addr++;
 	AT25SF041_WriteEnable();
-	AT25SF041_Write(Byte_Page_Program, *addr,dat->Voltage_at_LUT_pos);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.Voltage_at_LUT_pos);	
 	Wait_ms_SPINOR(5);
 	
 	*addr++;
 	AT25SF041_WriteEnable();
-	AT25SF041_Write(Byte_Page_Program, *addr,dat->LUT_max_pos_floor);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.LUT_max_pos_floor);	
 	Wait_ms_SPINOR(5);
 	
 	*addr++;
 	AT25SF041_WriteEnable();
-	AT25SF041_Write(Byte_Page_Program, *addr,dat->LUT_max_pos_float);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.LUT_max_pos_float);	
 
 
 }

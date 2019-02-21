@@ -48,7 +48,7 @@ char AT25SF041_Read(char opcode,unsigned long int addr);
 void Wait_ms_SPINOR(int ms);
 void AT25SF041_ChipErase(void);
 char Read_Status_Register_Byte1(void);
-void SPI_NOR_Write_Data(struct data_to_store *dat,unsigned long int *addr);
+void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr);
 
 
 
