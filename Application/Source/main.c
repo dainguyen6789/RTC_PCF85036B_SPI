@@ -91,7 +91,7 @@ void main(void)
 {
 //	unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
 	unsigned int sunlight_ADC;
-	unsigned long int address=1;
+	unsigned long int address=0;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 	char prox_flag=1,SPI_NOR_DATA=0,error=0;
@@ -139,7 +139,11 @@ void main(void)
 	Delay_ms(500);
 	SPI_WriteTime(0x00,Minutes);
 	Delay_ms(500);
-	while(address<=0x0007FFFF)
+	AT25SF041_WriteEnable();
+
+	AT25SF041_ChipErase();
+	Wait_ms_SPINOR(5);	
+	while(address<=5)
 	{
 			//==============================================================
 			// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
@@ -159,10 +163,7 @@ void main(void)
 			}
 			
 			
-			AT25SF041_WriteEnable();
 
-			AT25SF041_ChipErase();
-			Wait_ms_SPINOR(5);
 
 			/*while(1)
 			{
@@ -212,22 +213,19 @@ void main(void)
 			//Display_Pos(SPI_NOR_DATA);//display "m"
 			//https://www.mouser.ca/datasheet/2/291/NHD-0216K1Z-FL-YBW-42789.pdf
 	}
+	address=0;
 	while(1)
 	{
-		if(error!=1)
+		SPI_NOR_DATA=AT25SF041_Read(Read_Array,address);
+		WriteData(SPI_NOR_DATA);//
+		address++;
+		if(address==5)
 		{
-			Display_Line(1);	
-
-			WriteData(0x44);// print "D"
-			WriteData(0x44);// print "D"
+				address=0;
+				Display_Line(1);	
 		}
-		else
-		{
-			Display_Line(1);	
 
-			WriteData(0x45);// print "E"
-			WriteData(0x45);// print "E"
-		}
+
 
 	}
 	
