@@ -240,7 +240,7 @@ char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 
 char Read_Status_Register_Byte1(void)
 {
-	char dat=0,opcode,count=0;
+	unsigned char dat=0,opcode,count=0;
 	int i=0;
 	opcode=Read_Stat_Register_Byte1;
 	AT25SF041_CS_Clr();
@@ -309,12 +309,12 @@ void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
 	}								
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	
-	AT25SF041_Write(Byte_Page_Program, 0,dat.months);
+	AT25SF041_Write(Byte_Page_Program, 0,dat.month);
 	
 	Wait_ms_SPINOR(50);	
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	
-	AT25SF041_Write(Byte_Page_Program, 1,dat.days);	
+	AT25SF041_Write(Byte_Page_Program, 1,dat.date);	
 	Wait_ms_SPINOR(50);	
 
 
