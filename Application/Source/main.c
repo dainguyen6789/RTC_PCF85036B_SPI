@@ -99,6 +99,7 @@ void main(void)
 //	unsigned char KeyNum;
 	int calib_day=0, calib_count;
 	float theorical_JP_max_pos=0;
+	unsigned long int SPI_NOR_INTERNAL_FLASH_ADDR=0;
 //	char numStr[5];
 	
 //	float current_position=0;
@@ -290,7 +291,7 @@ void main(void)
 								
 									dat_to_store.LUT_max_pos_floor=theorical_JP_max_pos;
 									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;			
-									SPI_NOR_Write_Data(&dat_to_store,0);//0 is the starting address of SPI NOR
+									SPI_NOR_Write_Data(&dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
 								{
@@ -338,7 +339,7 @@ void main(void)
 								
 									dat_to_store.LUT_max_pos_floor=theorical_JP_max_pos;
 									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;			
-									SPI_NOR_Write_Data(&dat_to_store,0);//0 is the starting address of SPI NOR									
+									SPI_NOR_Write_Data(&dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR									
 
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm

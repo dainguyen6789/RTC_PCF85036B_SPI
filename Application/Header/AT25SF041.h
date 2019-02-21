@@ -35,7 +35,7 @@ struct data_to_store
 		char calib_max_pos_floor;
 	
 		char calib_max_pos_float;
-		char light_ADC;
+		int light_ADC;
 		char Voltage_at_LUT_pos;
 	
 		char LUT_max_pos_floor;

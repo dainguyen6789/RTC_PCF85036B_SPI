@@ -300,12 +300,12 @@ char Read_Status_Register_Byte1(void)
 
 void SPI_NOR_Write_Data(struct data_to_store *dat,unsigned long int *addr)
 {
-	/*if(addr==1)
+	if(*addr==0)
 	{
 		AT25SF041_WriteEnable();
 		AT25SF041_ChipErase();
 		Wait_ms_SPINOR(5);
-	}*/
+	}
 	
 	AT25SF041_WriteEnable();
 	AT25SF041_Write(Byte_Page_Program, addr,dat->month);

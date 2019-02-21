@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/18/2019 12:58:23 PAGE 1   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/20/2019 17:23:32 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE CALIBRATION
@@ -62,7 +62,7 @@ line level    source
   51   3                *current_position=*current_position+0.5;
   52   3                voltage_at_scanned_pos[i]=ADC_GetResult(ch);
   53   3                if(i==29)
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/18/2019 12:58:23 PAGE 2   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/20/2019 17:23:32 PAGE 2   
 
   54   3                {
   55   4                  *max_ADC_JP_value=voltage_at_scanned_pos[29];
@@ -126,7 +126,7 @@ line level    source
  113   1        
  114   1      }
  115          //input currnt_pos is the JP max theorical position
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/18/2019 12:58:23 PAGE 3   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/20/2019 17:23:32 PAGE 3   
 
  116          float calibration(unsigned char mnths,unsigned char dys,
  117                               unsigned char hurs,unsigned char mns,unsigned char sconds,
@@ -139,7 +139,7 @@ line level    source
  124   1        *max_ADC_JP_value=0;
  125   1        *theorical_max_pos=0;
  126   1        // if voltage is stable 
- 127   1        if(voltage_is_stable())
+ 127   1        //if(voltage_is_stable())
  128   1        {
  129   2          //  move to JP theorical max position-15
  130   2          Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-15);// off set is Zero means we go to  (first, go
@@ -153,13 +153,13 @@ line level    source
  135   2          *currnt_pos=JP_max_pos;
  136   2          return calib_value;
  137   2        }
- 138   1        else
- 139   1          return 0;
+ 138   1        //else
+ 139   1          //return 0;
  140   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1436    ----
+   CODE SIZE        =   1420    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----     191
    PDATA SIZE       =   ----    ----
