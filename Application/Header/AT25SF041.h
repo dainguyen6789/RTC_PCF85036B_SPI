@@ -43,8 +43,8 @@ struct data_to_store
 };
  
 void AT25SF041_WriteEnable(void);
-void AT25SF041_Write(char opcode, unsigned long int addr,char dat);
-char AT25SF041_Read(char opcode,unsigned long int addr);
+void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char dat);
+char AT25SF041_Read(unsigned char opcode,unsigned long int addr);
 void Wait_ms_SPINOR(int ms);
 void AT25SF041_ChipErase(void);
 char Read_Status_Register_Byte1(void);
