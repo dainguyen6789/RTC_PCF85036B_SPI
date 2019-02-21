@@ -154,7 +154,7 @@ void main(void)
 		{
 			WriteData(0x31);
 		}
-		else if(SPI_NOR_DATA==0x12)
+		else if(SPI_NOR_DATA==0x13)
 		{
 			WriteData(0x22);
 		}
