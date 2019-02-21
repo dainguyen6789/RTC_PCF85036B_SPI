@@ -5,7 +5,7 @@ void Wait_ms_SPINOR(int ms)
   unsigned int De_Cnt;
   while( (ms--) != 0)
   {
-    for(De_Cnt = 0; De_Cnt < 4; De_Cnt++); 
+    for(De_Cnt = 0; De_Cnt < 10; De_Cnt++); 
   }  	
 }
 void AT25SF041_ChipErase(void)
