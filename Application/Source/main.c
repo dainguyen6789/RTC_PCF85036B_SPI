@@ -141,33 +141,20 @@ void main(void)
 	Delay_ms(500);
 
 	address=0;
-	while(1)
+	//while(1)
 	{
 		Wait_ms_SPINOR(5);
 		AT25SF041_CS_Set();
 		Wait_ms_SPINOR(5);
 		//AT25SF041_WriteEnable();
 
-		SPI_NOR_DATA=AT25SF041_Read(Read_Array,address);
+		SPI_NOR_DATA=AT25SF041_Read(Read_Array,1);
 		Wait_ms_SPINOR(500);
-		if(SPI_NOR_DATA==1)
+		if(SPI_NOR_DATA==0x23)
 		{
 			WriteData(0x31);
 		}
-		else if(SPI_NOR_DATA==0x13)
-		{
-			WriteData(0x22);
-		}
-		else
-		{
-			WriteData(SPI_NOR_DATA);
-		}
-		address++;
-		if(address==6)
-		{
-			address=0;
-			Display_Line(1);	
-		}
+		WriteData(SPI_NOR_DATA);
 
 	}
 	
