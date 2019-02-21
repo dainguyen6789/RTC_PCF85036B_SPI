@@ -301,15 +301,7 @@ char Read_Status_Register_Byte1(void)
 void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
 {
 	
-	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(50);	
-	AT25SF041_Write(Byte_Page_Program, 0,dat.month);
-	
-	Wait_ms_SPINOR(50);	
-	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(50);	
-	AT25SF041_Write(Byte_Page_Program, 1,dat.date);	
-	Wait_ms_SPINOR(50);	
+
 
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	

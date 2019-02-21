@@ -297,7 +297,16 @@ void main(void)
 										//Wait_ms_SPINOR(50);
 										AT25SF041_ChipErase();
 										Wait_ms_SPINOR(5);
-									}											
+									}								
+									AT25SF041_WriteEnable();
+									//Wait_ms_SPINOR(50);	
+									AT25SF041_Write(Byte_Page_Program, 0,months);
+									
+									Wait_ms_SPINOR(50);	
+									AT25SF041_WriteEnable();
+									//Wait_ms_SPINOR(50);	
+									AT25SF041_Write(Byte_Page_Program, 1,days);	
+									Wait_ms_SPINOR(50);										
 									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
