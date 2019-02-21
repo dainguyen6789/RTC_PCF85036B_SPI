@@ -80,7 +80,7 @@ void AT25SF041_WriteEnable(void)
 }
 
 
-void AT25SF041_Write(char opcode, unsigned long int addr,char dat)
+void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char dat)
 {
 	int i;
 	AT25SF041_CS_Clr();
@@ -153,9 +153,9 @@ void AT25SF041_Write(char opcode, unsigned long int addr,char dat)
 	
 }
 
-char  AT25SF041_Read(char opcode,unsigned long int addr)
+char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 {
-	char dat=0;
+	unsigned char dat=0;
 	int i;
 	AT25SF041_CS_Clr();
 	Wait_ms_SPINOR(1);

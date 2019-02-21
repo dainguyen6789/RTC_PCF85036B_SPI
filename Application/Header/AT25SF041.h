@@ -26,20 +26,20 @@
  
 struct data_to_store
 {
-		char month;
-		char date;
-		char hour;
+		unsigned char month;
+		unsigned char date;
+		unsigned char hour;
 	
-		char min;
-		char calib_max_voltage_ADC;
-		char calib_max_pos_floor;
+		unsigned char min;
+		unsigned char calib_max_voltage_ADC;
+		unsigned char calib_max_pos_floor;
 	
-		char calib_max_pos_float;
-		int light_ADC;
-		char Voltage_at_LUT_pos;
+		unsigned char calib_max_pos_float;
+		unsigned int light_ADC;
+		unsigned char Voltage_at_LUT_pos;
 	
-		char LUT_max_pos_floor;
-		char LUT_max_pos_float;
+		unsigned char LUT_max_pos_floor;
+		unsigned char LUT_max_pos_float;
 };
  
 void AT25SF041_WriteEnable(void);
