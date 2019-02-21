@@ -277,7 +277,7 @@ void main(void)
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;
-									/*dat_to_store.month=months;
+									dat_to_store.month=months;
 									dat_to_store.date=days;
 									dat_to_store.hour=hours;
 									
@@ -290,24 +290,8 @@ void main(void)
 									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP;
 								
 									dat_to_store.LUT_max_pos_floor=theorical_JP_max_pos;
-									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;*/
-									//if(*addr==0)
-									{
-										AT25SF041_WriteEnable();
-										//Wait_ms_SPINOR(50);
-										AT25SF041_ChipErase();
-										Wait_ms_SPINOR(5);
-									}								
-									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(50);	
-									AT25SF041_Write(Byte_Page_Program, 0,months);
-									
-									Wait_ms_SPINOR(50);	
-									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(50);	
-									AT25SF041_Write(Byte_Page_Program, 1,days);	
-									Wait_ms_SPINOR(50);										
-									//SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
+									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;									
+									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
 								{

@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 17:00:00 PAGE 1   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 17:16:40 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE AT25SF041
@@ -21,7 +21,7 @@ line level    source
   11          void AT25SF041_ChipErase(void)
   12          {
   13   1        int i;
-  14   1        char opcode;
+  14   1        unsigned char opcode;
   15   1        opcode=Chip_Erase;
   16   1        //P4M1|=0x10;
   17   1        //P4M0&=~(1<<4);
@@ -59,10 +59,10 @@ line level    source
   49          void AT25SF041_WriteEnable(void)
   50          {
   51   1        int i;
-  52   1        char write_en;
+  52   1        unsigned char write_en;
   53   1        write_en=Write_Enable;
   54   1        AT25SF041_CS_Clr();
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 17:00:00 PAGE 2   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 17:16:40 PAGE 2   
 
   55   1      //Wait_ms_SPINOR(1);
   56   1        
@@ -126,7 +126,7 @@ line level    source
  114   2            Wait_ms_SPINOR(1);
  115   2            if( (addr&0x80)==0x80 )      //
  116   2            {
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 17:00:00 PAGE 3   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 17:16:40 PAGE 3   
 
  117   3                AT25SF041_SDI_Set();
  118   3            } 
@@ -190,7 +190,7 @@ line level    source
  176   3      
  177   3            }
  178   2            Wait_ms_SPINOR(1);    
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 17:00:00 PAGE 4   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 17:16:40 PAGE 4   
 
  179   2            AT25SF041_SCK_Set();
  180   2            Wait_ms_SPINOR(1);
@@ -254,7 +254,7 @@ line level    source
  238          
  239          
  240          
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 17:00:00 PAGE 5   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 17:16:40 PAGE 5   
 
  241          char Read_Status_Register_Byte1(void)
  242          {
@@ -318,69 +318,75 @@ line level    source
  300          
  301          void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
  302          {
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 17:00:00 PAGE 6   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 17:16:40 PAGE 6   
 
- 303   1        
- 304   1      
- 305   1      
- 306   1        AT25SF041_WriteEnable();
- 307   1        //Wait_ms_SPINOR(50); 
- 308   1        AT25SF041_Write(Byte_Page_Program, 2,dat.hour); 
- 309   1        Wait_ms_SPINOR(50); 
- 310   1      
- 311   1        AT25SF041_WriteEnable();
- 312   1        //Wait_ms_SPINOR(50); 
- 313   1        AT25SF041_Write(Byte_Page_Program, 3,dat.min);
+ 303   1        if(*addr==0)
+ 304   1        {
+ 305   2          AT25SF041_WriteEnable();
+ 306   2          //Wait_ms_SPINOR(50);
+ 307   2          AT25SF041_ChipErase();
+ 308   2          Wait_ms_SPINOR(5);
+ 309   2        }               
+ 310   1        AT25SF041_WriteEnable();
+ 311   1        //Wait_ms_SPINOR(50); 
+ 312   1        AT25SF041_Write(Byte_Page_Program, 0,dat.months);
+*** ERROR C204 IN LINE 312 OF Application\Source\AT25SF041.c: 'months': undefined member
+ 313   1        
  314   1        Wait_ms_SPINOR(50); 
- 315   1      
- 316   1        AT25SF041_WriteEnable();
- 317   1        //Wait_ms_SPINOR(50); 
- 318   1        AT25SF041_Write(Byte_Page_Program, 4,dat.calib_max_voltage_ADC);    
- 319   1        Wait_ms_SPINOR(50); 
- 320   1        
+ 315   1        AT25SF041_WriteEnable();
+ 316   1        //Wait_ms_SPINOR(50); 
+ 317   1        AT25SF041_Write(Byte_Page_Program, 1,dat.days); 
+*** ERROR C204 IN LINE 317 OF Application\Source\AT25SF041.c: 'days': undefined member
+ 318   1        Wait_ms_SPINOR(50); 
+ 319   1      
+ 320   1      
  321   1        AT25SF041_WriteEnable();
  322   1        //Wait_ms_SPINOR(50); 
- 323   1        AT25SF041_Write(Byte_Page_Program, 5,dat.calib_max_pos_floor);
+ 323   1        AT25SF041_Write(Byte_Page_Program, 2,dat.hour); 
  324   1        Wait_ms_SPINOR(50); 
- 325   1        AT25SF041_WriteEnable();
- 326   1        //Wait_ms_SPINOR(50); 
- 327   1        AT25SF041_Write(Byte_Page_Program, 6,dat.calib_max_pos_float);
- 328   1        Wait_ms_SPINOR(50); 
- 329   1        
- 330   1        AT25SF041_WriteEnable();
- 331   1        //Wait_ms_SPINOR(50); 
- 332   1        AT25SF041_Write(Byte_Page_Program, 7,dat.light_ADC);  
- 333   1        Wait_ms_SPINOR(50); 
- 334   1      
- 335   1        AT25SF041_WriteEnable();
- 336   1        //Wait_ms_SPINOR(50);
- 337   1        AT25SF041_Write(Byte_Page_Program, 8,dat.Voltage_at_LUT_pos); 
- 338   1        Wait_ms_SPINOR(50); 
- 339   1        
+ 325   1      
+ 326   1        AT25SF041_WriteEnable();
+ 327   1        //Wait_ms_SPINOR(50); 
+ 328   1        AT25SF041_Write(Byte_Page_Program, 3,dat.min);
+ 329   1        Wait_ms_SPINOR(50); 
+ 330   1      
+ 331   1        AT25SF041_WriteEnable();
+ 332   1        //Wait_ms_SPINOR(50); 
+ 333   1        AT25SF041_Write(Byte_Page_Program, 4,dat.calib_max_voltage_ADC);    
+ 334   1        Wait_ms_SPINOR(50); 
+ 335   1        
+ 336   1        AT25SF041_WriteEnable();
+ 337   1        //Wait_ms_SPINOR(50); 
+ 338   1        AT25SF041_Write(Byte_Page_Program, 5,dat.calib_max_pos_floor);
+ 339   1        Wait_ms_SPINOR(50); 
  340   1        AT25SF041_WriteEnable();
  341   1        //Wait_ms_SPINOR(50); 
- 342   1        AT25SF041_Write(Byte_Page_Program, 9,dat.LUT_max_pos_floor);  
+ 342   1        AT25SF041_Write(Byte_Page_Program, 6,dat.calib_max_pos_float);
  343   1        Wait_ms_SPINOR(50); 
  344   1        
  345   1        AT25SF041_WriteEnable();
  346   1        //Wait_ms_SPINOR(50); 
- 347   1        AT25SF041_Write(Byte_Page_Program, 10,dat.LUT_max_pos_float); 
+ 347   1        AT25SF041_Write(Byte_Page_Program, 7,dat.light_ADC);  
  348   1        Wait_ms_SPINOR(50); 
  349   1      
- 350   1      
- 351   1      }
-*** WARNING C280 IN LINE 301 OF Application\Source\AT25SF041.c: 'addr': unreferenced local variable
+ 350   1        AT25SF041_WriteEnable();
+ 351   1        //Wait_ms_SPINOR(50);
+ 352   1        AT25SF041_Write(Byte_Page_Program, 8,dat.Voltage_at_LUT_pos); 
+ 353   1        Wait_ms_SPINOR(50); 
+ 354   1        
+ 355   1        AT25SF041_WriteEnable();
+ 356   1        //Wait_ms_SPINOR(50); 
+ 357   1        AT25SF041_Write(Byte_Page_Program, 9,dat.LUT_max_pos_floor);  
+ 358   1        Wait_ms_SPINOR(50); 
+ 359   1        
+ 360   1        AT25SF041_WriteEnable();
+ 361   1        //Wait_ms_SPINOR(50); 
+ 362   1        AT25SF041_Write(Byte_Page_Program, 10,dat.LUT_max_pos_float); 
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 17:16:40 PAGE 7   
 
+ 363   1        Wait_ms_SPINOR(50); 
+ 364   1      
+ 365   1      
+ 366   1      }
 
-MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1066    ----
-   CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----      38
-   PDATA SIZE       =   ----    ----
-   DATA SIZE        =   ----    ----
-   IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----    ----
-END OF MODULE INFORMATION.
-
-
-C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  0 WARNING(S),  2 ERROR(S)
