@@ -150,8 +150,18 @@ void main(void)
 
 		SPI_NOR_DATA=AT25SF041_Read(Read_Array,address);
 		Wait_ms_SPINOR(500);
-
-		WriteData(SPI_NOR_DATA);
+		if(SPI_NOR_DATA==1)
+		{
+			WriteData(0x31);
+		}
+		if(SPI_NOR_DATA==0x12)
+		{
+			WriteData(0x22);
+		}
+		if(SPI_NOR_DATA==0x24)
+		{
+			WriteData(SPI_NOR_DATA);
+		}
 		address++;
 		if(address==6)
 		{
