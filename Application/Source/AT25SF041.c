@@ -303,8 +303,9 @@ void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
 	if(*addr==0)
 	{
 		AT25SF041_WriteEnable();
+		Wait_ms_SPINOR(50);
 		AT25SF041_ChipErase();
-		Wait_ms_SPINOR(5);
+		Wait_ms_SPINOR(50);
 	}
 	
 	AT25SF041_WriteEnable();
