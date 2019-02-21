@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/20/2019 17:23:33 PAGE 1   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 10:35:22 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE AT25SF041
@@ -62,7 +62,7 @@ line level    source
   52   1        char write_en;
   53   1        write_en=Write_Enable;
   54   1        AT25SF041_CS_Clr();
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/20/2019 17:23:33 PAGE 2   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 10:35:22 PAGE 2   
 
   55   1      //Wait_ms_SPINOR(1);
   56   1        
@@ -126,7 +126,7 @@ line level    source
  114   2            Wait_ms_SPINOR(1);
  115   2            if( (addr&0x80)==0x80 )      //
  116   2            {
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/20/2019 17:23:33 PAGE 3   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 10:35:22 PAGE 3   
 
  117   3                AT25SF041_SDI_Set();
  118   3            } 
@@ -190,7 +190,7 @@ line level    source
  176   3      
  177   3            }
  178   2            Wait_ms_SPINOR(1);    
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/20/2019 17:23:33 PAGE 4   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 10:35:22 PAGE 4   
 
  179   2            AT25SF041_SCK_Set();
  180   2            Wait_ms_SPINOR(1);
@@ -254,7 +254,7 @@ line level    source
  238          
  239          
  240          
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/20/2019 17:23:33 PAGE 5   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 10:35:22 PAGE 5   
 
  241          char Read_Status_Register_Byte1(void)
  242          {
@@ -318,7 +318,7 @@ line level    source
  300          
  301          void SPI_NOR_Write_Data(struct data_to_store *dat,unsigned long int *addr)
  302          {
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/20/2019 17:23:33 PAGE 6   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 10:35:22 PAGE 6   
 
  303   1        if(*addr==0)
  304   1        {
@@ -328,84 +328,73 @@ line level    source
  308   2        }
  309   1        
  310   1        AT25SF041_WriteEnable();
- 311   1        AT25SF041_Write(Byte_Page_Program, addr,dat->month);
-*** WARNING C214 IN LINE 311 OF Application\Source\AT25SF041.c: 'Argument': conversion: pointer to non-pointer
+ 311   1        AT25SF041_Write(Byte_Page_Program, *addr,dat->month);
  312   1        *addr++;
 *** WARNING C275 IN LINE 312 OF Application\Source\AT25SF041.c: expression with possibly no effect
  313   1        AT25SF041_WriteEnable();
- 314   1        AT25SF041_Write(Byte_Page_Program, addr,dat->date); 
-*** WARNING C214 IN LINE 314 OF Application\Source\AT25SF041.c: 'Argument': conversion: pointer to non-pointer
+ 314   1        AT25SF041_Write(Byte_Page_Program, *addr,dat->date);  
  315   1        Wait_ms_SPINOR(5);
  316   1      
  317   1        *addr++;
 *** WARNING C275 IN LINE 317 OF Application\Source\AT25SF041.c: expression with possibly no effect
  318   1        AT25SF041_WriteEnable();
- 319   1        AT25SF041_Write(Byte_Page_Program, addr,dat->hour); 
-*** WARNING C214 IN LINE 319 OF Application\Source\AT25SF041.c: 'Argument': conversion: pointer to non-pointer
+ 319   1        AT25SF041_Write(Byte_Page_Program, *addr,dat->hour);  
  320   1        Wait_ms_SPINOR(5);
  321   1      
  322   1        *addr++;
 *** WARNING C275 IN LINE 322 OF Application\Source\AT25SF041.c: expression with possibly no effect
  323   1        AT25SF041_WriteEnable();
- 324   1        AT25SF041_Write(Byte_Page_Program, addr,dat->min);
-*** WARNING C214 IN LINE 324 OF Application\Source\AT25SF041.c: 'Argument': conversion: pointer to non-pointer
+ 324   1        AT25SF041_Write(Byte_Page_Program, *addr,dat->min);
  325   1        Wait_ms_SPINOR(5);
  326   1      
  327   1        *addr++;
 *** WARNING C275 IN LINE 327 OF Application\Source\AT25SF041.c: expression with possibly no effect
  328   1        AT25SF041_WriteEnable();
- 329   1        AT25SF041_Write(Byte_Page_Program, addr,dat->calib_max_voltage_ADC);    
-*** WARNING C214 IN LINE 329 OF Application\Source\AT25SF041.c: 'Argument': conversion: pointer to non-pointer
+ 329   1        AT25SF041_Write(Byte_Page_Program, *addr,dat->calib_max_voltage_ADC);   
  330   1        Wait_ms_SPINOR(5);
  331   1        
  332   1        *addr++;
 *** WARNING C275 IN LINE 332 OF Application\Source\AT25SF041.c: expression with possibly no effect
  333   1        AT25SF041_WriteEnable();
- 334   1        AT25SF041_Write(Byte_Page_Program, addr,dat->calib_max_pos_floor);
-*** WARNING C214 IN LINE 334 OF Application\Source\AT25SF041.c: 'Argument': conversion: pointer to non-pointer
+ 334   1        AT25SF041_Write(Byte_Page_Program, *addr,dat->calib_max_pos_floor);
  335   1        Wait_ms_SPINOR(5);
  336   1        *addr++;
 *** WARNING C275 IN LINE 336 OF Application\Source\AT25SF041.c: expression with possibly no effect
  337   1        AT25SF041_WriteEnable();
- 338   1        AT25SF041_Write(Byte_Page_Program, addr,dat->calib_max_pos_float);
-*** WARNING C214 IN LINE 338 OF Application\Source\AT25SF041.c: 'Argument': conversion: pointer to non-pointer
+ 338   1        AT25SF041_Write(Byte_Page_Program, *addr,dat->calib_max_pos_float);
  339   1        Wait_ms_SPINOR(5);
  340   1        
  341   1        *addr++;
 *** WARNING C275 IN LINE 341 OF Application\Source\AT25SF041.c: expression with possibly no effect
  342   1        AT25SF041_WriteEnable();
- 343   1        AT25SF041_Write(Byte_Page_Program, addr,dat->light_ADC);  
-*** WARNING C214 IN LINE 343 OF Application\Source\AT25SF041.c: 'Argument': conversion: pointer to non-pointer
+ 343   1        AT25SF041_Write(Byte_Page_Program, *addr,dat->light_ADC); 
  344   1        Wait_ms_SPINOR(5);  
  345   1      
  346   1        *addr++;
 *** WARNING C275 IN LINE 346 OF Application\Source\AT25SF041.c: expression with possibly no effect
  347   1        AT25SF041_WriteEnable();
- 348   1        AT25SF041_Write(Byte_Page_Program, addr,dat->Voltage_at_LUT_pos); 
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/20/2019 17:23:33 PAGE 7   
-
-*** WARNING C214 IN LINE 348 OF Application\Source\AT25SF041.c: 'Argument': conversion: pointer to non-pointer
+ 348   1        AT25SF041_Write(Byte_Page_Program, *addr,dat->Voltage_at_LUT_pos);  
  349   1        Wait_ms_SPINOR(5);
  350   1        
  351   1        *addr++;
 *** WARNING C275 IN LINE 351 OF Application\Source\AT25SF041.c: expression with possibly no effect
  352   1        AT25SF041_WriteEnable();
- 353   1        AT25SF041_Write(Byte_Page_Program, addr,dat->LUT_max_pos_floor);  
-*** WARNING C214 IN LINE 353 OF Application\Source\AT25SF041.c: 'Argument': conversion: pointer to non-pointer
+ 353   1        AT25SF041_Write(Byte_Page_Program, *addr,dat->LUT_max_pos_floor); 
  354   1        Wait_ms_SPINOR(5);
  355   1        
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 10:35:22 PAGE 7   
+
  356   1        *addr++;
 *** WARNING C275 IN LINE 356 OF Application\Source\AT25SF041.c: expression with possibly no effect
  357   1        AT25SF041_WriteEnable();
- 358   1        AT25SF041_Write(Byte_Page_Program, addr,dat->LUT_max_pos_float);  
-*** WARNING C214 IN LINE 358 OF Application\Source\AT25SF041.c: 'Argument': conversion: pointer to non-pointer
+ 358   1        AT25SF041_Write(Byte_Page_Program, *addr,dat->LUT_max_pos_float); 
  359   1      
  360   1      
  361   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1438    ----
+   CODE SIZE        =   1397    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----      29
    PDATA SIZE       =   ----    ----
@@ -415,4 +404,4 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
 END OF MODULE INFORMATION.
 
 
-C51 COMPILATION COMPLETE.  21 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  10 WARNING(S),  0 ERROR(S)
