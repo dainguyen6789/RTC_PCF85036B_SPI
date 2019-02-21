@@ -120,6 +120,8 @@ void main(void)
 	P3M1=0x00;
 	P3M0=0xFF;
 	P3=0x4C;
+	P4M1&=~(1<<1 |1<<2|1<<3);
+	P4M0|=0x07;
 	LCD_Init();
 	SPI_Init();
 	KeyPad_IO_Init();
@@ -156,11 +158,11 @@ void main(void)
 		calib_time[calib_count]=7+(float)calib_count/2;
 	}
 	// Read the Data from SPI NOR;
-	SPI_NOR_DATA=AT25SF041_Read(Read_Array,0);
+	SPI_NOR_DATA=AT25SF041_Read(Read_Array,1);
 	//eXPECTED MONTH 0x01
-	if(SPI_NOR_DATA==0x01)
+	if(SPI_NOR_DATA==0x32)
 	{
-		WriteData(0x31);//display "1"
+		WriteData(0x32);//display "1"
 
 	}
 	else
