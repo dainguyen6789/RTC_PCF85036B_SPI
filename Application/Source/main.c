@@ -73,7 +73,7 @@ static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 float calib_value[21],calib_time[21];// 600/calib_stamp+1
 unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
-float current_position=127;
+float current_position=127,theorical_JP_max_pos=0;
 //int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);
@@ -99,7 +99,7 @@ void main(void)
 	
 //	unsigned char KeyNum;
 	int calib_day=0, calib_count;
-	float theorical_JP_max_pos=0;
+
 	unsigned long int SPI_NOR_INTERNAL_FLASH_ADDR=0;
 //	char numStr[5];
 	
