@@ -148,11 +148,11 @@ void main(void)
 		Wait_ms_SPINOR(5);
 		//AT25SF041_WriteEnable();
 
-		SPI_NOR_DATA=AT25SF041_Read(Read_Array,2);
+		SPI_NOR_DATA=AT25SF041_Read(Read_Array,6);
 		Wait_ms_SPINOR(500);
-		if(SPI_NOR_DATA==0x12)
+		if(SPI_NOR_DATA==16||SPI_NOR_DATA==17||SPI_NOR_DATA==18||SPI_NOR_DATA==19)
 		{
-			WriteData(0x32);
+			WriteData(0x35);
 		}
 		WriteData(SPI_NOR_DATA);
 
