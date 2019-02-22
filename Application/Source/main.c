@@ -283,14 +283,14 @@ void main(void)
 									
 									dat_to_store.min=mins;
 									dat_to_store.calib_max_voltage_ADC=max_ADC_Val;
-									dat_to_store.calib_max_pos_floor=current_position;
+									dat_to_store.calib_max_pos_floor=(char)current_position;
 								
-									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
-									dat_to_store.light_ADC=sunlight_ADC;
+									dat_to_store.calib_max_pos_float=(char)(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
+									dat_to_store.light_ADC=0;
 									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP;
 								
-									dat_to_store.LUT_max_pos_floor=theorical_JP_max_pos;
-									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;	
+									dat_to_store.LUT_max_pos_floor=(char)theorical_JP_max_pos;
+									dat_to_store.LUT_max_pos_float=(char)(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;	
 									//if(*addr==0)
 									/*{
 										AT25SF041_WriteEnable();
