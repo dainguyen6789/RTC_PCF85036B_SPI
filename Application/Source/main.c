@@ -79,6 +79,7 @@ float current_position=127;
 //calib_time=malloc(24);
 unsigned char calib_stamp =30;// calib every 30 mins 
 
+struct data_to_store dat_to_store;
 
 
 
