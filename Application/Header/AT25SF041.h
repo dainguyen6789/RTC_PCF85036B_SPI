@@ -24,7 +24,7 @@
  #define		AT25SF041_SDO_Clr()		{AT25SF041_SDO=0;} 
  #define		AT25SF041_SDO_Set()		{AT25SF041_SDO=1;}
  
-struct data_to_store
+extern struct data_to_store
 {
 		unsigned char month;
 		unsigned char date;
@@ -38,12 +38,12 @@ struct data_to_store
 		unsigned char light_ADC;
 		unsigned char Voltage_at_LUT_pos;
 	
-		//unsigned char LUT_max_pos_floor;
-		//unsigned char LUT_max_pos_float;
-		unsigned int LUT_max_pos_floor;
-		unsigned int LUT_max_pos_float;
+		unsigned char LUT_max_pos_floor;
+		unsigned char LUT_max_pos_float;
+		//unsigned int LUT_max_pos_floor;
+		//unsigned int LUT_max_pos_float;
 };
- 
+extern struct data_to_store dat_to_store;
 void AT25SF041_WriteEnable(void);
 void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char dat);
 char AT25SF041_Read(unsigned char opcode,unsigned long int addr);

@@ -95,7 +95,7 @@ void main(void)
 	char prox_flag=1;
 	int iUse_prevday_calib_value=0,max_ADC_Val=0,max_ADC_Val_JP=0;
 	struct point calib_point1,calib_point2;
-	struct data_to_store dat_to_store;
+	
 //	unsigned char KeyNum;
 	int calib_day=0, calib_count;
 	float theorical_JP_max_pos=0;
