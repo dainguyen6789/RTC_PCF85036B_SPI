@@ -5,7 +5,7 @@
 #define  	Write_Enable 											0x06
 #define  	Chip_Erase 												0x60
 #define  	Read_Stat_Register_Byte1 					0x05
-extern struct data_to_store
+struct data_to_store
 {
 		unsigned char month;
 		unsigned char date;
