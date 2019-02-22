@@ -38,8 +38,10 @@ struct data_to_store
 		unsigned char light_ADC;
 		unsigned char Voltage_at_LUT_pos;
 	
-		unsigned char LUT_max_pos_floor;
-		unsigned char LUT_max_pos_float;
+		//unsigned char LUT_max_pos_floor;
+		//unsigned char LUT_max_pos_float;
+		unsigned int LUT_max_pos_floor;
+		unsigned int LUT_max_pos_float;
 };
  
 void AT25SF041_WriteEnable(void);
