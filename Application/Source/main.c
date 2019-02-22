@@ -283,9 +283,9 @@ void main(void)
 									
 									dat_to_store.min=mins;
 									dat_to_store.calib_max_voltage_ADC=max_ADC_Val;
-									dat_to_store.calib_max_pos_floor=(char)current_position;
+									dat_to_store.calib_max_pos_floor=current_position;
 								
-									dat_to_store.calib_max_pos_float=(char)(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
+									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
 									dat_to_store.light_ADC=0;
 									//dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP;
 									dat_to_store.Voltage_at_LUT_pos=0;
