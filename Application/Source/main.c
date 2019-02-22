@@ -94,7 +94,7 @@ void main(void)
 	unsigned long int address=0;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
-	char prox_flag=1,SPI_NOR_DATA=0,error=0;
+	unsigned char prox_flag=1,SPI_NOR_DATA=0,error=0;
 	int iUse_prevday_calib_value=0;
 	struct point calib_point1,calib_point2;
 //	unsigned char KeyNum;
@@ -148,9 +148,9 @@ void main(void)
 		Wait_ms_SPINOR(5);
 		//AT25SF041_WriteEnable();
 
-		SPI_NOR_DATA=AT25SF041_Read(Read_Array,5);
+		SPI_NOR_DATA=AT25SF041_Read(Read_Array,1);
 		Wait_ms_SPINOR(500);
-		if(SPI_NOR_DATA==146)
+		if(SPI_NOR_DATA==0x27)
 		{
 			WriteData(0x35);
 		}
