@@ -292,7 +292,7 @@ void main(void)
 									dat_to_store.LUT_max_pos_floor=theorical_JP_max_pos;
 									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;	
 									//if(*addr==0)
-									{
+									/*{
 										AT25SF041_WriteEnable();
 										//Wait_ms_SPINOR(50);
 										AT25SF041_ChipErase();
@@ -351,10 +351,10 @@ void main(void)
 									AT25SF041_WriteEnable();
 									//Wait_ms_SPINOR(50);	
 									AT25SF041_Write(Byte_Page_Program, 10,dat_to_store.LUT_max_pos_float);
-									Wait_ms_SPINOR(50);									
+									Wait_ms_SPINOR(50);*/									
 							
 									Wait_ms_SPINOR(50);
-									//SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
+									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
 								{
