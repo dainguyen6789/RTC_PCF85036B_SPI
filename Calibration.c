@@ -117,7 +117,7 @@ float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
 										 float  *currnt_pos,int *max_ADC_Val,float *theorical_max_pos,int *max_ADC_JP_value)
 {
-	float calib_value=0;//
+	float calib_value=0,max_ADC=0;//
 	
 	float JP_max_pos=*currnt_pos;
 	*max_ADC_Val=0;
@@ -130,7 +130,8 @@ float calibration(unsigned char mnths,unsigned char dys,
 		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-15);// off set is Zero means we go to  (first, go to JP max theorical position -5)
 		*theorical_max_pos=JP_max_pos+15;// compensate +15 because of previous line.
 		// 	find the real max value in the area of JP +/- 15mm
-		Find_Real_Max(&JP_max_pos,&max_ADC_Val,&max_ADC_JP_value); //find real max and move to real max position
+		Find_Real_Max(&JP_max_pos,&max_ADC,&max_ADC_JP_value); //find real max and move to real max position
+		*max_ADC_Val=max_ADC;
 		calib_value=JP_max_pos-*theorical_max_pos;
 		*currnt_pos=JP_max_pos;
 		return calib_value;
