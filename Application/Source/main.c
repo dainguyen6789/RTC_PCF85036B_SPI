@@ -93,7 +93,7 @@ void main(void)
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 	char prox_flag=1;
-	int iUse_prevday_calib_value=0,max_ADC_Val=0,max_ADC_Val_JP;
+	int iUse_prevday_calib_value=0,max_ADC_Val=0,max_ADC_Val_JP=0;
 	struct point calib_point1,calib_point2;
 	struct data_to_store dat_to_store;
 //	unsigned char KeyNum;
@@ -282,12 +282,12 @@ void main(void)
 									dat_to_store.hour=hours;
 									
 									dat_to_store.min=mins;
-									//dat_to_store.calib_max_voltage_ADC=max_ADC_Val;
+									dat_to_store.calib_max_voltage_ADC=max_ADC_Val;
 									dat_to_store.calib_max_pos_floor=(char)current_position;
 								
 									dat_to_store.calib_max_pos_float=(char)(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
-									//dat_to_store.light_ADC=0;
-									//dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP;
+									dat_to_store.light_ADC=0;
+									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP;
 								
 									dat_to_store.LUT_max_pos_floor=(char)theorical_JP_max_pos;
 									dat_to_store.LUT_max_pos_float=(char)(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;	

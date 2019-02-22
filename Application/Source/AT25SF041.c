@@ -328,10 +328,10 @@ void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
 	AT25SF041_Write(Byte_Page_Program, 3,dat.min);
 	Wait_ms_SPINOR(50);	
 
-	/*AT25SF041_WriteEnable();
+	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	
 	AT25SF041_Write(Byte_Page_Program, 4,dat.calib_max_voltage_ADC);		
-	Wait_ms_SPINOR(50);	*/
+	Wait_ms_SPINOR(50);	
 	
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	
@@ -342,15 +342,15 @@ void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
 	AT25SF041_Write(Byte_Page_Program, 6,dat.calib_max_pos_float);
 	Wait_ms_SPINOR(50);	
 	
-	/*AT25SF041_WriteEnable();
+	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	
 	AT25SF041_Write(Byte_Page_Program, 7,dat.light_ADC);	
-	Wait_ms_SPINOR(50);	*/
+	Wait_ms_SPINOR(50);	
 
-	/*AT25SF041_WriteEnable();
+	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);
 	AT25SF041_Write(Byte_Page_Program, 8,dat.Voltage_at_LUT_pos);	
-	Wait_ms_SPINOR(50);	*/
+	Wait_ms_SPINOR(50);	
 	
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	
