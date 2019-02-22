@@ -32,7 +32,7 @@ int voltage_is_stable(void)
 	}
 	return 1;
 }
-void  Find_Real_Max(float  *current_position, int *max_ADC_value,int *max_ADC_JP_value)
+void  Find_Real_Max(float  *current_position, unsigned int *max_ADC_value,unsigned int *max_ADC_JP_value)
 {
 		unsigned char ch=0;
 		float calib_step_move=0.5;
@@ -115,9 +115,10 @@ unsigned int Max_Value(unsigned int *input)
 //input currnt_pos is the JP max theorical position
 float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos,int *max_ADC_Val,float *theorical_max_pos,int *max_ADC_JP_value)
+										 float  *currnt_pos,unsigned int *max_ADC_Val,float *theorical_max_pos,unsigned int *max_ADC_JP_value)
 {
-	float calib_value=0,max_ADC=0;//
+	float calib_value=0;
+	unsigned int max_ADC=0;//
 	
 	float JP_max_pos=*currnt_pos;
 	*max_ADC_Val=0;
