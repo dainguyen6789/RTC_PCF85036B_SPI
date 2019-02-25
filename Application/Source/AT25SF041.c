@@ -298,7 +298,7 @@ unsigned char Read_Status_Register_Byte1(void)
 	return dat;
 }
 
-void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
+/*void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
 {
 	//if(*addr==0)
 	{
@@ -375,4 +375,4 @@ void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
 	++*addr;
 
 
-}
+}*/
