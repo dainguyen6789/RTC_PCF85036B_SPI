@@ -285,15 +285,23 @@ void main(void)
 									
 									dat_to_store.min=mins;
 									dat_to_store.calib_max_voltage_ADC=(unsigned char)(max_ADC_Val/4);
-									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
+									//dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
+									dat_to_store.calib_max_pos_floor=1;
+
 								
-									dat_to_store.calib_max_pos_float=(unsigned char)(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
+									//dat_to_store.calib_max_pos_float=(unsigned char)(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
+									dat_to_store.calib_max_pos_float=2;// consider only 2 digit after .
+
 									dat_to_store.light_ADC=(unsigned char)sunlight_ADC/4;
+									
 									dat_to_store.Voltage_at_LUT_pos=(unsigned char) max_ADC_Val_JP/4;
 									//dat_to_store.Voltage_at_LUT_pos=0;
 								
-									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
-									dat_to_store.LUT_max_pos_float=(unsigned char)(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;	
+								
+									//dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
+									//dat_to_store.LUT_max_pos_float=(unsigned char)(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;	
+									dat_to_store.LUT_max_pos_floor=3;
+									dat_to_store.LUT_max_pos_float=4;	
 									//dat_to_store.LUT_max_pos_floor=0;
 									//dat_to_store.LUT_max_pos_float=0;										
 									//if(*addr==0)
@@ -395,7 +403,7 @@ void main(void)
 									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;
-									dat_to_store.month=months;
+									/*dat_to_store.month=months;
 									dat_to_store.date=days;
 									dat_to_store.hour=hours;
 									
@@ -409,7 +417,7 @@ void main(void)
 								
 									dat_to_store.LUT_max_pos_floor=theorical_JP_max_pos;
 									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;			
-									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR									
+									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR		*/							
 
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
