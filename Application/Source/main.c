@@ -429,7 +429,7 @@ void main(void)
 									Wait_ms_SPINOR(50);*/									
 							
 									Wait_ms_SPINOR(50);
-									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
+									//SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
 					
 
 								}
