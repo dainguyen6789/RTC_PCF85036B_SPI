@@ -179,9 +179,9 @@ void main(void)
 			Wait_ms_SPINOR(5);
 			AT25SF041_WriteEnable();
 
-			AT25SF041_Write(Byte_Page_Program,address,0x23);
+			AT25SF041_Write(Byte_Page_Program,address,0x32);
 			SPI_NOR_DATA=AT25SF041_Read(Read_Array,address);
-			if(SPI_NOR_DATA==0x23)
+			if(SPI_NOR_DATA==0x32)
 			{
 				WriteData(SPI_NOR_DATA);//
 				WriteData(0x41+address%2);//
@@ -214,7 +214,7 @@ void main(void)
 			//https://www.mouser.ca/datasheet/2/291/NHD-0216K1Z-FL-YBW-42789.pdf
 	}
 	address=0;
-	while(1)
+	while(error!=1)
 	{
 		SPI_NOR_DATA=AT25SF041_Read(Read_Array,address);
 		WriteData(SPI_NOR_DATA);//
@@ -227,6 +227,20 @@ void main(void)
 
 
 
+	}
+	while(error==1)
+	{
+				WriteData(0x45);// print "E"
+				
+				WriteData(0x45);// print "E"
+
+				WriteData(0x45);// print "E"
+
+				WriteData(0x45);// print "E"
+
+				WriteData(0x45);// print "E"
+
+				WriteData(0x45);// print "E"
 	}
 	
 
