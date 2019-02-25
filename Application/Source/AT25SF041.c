@@ -152,7 +152,8 @@ void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char 
 	///////////////////////////////////////
 	AT25SF041_CS_Set();
 	Wait_ms_SPINOR(1);
-	
+	while(ucRead_Status_Register_Byte1()&0x01==0x01);
+
 }
 
 unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
@@ -234,6 +235,8 @@ unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 	///////////////////////////////////////
 	AT25SF041_CS_Set();	
 	Wait_ms_SPINOR(1);
+	while(ucRead_Status_Register_Byte1()&0x01==0x01);
+
 	return dat;
 
 }
