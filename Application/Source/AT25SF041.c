@@ -43,7 +43,7 @@ void AT25SF041_ChipErase(void)
 	
 	AT25SF041_CS_Set();
 	Wait_ms_SPINOR(10);
-	while(Read_Status_Register_Byte1()&0x01==0x01);
+	while(ucRead_Status_Register_Byte1()&0x01==0x01);
 	
 }
 void AT25SF041_WriteEnable(void)
@@ -238,7 +238,7 @@ unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 
 
 
-unsigned char Read_Status_Register_Byte1(void)
+unsigned char ucRead_Status_Register_Byte1(void)
 {
 	unsigned char dat=0,opcode,count=0;
 	int i=0;
