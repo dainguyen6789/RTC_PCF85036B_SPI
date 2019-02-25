@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 16:38:22 PAGE 1   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:44:29 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE AT25SF041
@@ -21,7 +21,7 @@ line level    source
   11          void AT25SF041_ChipErase(void)
   12          {
   13   1        int i;
-  14   1        char opcode;
+  14   1        unsigned char opcode;
   15   1        opcode=Chip_Erase;
   16   1        //P4M1|=0x10;
   17   1        //P4M0&=~(1<<4);
@@ -59,10 +59,10 @@ line level    source
   49          void AT25SF041_WriteEnable(void)
   50          {
   51   1        int i;
-  52   1        char write_en;
+  52   1        unsigned char write_en;
   53   1        write_en=Write_Enable;
   54   1        AT25SF041_CS_Clr();
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 16:38:22 PAGE 2   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:44:29 PAGE 2   
 
   55   1      //Wait_ms_SPINOR(1);
   56   1        
@@ -92,7 +92,7 @@ line level    source
   80   1      }
   81          
   82          
-  83          void AT25SF041_Write(char opcode, unsigned long int addr,char dat)
+  83          void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char dat)
   84          {
   85   1        int i;
   86   1        AT25SF041_CS_Clr();
@@ -126,7 +126,7 @@ line level    source
  114   2            Wait_ms_SPINOR(1);
  115   2            if( (addr&0x80)==0x80 )      //
  116   2            {
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 16:38:22 PAGE 3   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:44:29 PAGE 3   
 
  117   3                AT25SF041_SDI_Set();
  118   3            } 
@@ -167,9 +167,9 @@ line level    source
  153   1        
  154   1      }
  155          
- 156          char  AT25SF041_Read(char opcode,unsigned long int addr)
+ 156          unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
  157          {
- 158   1        char dat=0;
+ 158   1        unsigned char dat=0;
  159   1        int i;
  160   1        AT25SF041_CS_Clr();
  161   1        Wait_ms_SPINOR(1);
@@ -190,7 +190,7 @@ line level    source
  176   3      
  177   3            }
  178   2            Wait_ms_SPINOR(1);    
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 16:38:22 PAGE 4   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:44:29 PAGE 4   
 
  179   2            AT25SF041_SCK_Set();
  180   2            Wait_ms_SPINOR(1);
@@ -254,11 +254,11 @@ line level    source
  238          
  239          
  240          
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 16:38:22 PAGE 5   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:44:29 PAGE 5   
 
- 241          char Read_Status_Register_Byte1(void)
+ 241          unsigned char Read_Status_Register_Byte1(void)
  242          {
- 243   1        char dat=0,opcode,count=0;
+ 243   1        unsigned char dat=0,opcode,count=0;
  244   1        int i=0;
  245   1        opcode=Read_Stat_Register_Byte1;
  246   1        AT25SF041_CS_Clr();
@@ -318,7 +318,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/21/2019 16:38:22 PAGE 6   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:44:29 PAGE 6   
 
    CODE SIZE        =    873    ----
    CONSTANT SIZE    =   ----    ----
