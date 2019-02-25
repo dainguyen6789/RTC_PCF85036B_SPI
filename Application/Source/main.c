@@ -55,7 +55,7 @@ void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,un
 void Display_Pos(float sign_dat);
 float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos,int *max_ADC_Val,float *theorical_max_pos,int *max_ADC_JP_value);
+										 float  *currnt_pos,unsigned int *max_ADC_Val,float *theorical_max_pos,unsigned int *max_ADC_JP_value);
 unsigned int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd); // this function is used to count the date in a year example: 22 March is the 80th day of the year
 unsigned char BCDtoDec1(unsigned char bcd);
 float calib_interpolate(float hours, float mins);
@@ -94,8 +94,9 @@ void main(void)
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 	char prox_flag=1;
-	int iUse_prevday_calib_value=0,max_ADC_Val=0;
-	unsigned int max_ADC_Val_JP=0;
+	int iUse_prevday_calib_value=0;
+	
+	unsigned int max_ADC_Val_JP=0,max_ADC_Val=0;
 	struct point calib_point1,calib_point2;
 	struct data_to_store dat_to_store;
 //	unsigned char KeyNum;
@@ -283,7 +284,7 @@ void main(void)
 									dat_to_store.hour=hours;
 									
 									dat_to_store.min=mins;
-									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
+									dat_to_store.calib_max_voltage_ADC=(unsigned char)max_ADC_Val/4;
 									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
 								
 									dat_to_store.calib_max_pos_float=(unsigned char)(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
