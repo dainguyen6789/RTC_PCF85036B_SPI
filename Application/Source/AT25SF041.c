@@ -153,7 +153,7 @@ void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char 
 	
 }
 
-char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
+unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 {
 	unsigned char dat=0;
 	int i;
@@ -238,7 +238,7 @@ char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 
 
 
-char Read_Status_Register_Byte1(void)
+unsigned char Read_Status_Register_Byte1(void)
 {
 	unsigned char dat=0,opcode,count=0;
 	int i=0;
