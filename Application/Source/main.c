@@ -189,6 +189,7 @@ void main(void)
 				WriteData(SPI_NOR_DATA);//
 	
 				Wait_ms_SPINOR(50);
+				SPI_NOR_DATA=0;
 			}
 			else
 			{	
