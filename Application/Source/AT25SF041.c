@@ -300,7 +300,7 @@ unsigned char Read_Status_Register_Byte1(void)
 
 void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
 {
-	if(*addr==0)
+	//if(*addr==0)
 	{
 		AT25SF041_WriteEnable();
 		//Wait_ms_SPINOR(50);
