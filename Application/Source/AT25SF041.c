@@ -11,10 +11,10 @@ void Wait_ms_SPINOR(int ms)
 void AT25SF041_ChipErase(void)
 {
 	int i;
-	char opcode;
+	unsigned char opcode;
 	opcode=Chip_Erase;
-	P4M1|=0x10;
-	P4M0&=~(1<<4);
+	//P4M1|=0x10;
+	//P4M0&=~(1<<4);
 	P4M1&=~(1<<1 |1<<2|1<<3);
 	P4M0|=0x07;
 	AT25SF041_CS_Clr();
@@ -49,7 +49,7 @@ void AT25SF041_ChipErase(void)
 void AT25SF041_WriteEnable(void)
 {
 	int i;
-	char write_en;
+	unsigned char write_en;
 	write_en=Write_Enable;
 	AT25SF041_CS_Clr();
 //Wait_ms_SPINOR(1);
@@ -153,9 +153,9 @@ void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned dat)
 	
 }
 
-char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
+unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 {
-	char dat=0;
+	unsigned char dat=0;
 	int i;
 	AT25SF041_CS_Clr();
 	Wait_ms_SPINOR(1);
@@ -238,9 +238,9 @@ char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 
 
 
-char Read_Status_Register_Byte1(void)
+unsigned char Read_Status_Register_Byte1(void)
 {
-	char dat=0,opcode,count=0;
+	unsigned char dat=0,opcode,count=0;
 	int i=0;
 	opcode=Read_Stat_Register_Byte1;
 	AT25SF041_CS_Clr();
