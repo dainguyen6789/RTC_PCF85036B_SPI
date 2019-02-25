@@ -170,60 +170,60 @@ void main(void)
 	
 						
 	AT25SF041_WriteEnable();
-	Wait_ms_SPINOR(100);
+	Wait_ms_SPINOR(200);
 	AT25SF041_Write(Byte_Page_Program, 0,0x3A);
 	
-	Wait_ms_SPINOR(100);
+	Wait_ms_SPINOR(200);
 	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
+	//Wait_ms_SPINOR(200);
 	AT25SF041_Write(Byte_Page_Program, 1,0x3B);	
-	Wait_ms_SPINOR(100);
+	Wait_ms_SPINOR(200);
 
 
 	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
+	//Wait_ms_SPINOR(200);
 	AT25SF041_Write(Byte_Page_Program, 2,0x3C);	
-	Wait_ms_SPINOR(100);
+	Wait_ms_SPINOR(200);
 
 	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
+	//Wait_ms_SPINOR(200);
 	AT25SF041_Write(Byte_Page_Program, 3,0x3D);
-	Wait_ms_SPINOR(100);
+	Wait_ms_SPINOR(200);
 
 	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
+	//Wait_ms_SPINOR(200);
 	AT25SF041_Write(Byte_Page_Program, 4,0x3E);		
-	Wait_ms_SPINOR(100);
+	Wait_ms_SPINOR(200);
 	
 	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
+	//Wait_ms_SPINOR(200);
 	AT25SF041_Write(Byte_Page_Program, 5,0x3F);
-	Wait_ms_SPINOR(100);
+	Wait_ms_SPINOR(200);
 	
 	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
+	//Wait_ms_SPINOR(200);
 	AT25SF041_Write(Byte_Page_Program, 6,0x36);
-	Wait_ms_SPINOR(100);
+	Wait_ms_SPINOR(200);
 	
 	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
+	//Wait_ms_SPINOR(200);
 	AT25SF041_Write(Byte_Page_Program, 7,0x37);	
-	Wait_ms_SPINOR(100);
+	Wait_ms_SPINOR(200);
 
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);
 	AT25SF041_Write(Byte_Page_Program, 8,0x38);	
-	Wait_ms_SPINOR(100);
+	Wait_ms_SPINOR(200);
 	
 	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
+	//Wait_ms_SPINOR(200);
 	AT25SF041_Write(Byte_Page_Program, 9,0x39);	
-	Wait_ms_SPINOR(100);
+	Wait_ms_SPINOR(200);
 	
 	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
+	//Wait_ms_SPINOR(200);
 	AT25SF041_Write(Byte_Page_Program, 10,0x32);	
-	Wait_ms_SPINOR(100);	
+	Wait_ms_SPINOR(200);	
 	
 	
 	
@@ -384,57 +384,57 @@ void main(void)
 										Wait_ms_SPINOR(5);
 									}								
 									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
+									//Wait_ms_SPINOR(200);
 									AT25SF041_Write(Byte_Page_Program, 0,dat_to_store.month);
 									
-									Wait_ms_SPINOR(100);
+									Wait_ms_SPINOR(200);
 									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
+									//Wait_ms_SPINOR(200);
 									AT25SF041_Write(Byte_Page_Program, 1,dat_to_store.date);	
-									Wait_ms_SPINOR(100);
+									Wait_ms_SPINOR(200);
 
 
 									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
+									//Wait_ms_SPINOR(200);
 									AT25SF041_Write(Byte_Page_Program, 2,dat_to_store.hour);	
-									Wait_ms_SPINOR(100);
+									Wait_ms_SPINOR(200);
 
 									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
+									//Wait_ms_SPINOR(200);
 									AT25SF041_Write(Byte_Page_Program, 3,dat_to_store.min);
-									Wait_ms_SPINOR(100);									
+									Wait_ms_SPINOR(200);									
 									
 									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
+									//Wait_ms_SPINOR(200);
 									AT25SF041_Write(Byte_Page_Program, 4,dat_to_store.calib_max_voltage_ADC);
 									Wait_ms_SPINOR(50);
 									
 									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
+									//Wait_ms_SPINOR(200);
 									AT25SF041_Write(Byte_Page_Program, 5,dat_to_store.calib_max_pos_floor);
 									
 									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
+									//Wait_ms_SPINOR(200);
 									AT25SF041_Write(Byte_Page_Program, 6,dat_to_store.calib_max_pos_float);
 									Wait_ms_SPINOR(50);
 									
 									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
+									//Wait_ms_SPINOR(200);
 									AT25SF041_Write(Byte_Page_Program, 7,dat_to_store.light_ADC);
 									Wait_ms_SPINOR(50);
 									
 									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
+									//Wait_ms_SPINOR(200);
 									AT25SF041_Write(Byte_Page_Program, 8,dat_to_store.Voltage_at_LUT_pos);
-									Wait_ms_SPINOR(100);
+									Wait_ms_SPINOR(200);
 
 									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
+									//Wait_ms_SPINOR(200);
 									AT25SF041_Write(Byte_Page_Program, 9,dat_to_store.LUT_max_pos_floor);
 									Wait_ms_SPINOR(50);
 									
 									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
+									//Wait_ms_SPINOR(200);
 									AT25SF041_Write(Byte_Page_Program, 10,dat_to_store.LUT_max_pos_float);
 									Wait_ms_SPINOR(50);*/									
 							
