@@ -171,28 +171,28 @@ void main(void)
 						
 	AT25SF041_WriteEnable();
 	Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 0,0x39);
+	AT25SF041_Write(Byte_Page_Program, 0,0x30);
 	
 	Wait_ms_SPINOR(100);
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 1,0x32);	
+	AT25SF041_Write(Byte_Page_Program, 1,0x31);	
 	Wait_ms_SPINOR(100);
 
 
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 2,0x38);	
+	AT25SF041_Write(Byte_Page_Program, 2,0x32);	
 	Wait_ms_SPINOR(100);
 
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 3,0x37);
+	AT25SF041_Write(Byte_Page_Program, 3,0x33);
 	Wait_ms_SPINOR(100);
 
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 4,0x36);		
+	AT25SF041_Write(Byte_Page_Program, 4,0x34);		
 	Wait_ms_SPINOR(100);
 	
 	AT25SF041_WriteEnable();
@@ -202,22 +202,22 @@ void main(void)
 	
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 6,0x34);
+	AT25SF041_Write(Byte_Page_Program, 6,0x36);
 	Wait_ms_SPINOR(100);
 	
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 7,0x31);	
+	AT25SF041_Write(Byte_Page_Program, 7,0x37);	
 	Wait_ms_SPINOR(100);
 
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);
-	AT25SF041_Write(Byte_Page_Program, 8,0x33);	
+	AT25SF041_Write(Byte_Page_Program, 8,0x38);	
 	Wait_ms_SPINOR(100);
 	
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 9,0x32);	
+	AT25SF041_Write(Byte_Page_Program, 9,0x39);	
 	Wait_ms_SPINOR(100);
 	
 	AT25SF041_WriteEnable();

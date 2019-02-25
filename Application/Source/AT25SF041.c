@@ -78,7 +78,7 @@ void AT25SF041_WriteEnable(void)
 	}
 	AT25SF041_CS_Set();
 	Wait_ms_SPINOR(1);
-	
+	while(ucRead_Status_Register_Byte1()&0x01==0x01);
 }
 
 
