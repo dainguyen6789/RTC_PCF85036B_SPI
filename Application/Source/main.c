@@ -599,3 +599,81 @@ void Display_Pos(float sign_dat)
 	}
 	return;
 }
+
+
+
+void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
+{
+	if(*addr==0)
+	{
+		AT25SF041_WriteEnable();
+		//Wait_ms_SPINOR(50);
+		AT25SF041_ChipErase();
+		Wait_ms_SPINOR(5);
+	}								
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(50);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.month);
+	++*addr;
+	
+	Wait_ms_SPINOR(50);	
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(50);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.date);	
+	Wait_ms_SPINOR(50);	
+	++*addr;
+
+
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(50);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.hour);	
+	Wait_ms_SPINOR(50);	
+	++*addr;
+
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(50);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.min);
+	Wait_ms_SPINOR(50);	
+	++*addr;
+
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(50);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_voltage_ADC);		
+	Wait_ms_SPINOR(50);	
+	++*addr;
+	
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(50);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_floor);
+	Wait_ms_SPINOR(50);	
+	++*addr;
+	
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(50);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_float);
+	Wait_ms_SPINOR(50);	
+	++*addr;
+	
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(50);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.light_ADC);	
+	Wait_ms_SPINOR(50);	
+	++*addr;
+
+	/*AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(50);
+	AT25SF041_Write(Byte_Page_Program, 8,dat.Voltage_at_LUT_pos);	
+	Wait_ms_SPINOR(50);	
+	
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(50);	
+	AT25SF041_Write(Byte_Page_Program, 9,dat.LUT_max_pos_floor);	
+	Wait_ms_SPINOR(50);	
+	
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(50);	
+	AT25SF041_Write(Byte_Page_Program, 10,dat.LUT_max_pos_float);	
+	Wait_ms_SPINOR(50);	*/
+
+
+}
