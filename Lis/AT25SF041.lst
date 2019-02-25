@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:21:24 PAGE 1   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:56:08 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE AT25SF041
@@ -62,7 +62,7 @@ line level    source
   52   1        unsigned char write_en;
   53   1        write_en=Write_Enable;
   54   1        AT25SF041_CS_Clr();
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:21:24 PAGE 2   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:56:08 PAGE 2   
 
   55   1      //Wait_ms_SPINOR(1);
   56   1        
@@ -126,7 +126,7 @@ line level    source
  114   2            Wait_ms_SPINOR(1);
  115   2            if( (addr&0x80)==0x80 )      //
  116   2            {
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:21:24 PAGE 3   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:56:08 PAGE 3   
 
  117   3                AT25SF041_SDI_Set();
  118   3            } 
@@ -190,7 +190,7 @@ line level    source
  176   3      
  177   3            }
  178   2            Wait_ms_SPINOR(1);    
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:21:24 PAGE 4   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:56:08 PAGE 4   
 
  179   2            AT25SF041_SCK_Set();
  180   2            Wait_ms_SPINOR(1);
@@ -254,7 +254,7 @@ line level    source
  238          
  239          
  240          
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:21:24 PAGE 5   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:56:08 PAGE 5   
 
  241          char Read_Status_Register_Byte1(void)
  242          {
@@ -316,91 +316,94 @@ line level    source
  298   1        return dat;
  299   1      }
  300          
- 301          /*void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
+ 301          void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
  302          {
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:21:24 PAGE 6   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:56:08 PAGE 6   
 
- 303            if(*addr==0)
- 304            {
- 305              AT25SF041_WriteEnable();
- 306              //Wait_ms_SPINOR(50);
- 307              AT25SF041_ChipErase();
- 308              Wait_ms_SPINOR(5);
- 309            }               
- 310            AT25SF041_WriteEnable();
- 311            //Wait_ms_SPINOR(50); 
- 312            AT25SF041_Write(Byte_Page_Program, *addr,dat.month);
- 313            ++*addr;
- 314            
- 315            Wait_ms_SPINOR(50); 
- 316            AT25SF041_WriteEnable();
- 317            //Wait_ms_SPINOR(50); 
- 318            AT25SF041_Write(Byte_Page_Program, *addr,dat.date); 
- 319            Wait_ms_SPINOR(50); 
- 320            ++*addr;
- 321          
- 322          
- 323            AT25SF041_WriteEnable();
- 324            //Wait_ms_SPINOR(50); 
- 325            AT25SF041_Write(Byte_Page_Program, *addr,dat.hour); 
- 326            Wait_ms_SPINOR(50); 
- 327            ++*addr;
- 328          
- 329            AT25SF041_WriteEnable();
- 330            //Wait_ms_SPINOR(50); 
- 331            AT25SF041_Write(Byte_Page_Program, *addr,dat.min);
- 332            Wait_ms_SPINOR(50); 
- 333            ++*addr;
- 334          
- 335            AT25SF041_WriteEnable();
- 336            //Wait_ms_SPINOR(50); 
- 337            AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_voltage_ADC);    
- 338            Wait_ms_SPINOR(50); 
- 339            ++*addr;
- 340            
- 341            AT25SF041_WriteEnable();
- 342            //Wait_ms_SPINOR(50); 
- 343            AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_floor);
- 344            Wait_ms_SPINOR(50); 
- 345            ++*addr;
- 346            
- 347            AT25SF041_WriteEnable();
- 348            //Wait_ms_SPINOR(50); 
- 349            AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_float);
- 350            Wait_ms_SPINOR(50); 
- 351            ++*addr;
- 352            
- 353            AT25SF041_WriteEnable();
- 354            //Wait_ms_SPINOR(50); 
- 355            AT25SF041_Write(Byte_Page_Program, *addr,dat.light_ADC);  
- 356            Wait_ms_SPINOR(50); 
- 357            ++*addr;
- 358          
- 359            AT25SF041_WriteEnable();
- 360            //Wait_ms_SPINOR(50);
- 361            AT25SF041_Write(Byte_Page_Program, 8,dat.Voltage_at_LUT_pos); 
- 362            Wait_ms_SPINOR(50); 
- 363            
- 364            AT25SF041_WriteEnable();
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:21:24 PAGE 7   
+ 303   1        if(*addr==0)
+ 304   1        {
+ 305   2          AT25SF041_WriteEnable();
+ 306   2          //Wait_ms_SPINOR(50);
+ 307   2          AT25SF041_ChipErase();
+ 308   2          Wait_ms_SPINOR(5);
+ 309   2        }               
+ 310   1        AT25SF041_WriteEnable();
+ 311   1        //Wait_ms_SPINOR(50); 
+ 312   1        AT25SF041_Write(Byte_Page_Program, *addr,dat.month);
+ 313   1        ++*addr;
+ 314   1        
+ 315   1        Wait_ms_SPINOR(50); 
+ 316   1        AT25SF041_WriteEnable();
+ 317   1        //Wait_ms_SPINOR(50); 
+ 318   1        AT25SF041_Write(Byte_Page_Program, *addr,dat.date); 
+ 319   1        Wait_ms_SPINOR(50); 
+ 320   1        ++*addr;
+ 321   1      
+ 322   1      
+ 323   1        AT25SF041_WriteEnable();
+ 324   1        //Wait_ms_SPINOR(50); 
+ 325   1        AT25SF041_Write(Byte_Page_Program, *addr,dat.hour); 
+ 326   1        Wait_ms_SPINOR(50); 
+ 327   1        ++*addr;
+ 328   1      
+ 329   1        AT25SF041_WriteEnable();
+ 330   1        //Wait_ms_SPINOR(50); 
+ 331   1        AT25SF041_Write(Byte_Page_Program, *addr,dat.min);
+ 332   1        Wait_ms_SPINOR(50); 
+ 333   1        ++*addr;
+ 334   1      
+ 335   1        AT25SF041_WriteEnable();
+ 336   1        //Wait_ms_SPINOR(50); 
+ 337   1        AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_voltage_ADC);    
+ 338   1        Wait_ms_SPINOR(50); 
+ 339   1        ++*addr;
+ 340   1        
+ 341   1        AT25SF041_WriteEnable();
+ 342   1        //Wait_ms_SPINOR(50); 
+ 343   1        AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_floor);
+ 344   1        Wait_ms_SPINOR(50); 
+ 345   1        ++*addr;
+ 346   1        
+ 347   1        AT25SF041_WriteEnable();
+ 348   1        //Wait_ms_SPINOR(50); 
+ 349   1        AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_float);
+ 350   1        Wait_ms_SPINOR(50); 
+ 351   1        ++*addr;
+ 352   1        
+ 353   1        AT25SF041_WriteEnable();
+ 354   1        //Wait_ms_SPINOR(50); 
+ 355   1        AT25SF041_Write(Byte_Page_Program, *addr,dat.light_ADC);  
+ 356   1        Wait_ms_SPINOR(50); 
+ 357   1        ++*addr;
+ 358   1      
+ 359   1        AT25SF041_WriteEnable();
+ 360   1        //Wait_ms_SPINOR(50);
+ 361   1        AT25SF041_Write(Byte_Page_Program, *addr,dat.Voltage_at_LUT_pos); 
+ 362   1        Wait_ms_SPINOR(50); 
+ 363   1        ++*addr;
+ 364   1        
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 10:56:08 PAGE 7   
 
- 365            //Wait_ms_SPINOR(50); 
- 366            AT25SF041_Write(Byte_Page_Program, 9,dat.LUT_max_pos_floor);  
- 367            Wait_ms_SPINOR(50); 
- 368            
- 369            AT25SF041_WriteEnable();
- 370            //Wait_ms_SPINOR(50); 
- 371            AT25SF041_Write(Byte_Page_Program, 10,dat.LUT_max_pos_float); 
- 372            Wait_ms_SPINOR(50); 
- 373          
- 374          
- 375          }*/
+ 365   1        AT25SF041_WriteEnable();
+ 366   1        //Wait_ms_SPINOR(50); 
+ 367   1        AT25SF041_Write(Byte_Page_Program, *addr,dat.LUT_max_pos_floor);  
+ 368   1        Wait_ms_SPINOR(50); 
+ 369   1        ++*addr;
+ 370   1        
+ 371   1        AT25SF041_WriteEnable();
+ 372   1        //Wait_ms_SPINOR(50); 
+ 373   1        AT25SF041_Write(Byte_Page_Program, *addr,dat.LUT_max_pos_float);  
+ 374   1        Wait_ms_SPINOR(50); 
+ 375   1        ++*addr;
+ 376   1      
+ 377   1      
+ 378   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    873    ----
+   CODE SIZE        =   1348    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----      23
+   XDATA SIZE       =   ----      37
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
