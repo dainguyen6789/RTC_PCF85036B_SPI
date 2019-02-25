@@ -15,8 +15,8 @@ void AT25SF041_ChipErase(void)
 	opcode=Chip_Erase;
 	//P4M1|=0x10;
 	//P4M0&=~(1<<4);
-	P4M1&=~(1<<1 |1<<2|1<<3);
-	P4M0|=0x07;
+	//P4M1&=~(1<<1 |1<<2|1<<3);
+	//P4M0|=0x07;
 	AT25SF041_CS_Clr();
 	Wait_ms_SPINOR(1);
 	
