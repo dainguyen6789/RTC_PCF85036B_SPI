@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:47:35 PAGE 1   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 18:04:45 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE AT25SF041
@@ -62,7 +62,7 @@ line level    source
   52   1        unsigned char write_en;
   53   1        write_en=Write_Enable;
   54   1        AT25SF041_CS_Clr();
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:47:35 PAGE 2   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 18:04:45 PAGE 2   
 
   55   1      //Wait_ms_SPINOR(1);
   56   1        
@@ -124,9 +124,9 @@ line level    source
  112   1        {
  113   2            AT25SF041_SCK_Clr();
  114   2            Wait_ms_SPINOR(1);
- 115   2            if( (addr&0x80)==0x80 )      //
+ 115   2            if( (addr&0x00800000)==0x00800000 )      //
  116   2            {
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:47:35 PAGE 3   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 18:04:45 PAGE 3   
 
  117   3                AT25SF041_SDI_Set();
  118   3            } 
@@ -190,7 +190,7 @@ line level    source
  176   3      
  177   3            }
  178   2            Wait_ms_SPINOR(1);    
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:47:35 PAGE 4   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 18:04:45 PAGE 4   
 
  179   2            AT25SF041_SCK_Set();
  180   2            Wait_ms_SPINOR(1);
@@ -203,7 +203,7 @@ line level    source
  187   1        {
  188   2            AT25SF041_SCK_Clr();
  189   2            Wait_ms_SPINOR(1);
- 190   2            if( (addr&0x80)==0x80 )      //
+ 190   2            if( (addr&0x00800000)==0x00800000 )      //
  191   2            {
  192   3                AT25SF041_SDI_Set();
  193   3            } 
@@ -254,7 +254,7 @@ line level    source
  238          
  239          
  240          
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:47:35 PAGE 5   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 18:04:45 PAGE 5   
 
  241          unsigned char ucRead_Status_Register_Byte1(void)
  242          {
@@ -318,9 +318,9 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:47:35 PAGE 6   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 18:04:45 PAGE 6   
 
-   CODE SIZE        =    873    ----
+   CODE SIZE        =    879    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----      23
    PDATA SIZE       =   ----    ----
