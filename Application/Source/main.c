@@ -284,23 +284,23 @@ void main(void)
 										}								
 										AT25SF041_WriteEnable();
 										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 0,months);
+										AT25SF041_Write(Byte_Page_Program, 0,0x32);
 										
 										Wait_ms_SPINOR(100);
 										AT25SF041_WriteEnable();
 										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 1,days);	
+										AT25SF041_Write(Byte_Page_Program, 1,0x32);	
 										Wait_ms_SPINOR(100);
 
 
 										AT25SF041_WriteEnable();
 										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 2,hours);	
+										AT25SF041_Write(Byte_Page_Program, 2,0x32);	
 										Wait_ms_SPINOR(100);
 
 										AT25SF041_WriteEnable();
 										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 3,mins);
+										AT25SF041_Write(Byte_Page_Program, 3,0x32);
 										Wait_ms_SPINOR(100);
 
 										AT25SF041_WriteEnable();
