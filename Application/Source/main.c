@@ -165,9 +165,9 @@ void main(void)
 	}
 	
 						
-	AT25SF041_WriteEnable();
+	//AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 0,0x32);
+	//AT25SF041_Write(Byte_Page_Program, 0,0x32);
 	
 	Wait_ms_SPINOR(100);
 	AT25SF041_WriteEnable();
