@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:31:56 PAGE 1   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:43:25 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE AT25SF041
@@ -30,12 +30,12 @@ line level    source
   20   1        P4M1&=~(1<<1 |1<<2|1<<3);
   21   1        P4M0|=0x07;
   22   1        AT25SF041_CS_Clr();
-  23   1        Wait_ms_SPINOR(1);
+  23   1        Wait_ms_SPINOR(5);
   24   1        
   25   1        for( i=0;i<8;i++)
   26   1        {
   27   2              AT25SF041_SCK_Clr();
-  28   2              Wait_ms_SPINOR(1);
+  28   2              Wait_ms_SPINOR(5);
   29   2              if( (opcode&0x80)==0x80 )      //
   30   2              {
   31   3                  AT25SF041_SDI_Set();
@@ -45,9 +45,9 @@ line level    source
   35   3                  AT25SF041_SDI_Clr();
   36   3      
   37   3              }
-  38   2              Wait_ms_SPINOR(1);    
+  38   2              Wait_ms_SPINOR(5);    
   39   2              AT25SF041_SCK_Set();
-  40   2              Wait_ms_SPINOR(1);
+  40   2              Wait_ms_SPINOR(5);
   41   2              opcode <<= 1;                   //
   42   2      
   43   2      
@@ -62,16 +62,16 @@ line level    source
   52          {
   53   1        int i;
   54   1        unsigned char write_en;
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:31:56 PAGE 2   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:43:25 PAGE 2   
 
   55   1        write_en=Write_Enable;
   56   1        AT25SF041_CS_Clr();
-  57   1      //Wait_ms_SPINOR(1);
+  57   1      //Wait_ms_SPINOR(5);
   58   1        
   59   1        for( i=0;i<8;i++)
   60   1        {
   61   2              AT25SF041_SCK_Clr();
-  62   2              Wait_ms_SPINOR(1);
+  62   2              Wait_ms_SPINOR(5);
   63   2              if( (write_en&0x80)==0x80 )      //
   64   2              {
   65   3                  AT25SF041_SDI_Set();
@@ -81,15 +81,15 @@ line level    source
   69   3                  AT25SF041_SDI_Clr();
   70   3      
   71   3              }
-  72   2              Wait_ms_SPINOR(1);    
+  72   2              Wait_ms_SPINOR(5);    
   73   2              AT25SF041_SCK_Set();
-  74   2              Wait_ms_SPINOR(1);
+  74   2              Wait_ms_SPINOR(5);
   75   2              write_en <<= 1;                   //
   76   2      
   77   2      
   78   2        }
   79   1        AT25SF041_CS_Set();
-  80   1        Wait_ms_SPINOR(1);
+  80   1        Wait_ms_SPINOR(5);
   81   1        while(ucRead_Status_Register_Byte1()&0x01==0x01);
   82   1      }
   83          
@@ -98,13 +98,13 @@ line level    source
   86          {
   87   1        int i;
   88   1        AT25SF041_CS_Clr();
-  89   1        Wait_ms_SPINOR(1);
+  89   1        Wait_ms_SPINOR(5);
   90   1      
   91   1        //////////////////////////////////////////
   92   1        for( i=0;i<8;i++)
   93   1          {
   94   2              AT25SF041_SCK_Clr();
-  95   2              Wait_ms_SPINOR(1);
+  95   2              Wait_ms_SPINOR(5);
   96   2              if( (opcode&0x80)==0x80 )      //
   97   2              {
   98   3                  AT25SF041_SDI_Set();
@@ -114,9 +114,9 @@ line level    source
  102   3                  AT25SF041_SDI_Clr();
  103   3      
  104   3              }
- 105   2              Wait_ms_SPINOR(1);    
+ 105   2              Wait_ms_SPINOR(5);    
  106   2              AT25SF041_SCK_Set();
- 107   2              Wait_ms_SPINOR(1);
+ 107   2              Wait_ms_SPINOR(5);
  108   2              opcode <<= 1;                   //
  109   2      
  110   2      
@@ -125,8 +125,8 @@ line level    source
  113   1        for( i=0;i<24;i++)
  114   1        {
  115   2            AT25SF041_SCK_Clr();
- 116   2            Wait_ms_SPINOR(1);
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:31:56 PAGE 3   
+ 116   2            Wait_ms_SPINOR(5);
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:43:25 PAGE 3   
 
  117   2            if( (addr&0x80)==0x80 )      //
  118   2            {
@@ -137,9 +137,9 @@ line level    source
  123   3                AT25SF041_SDI_Clr();
  124   3      
  125   3            }
- 126   2            Wait_ms_SPINOR(1);    
+ 126   2            Wait_ms_SPINOR(5);    
  127   2            AT25SF041_SCK_Set();
- 128   2            Wait_ms_SPINOR(1);
+ 128   2            Wait_ms_SPINOR(5);
  129   2            addr <<= 1;
  130   2      
  131   2        }
@@ -147,7 +147,7 @@ line level    source
  133   1          for( i=0;i<8;i++)
  134   1        {
  135   2            AT25SF041_SCK_Clr();
- 136   2            Wait_ms_SPINOR(1);
+ 136   2            Wait_ms_SPINOR(5);
  137   2            if( (dat&0x80)==0x80 )       //
  138   2            {
  139   3                AT25SF041_SDI_Set();
@@ -157,15 +157,15 @@ line level    source
  143   3                AT25SF041_SDI_Clr();
  144   3      
  145   3            }
- 146   2            Wait_ms_SPINOR(1);    
+ 146   2            Wait_ms_SPINOR(5);    
  147   2            AT25SF041_SCK_Set();
- 148   2            Wait_ms_SPINOR(1);
+ 148   2            Wait_ms_SPINOR(5);
  149   2            dat <<= 1;
  150   2      
  151   2        }
  152   1        ///////////////////////////////////////
  153   1        AT25SF041_CS_Set();
- 154   1        Wait_ms_SPINOR(1);
+ 154   1        Wait_ms_SPINOR(5);
  155   1        while(ucRead_Status_Register_Byte1()&0x01==0x01);
  156   1      
  157   1      }
@@ -175,14 +175,14 @@ line level    source
  161   1        unsigned char dat=0;
  162   1        int i;
  163   1        AT25SF041_CS_Clr();
- 164   1        Wait_ms_SPINOR(1);
+ 164   1        Wait_ms_SPINOR(5);
  165   1      
  166   1        //////////////////////////////////////////
  167   1        // Send the OPCODE
  168   1        for( i=0;i<8;i++)
  169   1        {
  170   2            AT25SF041_SCK_Clr();
- 171   2            Wait_ms_SPINOR(1);
+ 171   2            Wait_ms_SPINOR(5);
  172   2            if( (opcode&0x80)==0x80 )      //
  173   2            {
  174   3                AT25SF041_SDI_Set();
@@ -190,13 +190,13 @@ line level    source
  176   2              else
  177   2            {
  178   3                AT25SF041_SDI_Clr();
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:31:56 PAGE 4   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:43:25 PAGE 4   
 
  179   3      
  180   3            }
- 181   2            Wait_ms_SPINOR(1);    
+ 181   2            Wait_ms_SPINOR(5);    
  182   2            AT25SF041_SCK_Set();
- 183   2            Wait_ms_SPINOR(1);
+ 183   2            Wait_ms_SPINOR(5);
  184   2            opcode <<= 1;                   //
  185   2      
  186   2      
@@ -205,7 +205,7 @@ line level    source
  189   1        for( i=0;i<24;i++)
  190   1        {
  191   2            AT25SF041_SCK_Clr();
- 192   2            Wait_ms_SPINOR(1);
+ 192   2            Wait_ms_SPINOR(5);
  193   2            if( (addr&0x00000080)==0x00000080 )      //
  194   2            {
  195   3                AT25SF041_SDI_Set();
@@ -215,9 +215,9 @@ line level    source
  199   3                AT25SF041_SDI_Clr();
  200   3      
  201   3            }
- 202   2            Wait_ms_SPINOR(1);    
+ 202   2            Wait_ms_SPINOR(5);    
  203   2            AT25SF041_SCK_Set();
- 204   2            Wait_ms_SPINOR(1);
+ 204   2            Wait_ms_SPINOR(5);
  205   2            addr <<= 1;
  206   2      
  207   2        }
@@ -232,9 +232,9 @@ line level    source
  216   1        {
  217   2            dat <<= 1;                //
  218   2            AT25SF041_SCK_Set();
- 219   2            Wait_ms_SPINOR(1);
+ 219   2            Wait_ms_SPINOR(5);
  220   2            AT25SF041_SCK_Clr();
- 221   2            Wait_ms_SPINOR(1);
+ 221   2            Wait_ms_SPINOR(5);
  222   2      
  223   2            if(AT25SF041_SDO)
  224   2            {
@@ -242,19 +242,19 @@ line level    source
  226   3              dat |= 0x01;            //
  227   3            }
  228   2      
- 229   2            //Wait_ms_SPINOR(1); 
+ 229   2            //Wait_ms_SPINOR(5); 
  230   2            //AT25SF041_SCK_Set();
- 231   2            //Wait_ms_SPINOR(1);
+ 231   2            //Wait_ms_SPINOR(5);
  232   2      
  233   2        } 
  234   1        
  235   1        ///////////////////////////////////////
  236   1        AT25SF041_CS_Set(); 
- 237   1        Wait_ms_SPINOR(1);
+ 237   1        Wait_ms_SPINOR(5);
  238   1        while(ucRead_Status_Register_Byte1()&0x01==0x01);
  239   1      
  240   1        return dat;
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:31:56 PAGE 5   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:43:25 PAGE 5   
 
  241   1      
  242   1      }
@@ -267,14 +267,14 @@ line level    source
  249   1        int i=0;
  250   1        opcode=Read_Stat_Register_Byte1;
  251   1        AT25SF041_CS_Clr();
- 252   1        Wait_ms_SPINOR(1);
+ 252   1        Wait_ms_SPINOR(5);
  253   1      
  254   1        //////////////////////////////////////////
  255   1        // Send the OPCODE
  256   1        for( i=0;i<8;i++)
  257   1        {
  258   2            AT25SF041_SCK_Clr();
- 259   2            Wait_ms_SPINOR(1);
+ 259   2            Wait_ms_SPINOR(5);
  260   2            if( (opcode&0x80)==0x80 )      //
  261   2            {
  262   3                AT25SF041_SDI_Set();
@@ -284,9 +284,9 @@ line level    source
  266   3                AT25SF041_SDI_Clr();
  267   3      
  268   3            }
- 269   2            Wait_ms_SPINOR(1);    
+ 269   2            Wait_ms_SPINOR(5);    
  270   2            AT25SF041_SCK_Set();
- 271   2            Wait_ms_SPINOR(1);
+ 271   2            Wait_ms_SPINOR(5);
  272   2            opcode <<= 1;                   //
  273   2      
  274   2      
@@ -302,9 +302,9 @@ line level    source
  284   1        {
  285   2            dat <<= 1;                //
  286   2            AT25SF041_SCK_Set();
- 287   2            Wait_ms_SPINOR(1);
+ 287   2            Wait_ms_SPINOR(5);
  288   2            AT25SF041_SCK_Clr();
- 289   2            Wait_ms_SPINOR(1);
+ 289   2            Wait_ms_SPINOR(5);
  290   2      
  291   2            if(AT25SF041_SDO)
  292   2            {
@@ -317,8 +317,8 @@ line level    source
  299   1        
  300   1        ///////////////////////////////////////
  301   1        AT25SF041_CS_Set(); 
- 302   1        Wait_ms_SPINOR(1);
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:31:56 PAGE 6   
+ 302   1        Wait_ms_SPINOR(5);
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:43:25 PAGE 6   
 
  303   1        return dat;
  304   1      }
@@ -382,7 +382,7 @@ line level    source
  362            ++*addr;
  363          
  364            AT25SF041_WriteEnable();
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:31:56 PAGE 7   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 15:43:25 PAGE 7   
 
  365            //Wait_ms_SPINOR(50);
  366            AT25SF041_Write(Byte_Page_Program, *addr,dat.Voltage_at_LUT_pos); 

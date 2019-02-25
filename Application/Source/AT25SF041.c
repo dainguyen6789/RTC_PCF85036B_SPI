@@ -20,12 +20,12 @@ void AT25SF041_ChipErase(void)
 	P4M1&=~(1<<1 |1<<2|1<<3);
 	P4M0|=0x07;
 	AT25SF041_CS_Clr();
-	Wait_ms_SPINOR(1);
+	Wait_ms_SPINOR(5);
 	
 	for( i=0;i<8;i++)
 	{
 				AT25SF041_SCK_Clr();
-				Wait_ms_SPINOR(1);
+				Wait_ms_SPINOR(5);
 				if( (opcode&0x80)==0x80 )	  	 //
 				{
 						AT25SF041_SDI_Set();
@@ -35,9 +35,9 @@ void AT25SF041_ChipErase(void)
 						AT25SF041_SDI_Clr();
 
 				}
-				Wait_ms_SPINOR(1); 		
+				Wait_ms_SPINOR(5); 		
 				AT25SF041_SCK_Set();
-				Wait_ms_SPINOR(1);
+				Wait_ms_SPINOR(5);
 				opcode <<= 1;                   //
 
 
@@ -54,12 +54,12 @@ void AT25SF041_WriteEnable(void)
 	unsigned char write_en;
 	write_en=Write_Enable;
 	AT25SF041_CS_Clr();
-//Wait_ms_SPINOR(1);
+//Wait_ms_SPINOR(5);
 	
 	for( i=0;i<8;i++)
 	{
 				AT25SF041_SCK_Clr();
-				Wait_ms_SPINOR(1);
+				Wait_ms_SPINOR(5);
 				if( (write_en&0x80)==0x80 )	  	 //
 				{
 						AT25SF041_SDI_Set();
@@ -69,15 +69,15 @@ void AT25SF041_WriteEnable(void)
 						AT25SF041_SDI_Clr();
 
 				}
-				Wait_ms_SPINOR(1); 		
+				Wait_ms_SPINOR(5); 		
 				AT25SF041_SCK_Set();
-				Wait_ms_SPINOR(1);
+				Wait_ms_SPINOR(5);
 				write_en <<= 1;                   //
 
 
 	}
 	AT25SF041_CS_Set();
-	Wait_ms_SPINOR(1);
+	Wait_ms_SPINOR(5);
 	while(ucRead_Status_Register_Byte1()&0x01==0x01);
 }
 
@@ -86,13 +86,13 @@ void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char 
 {
 	int i;
 	AT25SF041_CS_Clr();
-	Wait_ms_SPINOR(1);
+	Wait_ms_SPINOR(5);
 
 	//////////////////////////////////////////
 	for( i=0;i<8;i++)
 		{
 				AT25SF041_SCK_Clr();
-				Wait_ms_SPINOR(1);
+				Wait_ms_SPINOR(5);
 				if( (opcode&0x80)==0x80 )	  	 //
 				{
 						AT25SF041_SDI_Set();
@@ -102,9 +102,9 @@ void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char 
 						AT25SF041_SDI_Clr();
 
 				}
-				Wait_ms_SPINOR(1); 		
+				Wait_ms_SPINOR(5); 		
 				AT25SF041_SCK_Set();
-				Wait_ms_SPINOR(1);
+				Wait_ms_SPINOR(5);
 				opcode <<= 1;                   //
 
 
@@ -113,7 +113,7 @@ void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char 
 	for( i=0;i<24;i++)
 	{
 			AT25SF041_SCK_Clr();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 			if( (addr&0x80)==0x80 )	  	 //
 			{
 					AT25SF041_SDI_Set();
@@ -123,9 +123,9 @@ void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char 
 					AT25SF041_SDI_Clr();
 
 			}
-			Wait_ms_SPINOR(1); 		
+			Wait_ms_SPINOR(5); 		
 			AT25SF041_SCK_Set();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 			addr <<= 1;
 
 	}
@@ -133,7 +133,7 @@ void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char 
 		for( i=0;i<8;i++)
 	{
 			AT25SF041_SCK_Clr();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 			if( (dat&0x80)==0x80 )	  	 //
 			{
 					AT25SF041_SDI_Set();
@@ -143,15 +143,15 @@ void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char 
 					AT25SF041_SDI_Clr();
 
 			}
-			Wait_ms_SPINOR(1); 		
+			Wait_ms_SPINOR(5); 		
 			AT25SF041_SCK_Set();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 			dat <<= 1;
 
 	}
 	///////////////////////////////////////
 	AT25SF041_CS_Set();
-	Wait_ms_SPINOR(1);
+	Wait_ms_SPINOR(5);
 	while(ucRead_Status_Register_Byte1()&0x01==0x01);
 
 }
@@ -161,14 +161,14 @@ unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 	unsigned char dat=0;
 	int i;
 	AT25SF041_CS_Clr();
-	Wait_ms_SPINOR(1);
+	Wait_ms_SPINOR(5);
 
 	//////////////////////////////////////////
 	// Send the OPCODE
 	for( i=0;i<8;i++)
 	{
 			AT25SF041_SCK_Clr();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 			if( (opcode&0x80)==0x80 )	  	 //
 			{
 					AT25SF041_SDI_Set();
@@ -178,9 +178,9 @@ unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 					AT25SF041_SDI_Clr();
 
 			}
-			Wait_ms_SPINOR(1); 		
+			Wait_ms_SPINOR(5); 		
 			AT25SF041_SCK_Set();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 			opcode <<= 1;                   //
 
 
@@ -189,7 +189,7 @@ unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 	for( i=0;i<24;i++)
 	{
 			AT25SF041_SCK_Clr();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 			if( (addr&0x00000080)==0x00000080 )	  	 //
 			{
 					AT25SF041_SDI_Set();
@@ -199,9 +199,9 @@ unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 					AT25SF041_SDI_Clr();
 
 			}
-			Wait_ms_SPINOR(1); 		
+			Wait_ms_SPINOR(5); 		
 			AT25SF041_SCK_Set();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 			addr <<= 1;
 
 	}
@@ -216,9 +216,9 @@ unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 	{
 			dat <<= 1;	              //
 			AT25SF041_SCK_Set();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 			AT25SF041_SCK_Clr();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 
 			if(AT25SF041_SDO)
 			{
@@ -226,15 +226,15 @@ unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 				dat |= 0x01;            //
 			}
 
-			//Wait_ms_SPINOR(1); 
+			//Wait_ms_SPINOR(5); 
 			//AT25SF041_SCK_Set();
-			//Wait_ms_SPINOR(1);
+			//Wait_ms_SPINOR(5);
 
 	}	
 	
 	///////////////////////////////////////
 	AT25SF041_CS_Set();	
-	Wait_ms_SPINOR(1);
+	Wait_ms_SPINOR(5);
 	while(ucRead_Status_Register_Byte1()&0x01==0x01);
 
 	return dat;
@@ -249,14 +249,14 @@ unsigned char ucRead_Status_Register_Byte1(void)
 	int i=0;
 	opcode=Read_Stat_Register_Byte1;
 	AT25SF041_CS_Clr();
-	Wait_ms_SPINOR(1);
+	Wait_ms_SPINOR(5);
 
 	//////////////////////////////////////////
 	// Send the OPCODE
 	for( i=0;i<8;i++)
 	{
 			AT25SF041_SCK_Clr();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 			if( (opcode&0x80)==0x80 )	  	 //
 			{
 					AT25SF041_SDI_Set();
@@ -266,9 +266,9 @@ unsigned char ucRead_Status_Register_Byte1(void)
 					AT25SF041_SDI_Clr();
 
 			}
-			Wait_ms_SPINOR(1); 		
+			Wait_ms_SPINOR(5); 		
 			AT25SF041_SCK_Set();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 			opcode <<= 1;                   //
 
 
@@ -284,9 +284,9 @@ unsigned char ucRead_Status_Register_Byte1(void)
 	{
 			dat <<= 1;	              //
 			AT25SF041_SCK_Set();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 			AT25SF041_SCK_Clr();
-			Wait_ms_SPINOR(1);
+			Wait_ms_SPINOR(5);
 
 			if(AT25SF041_SDO)
 			{
@@ -299,7 +299,7 @@ unsigned char ucRead_Status_Register_Byte1(void)
 	
 	///////////////////////////////////////
 	AT25SF041_CS_Set();	
-	Wait_ms_SPINOR(1);
+	Wait_ms_SPINOR(5);
 	return dat;
 }
 
