@@ -190,7 +190,7 @@ unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 	{
 			AT25SF041_SCK_Clr();
 			Wait_ms_SPINOR(1);
-			if( (addr&0x80)==0x80 )	  	 //
+			if( (addr&0x00000080)==0x00000080 )	  	 //
 			{
 					AT25SF041_SDI_Set();
 			}	

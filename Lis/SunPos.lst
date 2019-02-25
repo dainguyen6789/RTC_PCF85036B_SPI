@@ -1,0 +1,134 @@
+C51 COMPILER V9.52.0.0   SUNPOS                                                            02/25/2019 15:31:54 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE SUNPOS
+OBJECT MODULE PLACED IN .\Obj\SunPos.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE SunPos.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXTEND PR
+                    -INT(.\Lis\SunPos.lst) TABS(2) OBJECT(.\Obj\SunPos.obj)
+
+line level    source
+
+   1          // This file is available in electronic form at http://www.psa.es/sdg/sunpos.htm
+   2          
+   3          #include "SunPos.h"
+   4          #include "math.h"
+   5          
+   6          double sunpos(struct cTime udtTime,struct cLocation udtLocation, struct cSunCoordinates *udtSunCoordinates
+             -)
+   7          {
+   8   1        // Main variables
+   9   1        double dElapsedJulianDays;
+  10   1        double dDecimalHours;
+  11   1        double dEclipticLongitude;
+  12   1        double dEclipticObliquity;
+  13   1        double dRightAscension;
+  14   1        double dDeclination;
+  15   1      
+  16   1        // Auxiliary variables
+  17   1        double dY;
+  18   1        double dX;
+  19   1      
+  20   1        // Calculate difference in days between the current Julian Day 
+  21   1        // and JD 2451545.0, which is noon 1 January 2000 Universal Time
+  22   1        {
+  23   2          double dJulianDate;
+  24   2          long int liAux1;
+  25   2          long int liAux2;
+  26   2          // Calculate time of the day in UT decimal hours
+  27   2          dDecimalHours = udtTime.dHours + (udtTime.dMinutes 
+  28   2            + udtTime.dSeconds / 60.0 ) / 60.0;
+  29   2          // Calculate current Julian Day
+  30   2          liAux1 =(udtTime.iMonth-14)/12;
+  31   2          liAux2=(1461*(udtTime.iYear + 4800 + liAux1))/4 + (367*(udtTime.iMonth 
+  32   2            - 2-12*liAux1))/12- (3*((udtTime.iYear + 4900 
+  33   2          + liAux1)/100))/4+udtTime.iDay-32075;
+  34   2          dJulianDate=(double)(liAux2)-0.5+dDecimalHours/24.0;
+  35   2          // Calculate difference between current Julian Day and JD 2451545.0 
+  36   2          dElapsedJulianDays = dJulianDate-2451545.0;
+  37   2        }
+  38   1      
+  39   1        // Calculate ecliptic coordinates (ecliptic longitude and obliquity of the 
+  40   1        // ecliptic in radians but without limiting the angle to be less than 2*Pi 
+  41   1        // (i.e., the result may be greater than 2*Pi)
+  42   1        {
+  43   2          double dMeanLongitude;
+  44   2          double dMeanAnomaly;
+  45   2          double dOmega;
+  46   2          dOmega=2.1429-0.0010394594*dElapsedJulianDays;
+  47   2          dMeanLongitude = 4.8950630+ 0.017202791698*dElapsedJulianDays; // Radians
+  48   2          dMeanAnomaly = 6.2400600+ 0.0172019699*dElapsedJulianDays;
+  49   2          dEclipticLongitude = dMeanLongitude + 0.03341607*sin( dMeanAnomaly ) 
+  50   2            + 0.00034894*sin( 2*dMeanAnomaly )-0.0001134
+  51   2            -0.0000203*sin(dOmega);
+  52   2          dEclipticObliquity = 0.4090928 - 6.2140e-9*dElapsedJulianDays
+  53   2            +0.0000396*cos(dOmega);
+C51 COMPILER V9.52.0.0   SUNPOS                                                            02/25/2019 15:31:54 PAGE 2   
+
+  54   2        }
+  55   1      
+  56   1        // Calculate celestial coordinates ( right ascension and declination ) in radians 
+  57   1        // but without limiting the angle to be less than 2*Pi (i.e., the result may be 
+  58   1        // greater than 2*Pi)
+  59   1        {
+  60   2          double dSin_EclipticLongitude;
+  61   2          dSin_EclipticLongitude= sin( dEclipticLongitude );
+  62   2          dY = cos( dEclipticObliquity ) * dSin_EclipticLongitude;
+  63   2          dX = cos( dEclipticLongitude );
+  64   2          dRightAscension = atan2( dY,dX );
+  65   2          if( dRightAscension < 0.0 ) dRightAscension = dRightAscension + twopi;
+  66   2          dDeclination = asin( sin( dEclipticObliquity )*dSin_EclipticLongitude );
+  67   2        }
+  68   1      
+  69   1        // Calculate local coordinates ( azimuth and zenith angle ) in degrees
+  70   1        {
+  71   2          double dGreenwichMeanSiderealTime;
+  72   2          double dLocalMeanSiderealTime;
+  73   2          double dLatitudeInRadians;
+  74   2          double dHourAngle;
+  75   2          double dCos_Latitude;
+  76   2          double dSin_Latitude;
+  77   2          double dCos_HourAngle;
+  78   2          double dParallax;
+  79   2          dGreenwichMeanSiderealTime = 6.6974243242 + 
+  80   2            0.0657098283*dElapsedJulianDays 
+  81   2            + dDecimalHours;
+  82   2          dLocalMeanSiderealTime = (dGreenwichMeanSiderealTime*15 
+  83   2            + udtLocation.dLongitude)*rad;
+  84   2          dHourAngle = dLocalMeanSiderealTime - dRightAscension;
+  85   2          dLatitudeInRadians = udtLocation.dLatitude*rad;
+  86   2          dCos_Latitude = cos( dLatitudeInRadians );
+  87   2          dSin_Latitude = sin( dLatitudeInRadians );
+  88   2          dCos_HourAngle= cos( dHourAngle );
+  89   2          udtSunCoordinates->dZenithAngle = (acos( dCos_Latitude*dCos_HourAngle
+  90   2            *cos(dDeclination) + sin( dDeclination )*dSin_Latitude));
+  91   2          dY = -sin( dHourAngle );
+  92   2          dX = tan( dDeclination )*dCos_Latitude - dSin_Latitude*dCos_HourAngle;
+  93   2          udtSunCoordinates->dAzimuth = atan2( dY, dX );
+  94   2          if ( udtSunCoordinates->dAzimuth < 0.0 ) 
+  95   2            udtSunCoordinates->dAzimuth = udtSunCoordinates->dAzimuth + twopi;
+  96   2          udtSunCoordinates->dAzimuth = udtSunCoordinates->dAzimuth/rad;
+  97   2          // Parallax Correction
+  98   2          dParallax=(dEarthMeanRadius/dAstronomicalUnit)
+  99   2            *sin(udtSunCoordinates->dZenithAngle);
+ 100   2          udtSunCoordinates->dZenithAngle=(udtSunCoordinates->dZenithAngle 
+ 101   2            +
+ 102   2       dParallax)/rad;
+ 103   2        }
+ 104   1        return dDeclination;
+ 105   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1954    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      93
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+C51 COMPILER V9.52.0.0   SUNPOS                                                            02/25/2019 15:31:54 PAGE 3   
+
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
