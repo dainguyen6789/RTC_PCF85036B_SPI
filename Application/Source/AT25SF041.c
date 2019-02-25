@@ -309,43 +309,52 @@ void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
 	}								
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	
-	AT25SF041_Write(Byte_Page_Program, 0,dat.month);
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.month);
+	++*addr;
 	
 	Wait_ms_SPINOR(50);	
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	
-	AT25SF041_Write(Byte_Page_Program, 1,dat.date);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.date);	
 	Wait_ms_SPINOR(50);	
+	++*addr;
 
 
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	
-	AT25SF041_Write(Byte_Page_Program, 2,dat.hour);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.hour);	
 	Wait_ms_SPINOR(50);	
+	++*addr;
 
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	
-	AT25SF041_Write(Byte_Page_Program, 3,dat.min);
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.min);
 	Wait_ms_SPINOR(50);	
+	++*addr;
 
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	
-	AT25SF041_Write(Byte_Page_Program, 4,dat.calib_max_voltage_ADC);		
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_voltage_ADC);		
 	Wait_ms_SPINOR(50);	
+	++*addr;
 	
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	
-	AT25SF041_Write(Byte_Page_Program, 5,dat.calib_max_pos_floor);
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_floor);
 	Wait_ms_SPINOR(50);	
-	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(50);	
-	AT25SF041_Write(Byte_Page_Program, 6,dat.calib_max_pos_float);
-	Wait_ms_SPINOR(50);	
+	++*addr;
 	
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);	
-	AT25SF041_Write(Byte_Page_Program, 7,dat.light_ADC);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_float);
 	Wait_ms_SPINOR(50);	
+	++*addr;
+	
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(50);	
+	AT25SF041_Write(Byte_Page_Program, *addr,dat.light_ADC);	
+	Wait_ms_SPINOR(50);	
+	++*addr;
 
 	/*AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(50);
