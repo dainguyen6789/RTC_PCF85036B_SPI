@@ -47,7 +47,7 @@ void LCD_return_home(void);
 void Key_Process(void);
 void Display_Line(int line);
 void Command(unsigned char dat);//LCD command
-unsigned int Read_VCNL4035(unsigned int command_code);
+//unsigned int Read_VCNL4035(unsigned int command_code);
 void I2C_Init();
 void Display_Prox(unsigned int prox_data);
 void Step_move(unsigned int step, bit dir);
@@ -119,6 +119,12 @@ void main(void)
 	float dd=138;*/
 //	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
 	//=======================================
+	{
+		AT25SF041_WriteEnable();
+		//Wait_ms_SPINOR(50);
+		AT25SF041_ChipErase();
+		Wait_ms_SPINOR(5);
+	}		
 	P3M1=0x00;
 	P3M0=0xFF;
 	P3=0x4C;
@@ -158,12 +164,7 @@ void main(void)
 		calib_time[calib_count]=7+(float)calib_count/2;
 	}
 	
-	{
-		AT25SF041_WriteEnable();
-		//Wait_ms_SPINOR(50);
-		AT25SF041_ChipErase();
-		Wait_ms_SPINOR(5);
-	}								
+						
 	AT25SF041_WriteEnable();
 	//Wait_ms_SPINOR(100);
 	AT25SF041_Write(Byte_Page_Program, 0,0x32);
