@@ -284,7 +284,7 @@ void main(void)
 									dat_to_store.hour=hours;
 									
 									dat_to_store.min=mins;
-									dat_to_store.calib_max_voltage_ADC=(unsigned char)(max_ADC_Val/4);
+									dat_to_store.calib_max_voltage_ADC=1;
 									//dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
 									dat_to_store.calib_max_pos_floor=1;
 
@@ -292,9 +292,9 @@ void main(void)
 									//dat_to_store.calib_max_pos_float=(unsigned char)(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
 									dat_to_store.calib_max_pos_float=2;// consider only 2 digit after .
 
-									dat_to_store.light_ADC=(unsigned char)sunlight_ADC/4;
+									dat_to_store.light_ADC=2;
 									
-									dat_to_store.Voltage_at_LUT_pos=(unsigned char) max_ADC_Val_JP/4;
+									dat_to_store.Voltage_at_LUT_pos=3;
 									//dat_to_store.Voltage_at_LUT_pos=0;
 								
 								
