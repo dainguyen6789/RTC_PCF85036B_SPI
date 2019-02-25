@@ -99,7 +99,7 @@ void main(void)
 	struct point calib_point1,calib_point2;
 //	unsigned char KeyNum;
 	int calib_day=0, calib_count;
-
+	unsigned int i=0;
 //	char numStr[5];
 	
 //	float current_position=0;
@@ -143,7 +143,7 @@ void main(void)
 
 	AT25SF041_ChipErase();
 	Wait_ms_SPINOR(5);	
-	while(address<=500)
+	while(address<=10)
 	{
 			//==============================================================
 			// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
@@ -179,9 +179,11 @@ void main(void)
 			Wait_ms_SPINOR(5);
 			AT25SF041_WriteEnable();
 
-			AT25SF041_Write(Byte_Page_Program,address,0x32);
+			AT25SF041_Write(Byte_Page_Program,address,i+0x30);
 			SPI_NOR_DATA=AT25SF041_Read(Read_Array,address);
-			if(SPI_NOR_DATA==0x32)
+			Wait_ms_SPINOR(50);
+
+			if(SPI_NOR_DATA==0x30+i)
 			{
 				WriteData(SPI_NOR_DATA);//
 				WriteData(0x41+address%2);//
@@ -190,6 +192,7 @@ void main(void)
 	
 				Wait_ms_SPINOR(50);
 				SPI_NOR_DATA=0;
+				i++;
 			}
 			else
 			{	
@@ -220,7 +223,7 @@ void main(void)
 		SPI_NOR_DATA=AT25SF041_Read(Read_Array,address);
 		WriteData(SPI_NOR_DATA);//
 		address++;
-		if(address==500)
+		if(address==11)
 		{
 				address=0;
 				Display_Line(1);	
@@ -229,20 +232,16 @@ void main(void)
 
 
 	}
-	while(error==1)
+	if(error==1)
 	{
 				WriteData(0x45);// print "E"
 				
 				WriteData(0x45);// print "E"
+				WriteData(SPI_NOR_DATA);//
+				WriteData(0x30+i);//
 
-				WriteData(0x45);// print "E"
-
-				WriteData(0x45);// print "E"
-
-				WriteData(0x45);// print "E"
-
-				WriteData(0x45);// print "E"
 	}
+	while(1);
 	
 
 }

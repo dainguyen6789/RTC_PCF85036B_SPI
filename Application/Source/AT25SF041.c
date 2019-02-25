@@ -17,7 +17,12 @@ void AT25SF041_ChipErase(void)
 	//P4M0&=~(1<<4);
 	P4M1&=~(1<<1 |1<<2|1<<3);
 	P4M0|=0x07;
+	AT25SF041_CS_Set();
+	Wait_ms_SPINOR(50);
+
 	AT25SF041_CS_Clr();
+	Wait_ms_SPINOR(1);
+
 	Wait_ms_SPINOR(1);
 	
 	for( i=0;i<8;i++)
@@ -51,7 +56,11 @@ void AT25SF041_WriteEnable(void)
 	int i;
 	unsigned char write_en;
 	write_en=Write_Enable;
+	AT25SF041_CS_Set();
+		Wait_ms_SPINOR(50);
+
 	AT25SF041_CS_Clr();
+	Wait_ms_SPINOR(1);
 //Wait_ms_SPINOR(1);
 	
 	for( i=0;i<8;i++)
@@ -80,9 +89,12 @@ void AT25SF041_WriteEnable(void)
 }
 
 
-void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char dat)
+void AT25SF041_Write(unsigned char opcode, unsigned long int addr, unsigned char dat)
 {
 	int i;
+	AT25SF041_CS_Set();
+		Wait_ms_SPINOR(50);
+
 	AT25SF041_CS_Clr();
 	Wait_ms_SPINOR(1);
 
@@ -112,7 +124,7 @@ void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char 
 	{
 			AT25SF041_SCK_Clr();
 			Wait_ms_SPINOR(1);
-			if( (addr&0x80)==0x80 )	  	 //
+			if( (addr&0x00800000)==0x00800000 )	  	 //
 			{
 					AT25SF041_SDI_Set();
 			}	
@@ -155,7 +167,7 @@ void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char 
 
 unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 {
-	unsigned char dat=0;
+	char dat=0;
 	int i;
 	AT25SF041_CS_Clr();
 	Wait_ms_SPINOR(1);
@@ -187,7 +199,7 @@ unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
 	{
 			AT25SF041_SCK_Clr();
 			Wait_ms_SPINOR(1);
-			if( (addr&0x80)==0x80 )	  	 //
+			if( (addr&0x00800000)==0x00800000 )	  	 //
 			{
 					AT25SF041_SDI_Set();
 			}	

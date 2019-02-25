@@ -25,8 +25,8 @@
  #define		AT25SF041_SDO_Set()		{AT25SF041_SDO=1;}
  
 void AT25SF041_WriteEnable(void);
-void AT25SF041_Write(char opcode, unsigned long int addr,unsigned char dat);
-unsigned char  AT25SF041_Read(char opcode,unsigned long int addr);
+void AT25SF041_Write(unsigned char opcode, unsigned long int addr, unsigned char dat);
+unsigned char  AT25SF041_Read(char opcode,unsigned  long int addr);
 void Wait_ms_SPINOR(int ms);
 void AT25SF041_ChipErase(void);
 unsigned char Read_Status_Register_Byte1(void);
