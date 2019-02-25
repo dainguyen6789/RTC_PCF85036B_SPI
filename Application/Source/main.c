@@ -80,7 +80,12 @@ float current_position=127;
 unsigned char calib_stamp =30;// calib every 30 mins 
 unsigned long int SPI_NOR_INTERNAL_FLASH_ADDR=0;
 
-
+void AT25SF041_WriteEnable(void);
+void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char dat);
+unsigned char AT25SF041_Read(unsigned char opcode,unsigned long int addr);
+void Wait_ms_SPINOR(int ms);
+void AT25SF041_ChipErase(void);
+unsigned char ucRead_Status_Register_Byte1(void);
 
 void tm0_isr() interrupt 1 using 1
 {

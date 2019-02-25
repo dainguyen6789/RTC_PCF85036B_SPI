@@ -1,5 +1,7 @@
 #include "AT25SF041.h"
 #include "stc15f2k60s2.h"
+unsigned char ucRead_Status_Register_Byte1(void);
+
 void Wait_ms_SPINOR(int ms)
 {
   unsigned int De_Cnt;

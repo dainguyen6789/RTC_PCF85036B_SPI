@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:12:42 PAGE 1   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:19:16 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE AT25SF041
@@ -10,394 +10,396 @@ line level    source
 
    1          #include "AT25SF041.h"
    2          #include "stc15f2k60s2.h"
-   3          void Wait_ms_SPINOR(int ms)
-   4          {
-   5   1        unsigned int De_Cnt;
-   6   1        while( (ms--) != 0)
-   7   1        {
-   8   2          for(De_Cnt = 0; De_Cnt < 4; De_Cnt++); 
-   9   2        }   
-  10   1      }
-  11          void AT25SF041_ChipErase(void)
-  12          {
-  13   1        int i;
-  14   1        unsigned char opcode;
-  15   1        opcode=Chip_Erase;
-  16   1        //P4M1|=0x10;
-  17   1        //P4M0&=~(1<<4);
-  18   1        P4M1&=~(1<<1 |1<<2|1<<3);
-  19   1        P4M0|=0x07;
-  20   1        AT25SF041_CS_Clr();
-  21   1        Wait_ms_SPINOR(1);
-  22   1        
-  23   1        for( i=0;i<8;i++)
-  24   1        {
-  25   2              AT25SF041_SCK_Clr();
-  26   2              Wait_ms_SPINOR(1);
-  27   2              if( (opcode&0x80)==0x80 )      //
-  28   2              {
-  29   3                  AT25SF041_SDI_Set();
-  30   3              } 
-  31   2                else
-  32   2              {
-  33   3                  AT25SF041_SDI_Clr();
-  34   3      
-  35   3              }
-  36   2              Wait_ms_SPINOR(1);    
-  37   2              AT25SF041_SCK_Set();
-  38   2              Wait_ms_SPINOR(1);
-  39   2              opcode <<= 1;                   //
-  40   2      
-  41   2      
-  42   2        }
-  43   1        
-  44   1        AT25SF041_CS_Set();
-  45   1        Wait_ms_SPINOR(10);
-  46   1        while(ucRead_Status_Register_Byte1()&0x01==0x01);
-  47   1        
-  48   1      }
-  49          void AT25SF041_WriteEnable(void)
-  50          {
-  51   1        int i;
-  52   1        unsigned char write_en;
-  53   1        write_en=Write_Enable;
-  54   1        AT25SF041_CS_Clr();
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:12:42 PAGE 2   
+   3          unsigned char ucRead_Status_Register_Byte1(void);
+   4          
+   5          void Wait_ms_SPINOR(int ms)
+   6          {
+   7   1        unsigned int De_Cnt;
+   8   1        while( (ms--) != 0)
+   9   1        {
+  10   2          for(De_Cnt = 0; De_Cnt < 4; De_Cnt++); 
+  11   2        }   
+  12   1      }
+  13          void AT25SF041_ChipErase(void)
+  14          {
+  15   1        int i;
+  16   1        unsigned char opcode;
+  17   1        opcode=Chip_Erase;
+  18   1        //P4M1|=0x10;
+  19   1        //P4M0&=~(1<<4);
+  20   1        P4M1&=~(1<<1 |1<<2|1<<3);
+  21   1        P4M0|=0x07;
+  22   1        AT25SF041_CS_Clr();
+  23   1        Wait_ms_SPINOR(1);
+  24   1        
+  25   1        for( i=0;i<8;i++)
+  26   1        {
+  27   2              AT25SF041_SCK_Clr();
+  28   2              Wait_ms_SPINOR(1);
+  29   2              if( (opcode&0x80)==0x80 )      //
+  30   2              {
+  31   3                  AT25SF041_SDI_Set();
+  32   3              } 
+  33   2                else
+  34   2              {
+  35   3                  AT25SF041_SDI_Clr();
+  36   3      
+  37   3              }
+  38   2              Wait_ms_SPINOR(1);    
+  39   2              AT25SF041_SCK_Set();
+  40   2              Wait_ms_SPINOR(1);
+  41   2              opcode <<= 1;                   //
+  42   2      
+  43   2      
+  44   2        }
+  45   1        
+  46   1        AT25SF041_CS_Set();
+  47   1        Wait_ms_SPINOR(10);
+  48   1        while(ucRead_Status_Register_Byte1()&0x01==0x01);
+  49   1        
+  50   1      }
+  51          void AT25SF041_WriteEnable(void)
+  52          {
+  53   1        int i;
+  54   1        unsigned char write_en;
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:19:16 PAGE 2   
 
-  55   1      //Wait_ms_SPINOR(1);
-  56   1        
-  57   1        for( i=0;i<8;i++)
-  58   1        {
-  59   2              AT25SF041_SCK_Clr();
-  60   2              Wait_ms_SPINOR(1);
-  61   2              if( (write_en&0x80)==0x80 )      //
-  62   2              {
-  63   3                  AT25SF041_SDI_Set();
-  64   3              } 
-  65   2                else
-  66   2              {
-  67   3                  AT25SF041_SDI_Clr();
-  68   3      
-  69   3              }
-  70   2              Wait_ms_SPINOR(1);    
-  71   2              AT25SF041_SCK_Set();
-  72   2              Wait_ms_SPINOR(1);
-  73   2              write_en <<= 1;                   //
-  74   2      
-  75   2      
-  76   2        }
-  77   1        AT25SF041_CS_Set();
-  78   1        Wait_ms_SPINOR(1);
-  79   1        
-  80   1      }
-  81          
-  82          
-  83          void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char dat)
-  84          {
-  85   1        int i;
-  86   1        AT25SF041_CS_Clr();
-  87   1        Wait_ms_SPINOR(1);
-  88   1      
-  89   1        //////////////////////////////////////////
-  90   1        for( i=0;i<8;i++)
-  91   1          {
-  92   2              AT25SF041_SCK_Clr();
-  93   2              Wait_ms_SPINOR(1);
-  94   2              if( (opcode&0x80)==0x80 )      //
-  95   2              {
-  96   3                  AT25SF041_SDI_Set();
-  97   3              } 
-  98   2                else
-  99   2              {
- 100   3                  AT25SF041_SDI_Clr();
- 101   3      
- 102   3              }
- 103   2              Wait_ms_SPINOR(1);    
- 104   2              AT25SF041_SCK_Set();
- 105   2              Wait_ms_SPINOR(1);
- 106   2              opcode <<= 1;                   //
- 107   2      
- 108   2      
- 109   2          }
- 110   1        // SEND THE ADDR (24-bit)
- 111   1        for( i=0;i<24;i++)
- 112   1        {
- 113   2            AT25SF041_SCK_Clr();
- 114   2            Wait_ms_SPINOR(1);
- 115   2            if( (addr&0x80)==0x80 )      //
- 116   2            {
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:12:42 PAGE 3   
+  55   1        write_en=Write_Enable;
+  56   1        AT25SF041_CS_Clr();
+  57   1      //Wait_ms_SPINOR(1);
+  58   1        
+  59   1        for( i=0;i<8;i++)
+  60   1        {
+  61   2              AT25SF041_SCK_Clr();
+  62   2              Wait_ms_SPINOR(1);
+  63   2              if( (write_en&0x80)==0x80 )      //
+  64   2              {
+  65   3                  AT25SF041_SDI_Set();
+  66   3              } 
+  67   2                else
+  68   2              {
+  69   3                  AT25SF041_SDI_Clr();
+  70   3      
+  71   3              }
+  72   2              Wait_ms_SPINOR(1);    
+  73   2              AT25SF041_SCK_Set();
+  74   2              Wait_ms_SPINOR(1);
+  75   2              write_en <<= 1;                   //
+  76   2      
+  77   2      
+  78   2        }
+  79   1        AT25SF041_CS_Set();
+  80   1        Wait_ms_SPINOR(1);
+  81   1        
+  82   1      }
+  83          
+  84          
+  85          void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char dat)
+  86          {
+  87   1        int i;
+  88   1        AT25SF041_CS_Clr();
+  89   1        Wait_ms_SPINOR(1);
+  90   1      
+  91   1        //////////////////////////////////////////
+  92   1        for( i=0;i<8;i++)
+  93   1          {
+  94   2              AT25SF041_SCK_Clr();
+  95   2              Wait_ms_SPINOR(1);
+  96   2              if( (opcode&0x80)==0x80 )      //
+  97   2              {
+  98   3                  AT25SF041_SDI_Set();
+  99   3              } 
+ 100   2                else
+ 101   2              {
+ 102   3                  AT25SF041_SDI_Clr();
+ 103   3      
+ 104   3              }
+ 105   2              Wait_ms_SPINOR(1);    
+ 106   2              AT25SF041_SCK_Set();
+ 107   2              Wait_ms_SPINOR(1);
+ 108   2              opcode <<= 1;                   //
+ 109   2      
+ 110   2      
+ 111   2          }
+ 112   1        // SEND THE ADDR (24-bit)
+ 113   1        for( i=0;i<24;i++)
+ 114   1        {
+ 115   2            AT25SF041_SCK_Clr();
+ 116   2            Wait_ms_SPINOR(1);
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:19:16 PAGE 3   
 
- 117   3                AT25SF041_SDI_Set();
- 118   3            } 
- 119   2              else
- 120   2            {
- 121   3                AT25SF041_SDI_Clr();
- 122   3      
- 123   3            }
- 124   2            Wait_ms_SPINOR(1);    
- 125   2            AT25SF041_SCK_Set();
- 126   2            Wait_ms_SPINOR(1);
- 127   2            addr <<= 1;
- 128   2      
- 129   2        }
- 130   1        
- 131   1          for( i=0;i<8;i++)
- 132   1        {
- 133   2            AT25SF041_SCK_Clr();
- 134   2            Wait_ms_SPINOR(1);
- 135   2            if( (dat&0x80)==0x80 )       //
- 136   2            {
- 137   3                AT25SF041_SDI_Set();
- 138   3            } 
- 139   2              else
- 140   2            {
- 141   3                AT25SF041_SDI_Clr();
- 142   3      
- 143   3            }
- 144   2            Wait_ms_SPINOR(1);    
- 145   2            AT25SF041_SCK_Set();
- 146   2            Wait_ms_SPINOR(1);
- 147   2            dat <<= 1;
- 148   2      
- 149   2        }
- 150   1        ///////////////////////////////////////
- 151   1        AT25SF041_CS_Set();
- 152   1        Wait_ms_SPINOR(1);
- 153   1        
- 154   1      }
- 155          
- 156          unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
- 157          {
- 158   1        unsigned char dat=0;
- 159   1        int i;
- 160   1        AT25SF041_CS_Clr();
- 161   1        Wait_ms_SPINOR(1);
- 162   1      
- 163   1        //////////////////////////////////////////
- 164   1        // Send the OPCODE
- 165   1        for( i=0;i<8;i++)
- 166   1        {
- 167   2            AT25SF041_SCK_Clr();
- 168   2            Wait_ms_SPINOR(1);
- 169   2            if( (opcode&0x80)==0x80 )      //
- 170   2            {
- 171   3                AT25SF041_SDI_Set();
- 172   3            } 
- 173   2              else
- 174   2            {
- 175   3                AT25SF041_SDI_Clr();
- 176   3      
- 177   3            }
- 178   2            Wait_ms_SPINOR(1);    
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:12:42 PAGE 4   
+ 117   2            if( (addr&0x80)==0x80 )      //
+ 118   2            {
+ 119   3                AT25SF041_SDI_Set();
+ 120   3            } 
+ 121   2              else
+ 122   2            {
+ 123   3                AT25SF041_SDI_Clr();
+ 124   3      
+ 125   3            }
+ 126   2            Wait_ms_SPINOR(1);    
+ 127   2            AT25SF041_SCK_Set();
+ 128   2            Wait_ms_SPINOR(1);
+ 129   2            addr <<= 1;
+ 130   2      
+ 131   2        }
+ 132   1        
+ 133   1          for( i=0;i<8;i++)
+ 134   1        {
+ 135   2            AT25SF041_SCK_Clr();
+ 136   2            Wait_ms_SPINOR(1);
+ 137   2            if( (dat&0x80)==0x80 )       //
+ 138   2            {
+ 139   3                AT25SF041_SDI_Set();
+ 140   3            } 
+ 141   2              else
+ 142   2            {
+ 143   3                AT25SF041_SDI_Clr();
+ 144   3      
+ 145   3            }
+ 146   2            Wait_ms_SPINOR(1);    
+ 147   2            AT25SF041_SCK_Set();
+ 148   2            Wait_ms_SPINOR(1);
+ 149   2            dat <<= 1;
+ 150   2      
+ 151   2        }
+ 152   1        ///////////////////////////////////////
+ 153   1        AT25SF041_CS_Set();
+ 154   1        Wait_ms_SPINOR(1);
+ 155   1        
+ 156   1      }
+ 157          
+ 158          unsigned char  AT25SF041_Read(unsigned char opcode,unsigned long int addr)
+ 159          {
+ 160   1        unsigned char dat=0;
+ 161   1        int i;
+ 162   1        AT25SF041_CS_Clr();
+ 163   1        Wait_ms_SPINOR(1);
+ 164   1      
+ 165   1        //////////////////////////////////////////
+ 166   1        // Send the OPCODE
+ 167   1        for( i=0;i<8;i++)
+ 168   1        {
+ 169   2            AT25SF041_SCK_Clr();
+ 170   2            Wait_ms_SPINOR(1);
+ 171   2            if( (opcode&0x80)==0x80 )      //
+ 172   2            {
+ 173   3                AT25SF041_SDI_Set();
+ 174   3            } 
+ 175   2              else
+ 176   2            {
+ 177   3                AT25SF041_SDI_Clr();
+ 178   3      
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:19:16 PAGE 4   
 
- 179   2            AT25SF041_SCK_Set();
- 180   2            Wait_ms_SPINOR(1);
- 181   2            opcode <<= 1;                   //
- 182   2      
- 183   2      
- 184   2        }
- 185   1        // SEND THE ADDR (24-bit)
- 186   1        for( i=0;i<24;i++)
- 187   1        {
- 188   2            AT25SF041_SCK_Clr();
- 189   2            Wait_ms_SPINOR(1);
- 190   2            if( (addr&0x80)==0x80 )      //
- 191   2            {
- 192   3                AT25SF041_SDI_Set();
- 193   3            } 
- 194   2              else
- 195   2            {
- 196   3                AT25SF041_SDI_Clr();
- 197   3      
- 198   3            }
- 199   2            Wait_ms_SPINOR(1);    
- 200   2            AT25SF041_SCK_Set();
- 201   2            Wait_ms_SPINOR(1);
- 202   2            addr <<= 1;
- 203   2      
- 204   2        }
- 205   1        /////////////////////////////////////////
- 206   1        // Store the output data from NOR FLash
- 207   1        Wait_ms_SPINOR(10);
- 208   1      
- 209   1        AT25SF041_SDO_Set();
- 210   1        Wait_ms_SPINOR(2);
- 211   1        
- 212   1        for( i=0;i<8;i++)
- 213   1        {
- 214   2            dat <<= 1;                //
- 215   2            AT25SF041_SCK_Set();
- 216   2            Wait_ms_SPINOR(1);
- 217   2            AT25SF041_SCK_Clr();
+ 179   3            }
+ 180   2            Wait_ms_SPINOR(1);    
+ 181   2            AT25SF041_SCK_Set();
+ 182   2            Wait_ms_SPINOR(1);
+ 183   2            opcode <<= 1;                   //
+ 184   2      
+ 185   2      
+ 186   2        }
+ 187   1        // SEND THE ADDR (24-bit)
+ 188   1        for( i=0;i<24;i++)
+ 189   1        {
+ 190   2            AT25SF041_SCK_Clr();
+ 191   2            Wait_ms_SPINOR(1);
+ 192   2            if( (addr&0x80)==0x80 )      //
+ 193   2            {
+ 194   3                AT25SF041_SDI_Set();
+ 195   3            } 
+ 196   2              else
+ 197   2            {
+ 198   3                AT25SF041_SDI_Clr();
+ 199   3      
+ 200   3            }
+ 201   2            Wait_ms_SPINOR(1);    
+ 202   2            AT25SF041_SCK_Set();
+ 203   2            Wait_ms_SPINOR(1);
+ 204   2            addr <<= 1;
+ 205   2      
+ 206   2        }
+ 207   1        /////////////////////////////////////////
+ 208   1        // Store the output data from NOR FLash
+ 209   1        Wait_ms_SPINOR(10);
+ 210   1      
+ 211   1        AT25SF041_SDO_Set();
+ 212   1        Wait_ms_SPINOR(2);
+ 213   1        
+ 214   1        for( i=0;i<8;i++)
+ 215   1        {
+ 216   2            dat <<= 1;                //
+ 217   2            AT25SF041_SCK_Set();
  218   2            Wait_ms_SPINOR(1);
- 219   2      
- 220   2            if(AT25SF041_SDO)
- 221   2            {
- 222   3              // INPUT BIT =1
- 223   3              dat |= 0x01;            //
- 224   3            }
- 225   2      
- 226   2            //Wait_ms_SPINOR(1); 
- 227   2            //AT25SF041_SCK_Set();
- 228   2            //Wait_ms_SPINOR(1);
- 229   2      
- 230   2        } 
- 231   1        
- 232   1        ///////////////////////////////////////
- 233   1        AT25SF041_CS_Set(); 
- 234   1        Wait_ms_SPINOR(1);
- 235   1        return dat;
- 236   1      
- 237   1      }
- 238          
- 239          
+ 219   2            AT25SF041_SCK_Clr();
+ 220   2            Wait_ms_SPINOR(1);
+ 221   2      
+ 222   2            if(AT25SF041_SDO)
+ 223   2            {
+ 224   3              // INPUT BIT =1
+ 225   3              dat |= 0x01;            //
+ 226   3            }
+ 227   2      
+ 228   2            //Wait_ms_SPINOR(1); 
+ 229   2            //AT25SF041_SCK_Set();
+ 230   2            //Wait_ms_SPINOR(1);
+ 231   2      
+ 232   2        } 
+ 233   1        
+ 234   1        ///////////////////////////////////////
+ 235   1        AT25SF041_CS_Set(); 
+ 236   1        Wait_ms_SPINOR(1);
+ 237   1        return dat;
+ 238   1      
+ 239   1      }
  240          
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:12:42 PAGE 5   
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:19:16 PAGE 5   
 
- 241          unsigned char ucRead_Status_Register_Byte1(void)
- 242          {
- 243   1        unsigned char dat=0,opcode,count=0;
- 244   1        int i=0;
- 245   1        opcode=Read_Stat_Register_Byte1;
- 246   1        AT25SF041_CS_Clr();
- 247   1        Wait_ms_SPINOR(1);
- 248   1      
- 249   1        //////////////////////////////////////////
- 250   1        // Send the OPCODE
- 251   1        for( i=0;i<8;i++)
- 252   1        {
- 253   2            AT25SF041_SCK_Clr();
- 254   2            Wait_ms_SPINOR(1);
- 255   2            if( (opcode&0x80)==0x80 )      //
- 256   2            {
- 257   3                AT25SF041_SDI_Set();
- 258   3            } 
- 259   2              else
- 260   2            {
- 261   3                AT25SF041_SDI_Clr();
- 262   3      
- 263   3            }
- 264   2            Wait_ms_SPINOR(1);    
- 265   2            AT25SF041_SCK_Set();
- 266   2            Wait_ms_SPINOR(1);
- 267   2            opcode <<= 1;                   //
- 268   2      
- 269   2      
- 270   2        }
- 271   1      
- 272   1        /////////////////////////////////////////
- 273   1        // Store the output data from NOR FLash
- 274   1        Wait_ms_SPINOR(10);
- 275   1      
- 276   1        AT25SF041_SDO_Set();
- 277   1        Wait_ms_SPINOR(2);
- 278   1        for( i=0;i<8;i++)
- 279   1        {
- 280   2            dat <<= 1;                //
- 281   2            AT25SF041_SCK_Set();
- 282   2            Wait_ms_SPINOR(1);
- 283   2            AT25SF041_SCK_Clr();
+ 241          
+ 242          
+ 243          unsigned char ucRead_Status_Register_Byte1(void)
+ 244          {
+ 245   1        unsigned char dat=0,opcode,count=0;
+ 246   1        int i=0;
+ 247   1        opcode=Read_Stat_Register_Byte1;
+ 248   1        AT25SF041_CS_Clr();
+ 249   1        Wait_ms_SPINOR(1);
+ 250   1      
+ 251   1        //////////////////////////////////////////
+ 252   1        // Send the OPCODE
+ 253   1        for( i=0;i<8;i++)
+ 254   1        {
+ 255   2            AT25SF041_SCK_Clr();
+ 256   2            Wait_ms_SPINOR(1);
+ 257   2            if( (opcode&0x80)==0x80 )      //
+ 258   2            {
+ 259   3                AT25SF041_SDI_Set();
+ 260   3            } 
+ 261   2              else
+ 262   2            {
+ 263   3                AT25SF041_SDI_Clr();
+ 264   3      
+ 265   3            }
+ 266   2            Wait_ms_SPINOR(1);    
+ 267   2            AT25SF041_SCK_Set();
+ 268   2            Wait_ms_SPINOR(1);
+ 269   2            opcode <<= 1;                   //
+ 270   2      
+ 271   2      
+ 272   2        }
+ 273   1      
+ 274   1        /////////////////////////////////////////
+ 275   1        // Store the output data from NOR FLash
+ 276   1        Wait_ms_SPINOR(10);
+ 277   1      
+ 278   1        AT25SF041_SDO_Set();
+ 279   1        Wait_ms_SPINOR(2);
+ 280   1        for( i=0;i<8;i++)
+ 281   1        {
+ 282   2            dat <<= 1;                //
+ 283   2            AT25SF041_SCK_Set();
  284   2            Wait_ms_SPINOR(1);
- 285   2      
- 286   2            if(AT25SF041_SDO)
- 287   2            {
- 288   3              // INPUT BIT =1
- 289   3              dat |= 0x01;            //
- 290   3            }
- 291   2      
- 292   2        } 
- 293   1        
- 294   1        
- 295   1        ///////////////////////////////////////
- 296   1        AT25SF041_CS_Set(); 
- 297   1        Wait_ms_SPINOR(1);
- 298   1        return dat;
- 299   1      }
- 300          
- 301          /*void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
- 302          {
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:12:42 PAGE 6   
+ 285   2            AT25SF041_SCK_Clr();
+ 286   2            Wait_ms_SPINOR(1);
+ 287   2      
+ 288   2            if(AT25SF041_SDO)
+ 289   2            {
+ 290   3              // INPUT BIT =1
+ 291   3              dat |= 0x01;            //
+ 292   3            }
+ 293   2      
+ 294   2        } 
+ 295   1        
+ 296   1        
+ 297   1        ///////////////////////////////////////
+ 298   1        AT25SF041_CS_Set(); 
+ 299   1        Wait_ms_SPINOR(1);
+ 300   1        return dat;
+ 301   1      }
+ 302          
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:19:16 PAGE 6   
 
- 303            //if(*addr==0)
- 304            {
- 305              AT25SF041_WriteEnable();
- 306              //Wait_ms_SPINOR(50);
- 307              AT25SF041_ChipErase();
- 308              Wait_ms_SPINOR(5);
- 309            }               
- 310            AT25SF041_WriteEnable();
- 311            //Wait_ms_SPINOR(50); 
- 312            AT25SF041_Write(Byte_Page_Program, *addr,dat.month);
- 313            ++*addr;
- 314            
- 315            Wait_ms_SPINOR(50); 
- 316            AT25SF041_WriteEnable();
- 317            //Wait_ms_SPINOR(50); 
- 318            AT25SF041_Write(Byte_Page_Program, *addr,dat.date); 
- 319            Wait_ms_SPINOR(50); 
- 320            ++*addr;
- 321          
- 322          
- 323            AT25SF041_WriteEnable();
- 324            //Wait_ms_SPINOR(50); 
- 325            AT25SF041_Write(Byte_Page_Program, *addr,dat.hour); 
- 326            Wait_ms_SPINOR(50); 
- 327            ++*addr;
- 328          
- 329            AT25SF041_WriteEnable();
- 330            //Wait_ms_SPINOR(50); 
- 331            AT25SF041_Write(Byte_Page_Program, *addr,dat.min);
- 332            Wait_ms_SPINOR(50); 
- 333            ++*addr;
- 334          
- 335            AT25SF041_WriteEnable();
- 336            //Wait_ms_SPINOR(50); 
- 337            AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_voltage_ADC);    
- 338            Wait_ms_SPINOR(50); 
- 339            ++*addr;
- 340            
- 341            AT25SF041_WriteEnable();
- 342            //Wait_ms_SPINOR(50); 
- 343            AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_floor);
- 344            Wait_ms_SPINOR(50); 
- 345            ++*addr;
- 346            
- 347            AT25SF041_WriteEnable();
- 348            //Wait_ms_SPINOR(50); 
- 349            AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_float);
- 350            Wait_ms_SPINOR(50); 
- 351            ++*addr;
- 352            
- 353            AT25SF041_WriteEnable();
- 354            //Wait_ms_SPINOR(50); 
- 355            AT25SF041_Write(Byte_Page_Program, *addr,dat.light_ADC);  
- 356            Wait_ms_SPINOR(50); 
- 357            ++*addr;
- 358          
- 359            AT25SF041_WriteEnable();
- 360            //Wait_ms_SPINOR(50);
- 361            AT25SF041_Write(Byte_Page_Program, *addr,dat.Voltage_at_LUT_pos); 
- 362            Wait_ms_SPINOR(50); 
- 363            ++*addr;
- 364            
-C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:12:42 PAGE 7   
+ 303          /*void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
+ 304          {
+ 305            //if(*addr==0)
+ 306            {
+ 307              AT25SF041_WriteEnable();
+ 308              //Wait_ms_SPINOR(50);
+ 309              AT25SF041_ChipErase();
+ 310              Wait_ms_SPINOR(5);
+ 311            }               
+ 312            AT25SF041_WriteEnable();
+ 313            //Wait_ms_SPINOR(50); 
+ 314            AT25SF041_Write(Byte_Page_Program, *addr,dat.month);
+ 315            ++*addr;
+ 316            
+ 317            Wait_ms_SPINOR(50); 
+ 318            AT25SF041_WriteEnable();
+ 319            //Wait_ms_SPINOR(50); 
+ 320            AT25SF041_Write(Byte_Page_Program, *addr,dat.date); 
+ 321            Wait_ms_SPINOR(50); 
+ 322            ++*addr;
+ 323          
+ 324          
+ 325            AT25SF041_WriteEnable();
+ 326            //Wait_ms_SPINOR(50); 
+ 327            AT25SF041_Write(Byte_Page_Program, *addr,dat.hour); 
+ 328            Wait_ms_SPINOR(50); 
+ 329            ++*addr;
+ 330          
+ 331            AT25SF041_WriteEnable();
+ 332            //Wait_ms_SPINOR(50); 
+ 333            AT25SF041_Write(Byte_Page_Program, *addr,dat.min);
+ 334            Wait_ms_SPINOR(50); 
+ 335            ++*addr;
+ 336          
+ 337            AT25SF041_WriteEnable();
+ 338            //Wait_ms_SPINOR(50); 
+ 339            AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_voltage_ADC);    
+ 340            Wait_ms_SPINOR(50); 
+ 341            ++*addr;
+ 342            
+ 343            AT25SF041_WriteEnable();
+ 344            //Wait_ms_SPINOR(50); 
+ 345            AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_floor);
+ 346            Wait_ms_SPINOR(50); 
+ 347            ++*addr;
+ 348            
+ 349            AT25SF041_WriteEnable();
+ 350            //Wait_ms_SPINOR(50); 
+ 351            AT25SF041_Write(Byte_Page_Program, *addr,dat.calib_max_pos_float);
+ 352            Wait_ms_SPINOR(50); 
+ 353            ++*addr;
+ 354            
+ 355            AT25SF041_WriteEnable();
+ 356            //Wait_ms_SPINOR(50); 
+ 357            AT25SF041_Write(Byte_Page_Program, *addr,dat.light_ADC);  
+ 358            Wait_ms_SPINOR(50); 
+ 359            ++*addr;
+ 360          
+ 361            AT25SF041_WriteEnable();
+ 362            //Wait_ms_SPINOR(50);
+ 363            AT25SF041_Write(Byte_Page_Program, *addr,dat.Voltage_at_LUT_pos); 
+ 364            Wait_ms_SPINOR(50); 
+C51 COMPILER V9.52.0.0   AT25SF041                                                         02/25/2019 14:19:16 PAGE 7   
 
- 365            AT25SF041_WriteEnable();
- 366            //Wait_ms_SPINOR(50); 
- 367            AT25SF041_Write(Byte_Page_Program, *addr,dat.LUT_max_pos_floor);  
- 368            Wait_ms_SPINOR(50); 
- 369            ++*addr;
- 370            
- 371            AT25SF041_WriteEnable();
- 372            //Wait_ms_SPINOR(50); 
- 373            AT25SF041_Write(Byte_Page_Program, *addr,dat.LUT_max_pos_float);  
- 374            Wait_ms_SPINOR(50); 
- 375            ++*addr;
- 376          
- 377          
- 378          }*/
+ 365            ++*addr;
+ 366            
+ 367            AT25SF041_WriteEnable();
+ 368            //Wait_ms_SPINOR(50); 
+ 369            AT25SF041_Write(Byte_Page_Program, *addr,dat.LUT_max_pos_floor);  
+ 370            Wait_ms_SPINOR(50); 
+ 371            ++*addr;
+ 372            
+ 373            AT25SF041_WriteEnable();
+ 374            //Wait_ms_SPINOR(50); 
+ 375            AT25SF041_Write(Byte_Page_Program, *addr,dat.LUT_max_pos_float);  
+ 376            Wait_ms_SPINOR(50); 
+ 377            ++*addr;
+ 378          
+ 379          
+ 380          }*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
