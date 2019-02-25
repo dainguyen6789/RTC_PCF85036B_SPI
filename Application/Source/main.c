@@ -80,12 +80,7 @@ float current_position=127;
 unsigned char calib_stamp =30;// calib every 30 mins 
 unsigned long int SPI_NOR_INTERNAL_FLASH_ADDR=0;
 
-void AT25SF041_WriteEnable(void);
-void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char dat);
-unsigned char AT25SF041_Read(unsigned char opcode,unsigned long int addr);
-void Wait_ms_SPINOR(int ms);
-void AT25SF041_ChipErase(void);
-unsigned char ucRead_Status_Register_Byte1(void);
+
 
 void tm0_isr() interrupt 1 using 1
 {
@@ -102,7 +97,7 @@ void main(void)
 	
 	unsigned int max_ADC_Val_JP=0,max_ADC_Val=0;
 	struct point calib_point1,calib_point2;
-//	struct data_to_store dat_to_store;
+	struct data_to_store dat_to_store;
 //	unsigned char KeyNum;
 	int calib_day=0, calib_count;
 	float theorical_JP_max_pos=0;
@@ -168,65 +163,7 @@ void main(void)
 		calib_time[calib_count]=7+(float)calib_count/2;
 	}
 	
-						
-	AT25SF041_WriteEnable();
-	Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 0,0x3A);
-	
-	Wait_ms_SPINOR(100);
-	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 1,0x3B);	
-	Wait_ms_SPINOR(100);
 
-
-	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 2,0x3C);	
-	Wait_ms_SPINOR(100);
-
-	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 3,0x3D);
-	Wait_ms_SPINOR(100);
-
-	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 4,0x3E);		
-	Wait_ms_SPINOR(100);
-	
-	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 5,0x3F);
-	Wait_ms_SPINOR(100);
-	
-	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 6,0x36);
-	Wait_ms_SPINOR(100);
-	
-	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 7,0x37);	
-	Wait_ms_SPINOR(100);
-
-	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(50);
-	AT25SF041_Write(Byte_Page_Program, 8,0x38);	
-	Wait_ms_SPINOR(100);
-	
-	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 9,0x39);	
-	Wait_ms_SPINOR(100);
-	
-	AT25SF041_WriteEnable();
-	//Wait_ms_SPINOR(100);
-	AT25SF041_Write(Byte_Page_Program, 10,0x32);	
-	Wait_ms_SPINOR(100);	
-	
-	
-	
 	while(1)                                      
 	{
 		Key_Process();
@@ -348,7 +285,7 @@ void main(void)
 									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP);// find the real max value within JP max +/- 10mm
 									
 
-									/*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
+									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;
 									dat_to_store.month=months;
@@ -356,24 +293,24 @@ void main(void)
 									dat_to_store.hour=hours;
 									
 									dat_to_store.min=mins;
-									dat_to_store.calib_max_voltage_ADC=1;
-									//dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
-									dat_to_store.calib_max_pos_floor=1;
+									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
+									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
+									//at_to_store.calib_max_pos_floor=1;
 
 								
-									//dat_to_store.calib_max_pos_float=(unsigned char)(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
-									dat_to_store.calib_max_pos_float=2;// consider only 2 digit after .
+									dat_to_store.calib_max_pos_float=(unsigned char)(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
+									//dat_to_store.calib_max_pos_float=2;// consider only 2 digit after .
 
-									dat_to_store.light_ADC=2;
+									dat_to_store.light_ADC=sunlight_ADC/4;
 									
-									dat_to_store.Voltage_at_LUT_pos=3;
+									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;
 									//dat_to_store.Voltage_at_LUT_pos=0;
 								
 								
-									//dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
-									//dat_to_store.LUT_max_pos_float=(unsigned char)(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;	
-									dat_to_store.LUT_max_pos_floor=3;
-									dat_to_store.LUT_max_pos_float=4;	
+									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
+									dat_to_store.LUT_max_pos_float=(unsigned char)(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;	
+									//dat_to_store.LUT_max_pos_floor=3;
+									//dat_to_store.LUT_max_pos_float=4;	
 									//dat_to_store.LUT_max_pos_floor=0;
 									//dat_to_store.LUT_max_pos_float=0;										
 									//if(*addr==0)
@@ -439,7 +376,7 @@ void main(void)
 									Wait_ms_SPINOR(50);*/									
 							
 									Wait_ms_SPINOR(50);
-									//SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
+									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
 					
 
 								}

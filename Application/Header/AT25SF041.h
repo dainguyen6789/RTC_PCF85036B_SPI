@@ -24,15 +24,39 @@
  #define		AT25SF041_SDO_Clr()		{AT25SF041_SDO=0;} 
  #define		AT25SF041_SDO_Set()		{AT25SF041_SDO=1;}
  
+struct data_to_store 
+ {
+		unsigned char month;
+		unsigned char date;
+		unsigned char hour;
+		
+		unsigned char min;
+		unsigned char calib_max_voltage_ADC;
+		unsigned char calib_max_pos_floor;
+	
+
+	
+		unsigned char calib_max_pos_float; 
+		//dat_to_store.calib_max_pos_float=2;// consider only 2 digit after .
+
+		unsigned char light_ADC;
+		
+		unsigned char Voltage_at_LUT_pos;
+		//dat_to_store.Voltage_at_LUT_pos=0;
+	
+	
+		unsigned char LUT_max_pos_floor;
+		unsigned char LUT_max_pos_float	;
+};
 
  
-/*void AT25SF041_WriteEnable(void);
+void AT25SF041_WriteEnable(void);
 void AT25SF041_Write(unsigned char opcode, unsigned long int addr,unsigned char dat);
 unsigned char AT25SF041_Read(unsigned char opcode,unsigned long int addr);
 void Wait_ms_SPINOR(int ms);
 void AT25SF041_ChipErase(void);
-unsigned char ucRead_Status_Register_Byte1(void);*/
-//void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr);
+unsigned char ucRead_Status_Register_Byte1(void);
+void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr);
 
 
 
