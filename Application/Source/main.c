@@ -276,7 +276,69 @@ void main(void)
 								{
 									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP);// find the real max value within JP max +/- 10mm
-									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
+										{
+											AT25SF041_WriteEnable();
+											//Wait_ms_SPINOR(50);
+											AT25SF041_ChipErase();
+											Wait_ms_SPINOR(5);
+										}								
+										AT25SF041_WriteEnable();
+										//Wait_ms_SPINOR(50);	
+										AT25SF041_Write(Byte_Page_Program, 0,months);
+										
+										Wait_ms_SPINOR(50);	
+										AT25SF041_WriteEnable();
+										//Wait_ms_SPINOR(50);	
+										AT25SF041_Write(Byte_Page_Program, 1,days);	
+										Wait_ms_SPINOR(50);	
+
+
+										AT25SF041_WriteEnable();
+										//Wait_ms_SPINOR(50);	
+										AT25SF041_Write(Byte_Page_Program, 2,hours);	
+										Wait_ms_SPINOR(50);	
+
+										AT25SF041_WriteEnable();
+										//Wait_ms_SPINOR(50);	
+										AT25SF041_Write(Byte_Page_Program, 3,mins);
+										Wait_ms_SPINOR(50);	
+
+										AT25SF041_WriteEnable();
+										//Wait_ms_SPINOR(50);	
+										AT25SF041_Write(Byte_Page_Program, 4,4);		
+										Wait_ms_SPINOR(50);	
+										
+										AT25SF041_WriteEnable();
+										//Wait_ms_SPINOR(50);	
+										AT25SF041_Write(Byte_Page_Program, 5,5);
+										Wait_ms_SPINOR(50);	
+										
+										AT25SF041_WriteEnable();
+										//Wait_ms_SPINOR(50);	
+										AT25SF041_Write(Byte_Page_Program, 6,6);
+										Wait_ms_SPINOR(50);	
+										
+										AT25SF041_WriteEnable();
+										//Wait_ms_SPINOR(50);	
+										AT25SF041_Write(Byte_Page_Program, 7,7);	
+										Wait_ms_SPINOR(50);	
+
+										AT25SF041_WriteEnable();
+										//Wait_ms_SPINOR(50);
+										AT25SF041_Write(Byte_Page_Program, 8,8);	
+										Wait_ms_SPINOR(50);	
+										
+										AT25SF041_WriteEnable();
+										//Wait_ms_SPINOR(50);	
+										AT25SF041_Write(Byte_Page_Program, 9,9);	
+										Wait_ms_SPINOR(50);	
+										
+										AT25SF041_WriteEnable();
+										//Wait_ms_SPINOR(50);	
+										AT25SF041_Write(Byte_Page_Program, 10,10);	
+										Wait_ms_SPINOR(50);	
+
+									/*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
 									//count++;
 									dat_to_store.month=months;
