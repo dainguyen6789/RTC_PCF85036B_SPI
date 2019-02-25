@@ -157,6 +157,71 @@ void main(void)
 		calib_value[calib_count]=0;
 		calib_time[calib_count]=7+(float)calib_count/2;
 	}
+	
+	{
+		AT25SF041_WriteEnable();
+		//Wait_ms_SPINOR(50);
+		AT25SF041_ChipErase();
+		Wait_ms_SPINOR(5);
+	}								
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(100);
+	AT25SF041_Write(Byte_Page_Program, 0,0x32);
+	
+	Wait_ms_SPINOR(100);
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(100);
+	AT25SF041_Write(Byte_Page_Program, 1,0x32);	
+	Wait_ms_SPINOR(100);
+
+
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(100);
+	AT25SF041_Write(Byte_Page_Program, 2,0x32);	
+	Wait_ms_SPINOR(100);
+
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(100);
+	AT25SF041_Write(Byte_Page_Program, 3,0x32);
+	Wait_ms_SPINOR(100);
+
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(100);
+	AT25SF041_Write(Byte_Page_Program, 4,4);		
+	Wait_ms_SPINOR(100);
+	
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(100);
+	AT25SF041_Write(Byte_Page_Program, 5,5);
+	Wait_ms_SPINOR(100);
+	
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(100);
+	AT25SF041_Write(Byte_Page_Program, 6,6);
+	Wait_ms_SPINOR(100);
+	
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(100);
+	AT25SF041_Write(Byte_Page_Program, 7,7);	
+	Wait_ms_SPINOR(100);
+
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(50);
+	AT25SF041_Write(Byte_Page_Program, 8,8);	
+	Wait_ms_SPINOR(100);
+	
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(100);
+	AT25SF041_Write(Byte_Page_Program, 9,9);	
+	Wait_ms_SPINOR(100);
+	
+	AT25SF041_WriteEnable();
+	//Wait_ms_SPINOR(100);
+	AT25SF041_Write(Byte_Page_Program, 10,10);	
+	Wait_ms_SPINOR(100);	
+	
+	
+	
 	while(1)                                      
 	{
 		Key_Process();
@@ -276,67 +341,7 @@ void main(void)
 								{
 									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP);// find the real max value within JP max +/- 10mm
-										{
-											AT25SF041_WriteEnable();
-											//Wait_ms_SPINOR(50);
-											AT25SF041_ChipErase();
-											Wait_ms_SPINOR(5);
-										}								
-										AT25SF041_WriteEnable();
-										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 0,0x32);
-										
-										Wait_ms_SPINOR(100);
-										AT25SF041_WriteEnable();
-										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 1,0x32);	
-										Wait_ms_SPINOR(100);
-
-
-										AT25SF041_WriteEnable();
-										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 2,0x32);	
-										Wait_ms_SPINOR(100);
-
-										AT25SF041_WriteEnable();
-										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 3,0x32);
-										Wait_ms_SPINOR(100);
-
-										AT25SF041_WriteEnable();
-										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 4,4);		
-										Wait_ms_SPINOR(100);
-										
-										AT25SF041_WriteEnable();
-										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 5,5);
-										Wait_ms_SPINOR(100);
-										
-										AT25SF041_WriteEnable();
-										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 6,6);
-										Wait_ms_SPINOR(100);
-										
-										AT25SF041_WriteEnable();
-										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 7,7);	
-										Wait_ms_SPINOR(100);
-
-										AT25SF041_WriteEnable();
-										//Wait_ms_SPINOR(50);
-										AT25SF041_Write(Byte_Page_Program, 8,8);	
-										Wait_ms_SPINOR(100);
-										
-										AT25SF041_WriteEnable();
-										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 9,9);	
-										Wait_ms_SPINOR(100);
-										
-										AT25SF041_WriteEnable();
-										//Wait_ms_SPINOR(100);
-										AT25SF041_Write(Byte_Page_Program, 10,10);	
-										Wait_ms_SPINOR(100);
+									
 
 									/*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
 									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;

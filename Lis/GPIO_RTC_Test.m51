@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22                                                        02/25/2019  12:54:15  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22                                                        02/25/2019  13:00:29  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
@@ -59,7 +59,7 @@ INPUT MODULES INCLUDED:
   C:\KEIL_V5\C51\LIB\C51L.LIB (?C?LLDOPTR)
   C:\KEIL_V5\C51\LIB\C51L.LIB (?C?LSTPTR)
   C:\KEIL_V5\C51\LIB\C51L.LIB (?C?LSTOPTR)
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 2
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 2
 
 
   C:\KEIL_V5\C51\LIB\C51L.LIB (?C?LLDXDATA)
@@ -119,7 +119,7 @@ LINK MAP OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
             XDATA   0646H     0001H     UNIT         ?XD?UC_NACK?IOEXPANDER_PI4IOE5V96248
 
             * * * * * * *   C O D E   M E M O R Y   * * * * * * *
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 3
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 3
 
 
             CODE    0000H     0003H     ABSOLUTE     
@@ -179,7 +179,7 @@ LINK MAP OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
             CODE    4BCEH     001EH     UNIT         ?PR?_DELAY_MS?KEYPAD
             CODE    4BECH     001DH     UNIT         ?PR?_DISPLAYLCD?LCD_DRIVER_SPLC780D
             CODE    4C09H     001BH     UNIT         ?PR?_BCDTODEC1?BIPOLARMOTOR
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 4
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 4
 
 
             CODE    4C24H     0018H     UNIT         ?PR?_SPI_WRITETIME?PCF85063BTL
@@ -227,6 +227,10 @@ SEGMENT                                             BIT_GROUP          XDATA_GRO
   +--> ?PR?_DELAY_MS?KEYPAD
   +--> ?PR?_DISPLAY_LINE?LCD_DRIVER_SPLC780D
   +--> ?PR?_WRITEDATA?LCD_DRIVER_SPLC780D
+  +--> ?PR?AT25SF041_WRITEENABLE?AT25SF041
+  +--> ?PR?AT25SF041_CHIPERASE?AT25SF041
+  +--> ?PR?_WAIT_MS_SPINOR?AT25SF041
+  +--> ?PR?_AT25SF041_WRITE?AT25SF041
   +--> ?PR?KEY_PROCESS?KEYPAD
   +--> ?PR?_COMMAND?LCD_DRIVER_SPLC780D
   +--> ?PR?_DISPLAY_POS?MAIN
@@ -235,15 +239,11 @@ SEGMENT                                             BIT_GROUP          XDATA_GRO
   +--> ?PR?LCD_RETURN_HOME?LCD_DRIVER_SPLC780D
   +--> ?PR?_READ_TIME?PCF85063BTL
   +--> ?PR?_ADC_GETRESULT?ADC
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 5
+
+
   +--> ?PR?_BCDTODEC1?BIPOLARMOTOR
   +--> ?PR?_CALIBRATION?CALIBRATION
-  +--> ?PR?AT25SF041_WRITEENABLE?AT25SF041
-  +--> ?PR?AT25SF041_CHIPERASE?AT25SF041
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 5
-
-
-  +--> ?PR?_WAIT_MS_SPINOR?AT25SF041
-  +--> ?PR?_AT25SF041_WRITE?AT25SF041
   +--> ?PR?LINEAR_INTERPOLATE?BIPOLARMOTOR
   +--> ?PR?_UPDATE_POSITION?BIPOLARMOTOR
 
@@ -269,6 +269,19 @@ SEGMENT                                             BIT_GROUP          XDATA_GRO
 ?PR?_WRITEDATA?LCD_DRIVER_SPLC780D               -----    -----      046AH    0001H
   +--> ?PR?_WAIT_MS?LCD_DRIVER_SPLC780D
 
+?PR?AT25SF041_WRITEENABLE?AT25SF041              -----    -----      03BBH    0002H
+  +--> ?PR?_WAIT_MS_SPINOR?AT25SF041
+
+?PR?AT25SF041_CHIPERASE?AT25SF041                -----    -----      03BBH    0002H
+  +--> ?PR?_WAIT_MS_SPINOR?AT25SF041
+  +--> ?PR?READ_STATUS_REGISTER_BYTE1?AT25SF041
+
+?PR?READ_STATUS_REGISTER_BYTE1?AT25SF041         -----    -----      03BDH    0003H
+  +--> ?PR?_WAIT_MS_SPINOR?AT25SF041
+
+?PR?_AT25SF041_WRITE?AT25SF041                   -----    -----      03BBH    0008H
+  +--> ?PR?_WAIT_MS_SPINOR?AT25SF041
+
 ?PR?KEY_PROCESS?KEYPAD                           -----    -----      03BBH    0006H
   +--> ?PR?KEY_SCAN?KEYPAD
   +--> ?PR?_SPI_WRITETIME?PCF85063BTL
@@ -286,6 +299,9 @@ SEGMENT                                             BIT_GROUP          XDATA_GRO
   +--> ?PR?_WRITEDATA?LCD_DRIVER_SPLC780D
 
 ?PR?_DISPLAYLCD?LCD_DRIVER_SPLC780D              -----    -----      03BBH    0001H
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 6
+
+
   +--> ?PR?_WRITEDATA?LCD_DRIVER_SPLC780D
 
 ?PR?_STEP_MOVE?BIPOLARMOTOR                      0020H.6  0000H.1    0479H    0004H
@@ -299,9 +315,6 @@ SEGMENT                                             BIT_GROUP          XDATA_GRO
   +--> ?PR?I2C_START?IOEXPANDER_PI4IOE5V96248
   +--> ?PR?_WAIT_MS_I2C?IOEXPANDER_PI4IOE5V9...
   +--> ?PR?_I2C_SENDBYTE?IOEXPANDER_PI4IOE5V...
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 6
-
-
   +--> ?PR?I2C_ACK?IOEXPANDER_PI4IOE5V96248
   +--> ?PR?I2C_STOP?IOEXPANDER_PI4IOE5V96248
 
@@ -346,6 +359,9 @@ SEGMENT                                             BIT_GROUP          XDATA_GRO
   +--> ?PR?ASIN?ASIN
   +--> ?PR?LINEAR_INTERPOLATE?BIPOLARMOTOR
   +--> ?PR?_ABS?ABS
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 7
+
+
   +--> ?PR?_MOVE?BIPOLARMOTOR
 
 ?PR?SUNPOS?SUNPOS                                -----    -----      0475H    005DH
@@ -358,9 +374,6 @@ SEGMENT                                             BIT_GROUP          XDATA_GRO
 
 ?PR?_ATAN2?ATAN2                                 -----    -----      04D2H    0008H
   +--> ?PR?ATAN?ATAN
-
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 7
-
 
 ?PR?ATAN?ATAN                                    0020H.5  0000H.2    04DAH    0004H
 
@@ -390,19 +403,6 @@ SEGMENT                                             BIT_GROUP          XDATA_GRO
 
 ?PR?_MAX_VALUE?CALIBRATION                       -----    -----      0460H    0004H
 
-?PR?AT25SF041_WRITEENABLE?AT25SF041              -----    -----      03BBH    0002H
-  +--> ?PR?_WAIT_MS_SPINOR?AT25SF041
-
-?PR?AT25SF041_CHIPERASE?AT25SF041                -----    -----      03BBH    0002H
-  +--> ?PR?_WAIT_MS_SPINOR?AT25SF041
-  +--> ?PR?READ_STATUS_REGISTER_BYTE1?AT25SF041
-
-?PR?READ_STATUS_REGISTER_BYTE1?AT25SF041         -----    -----      03BDH    0003H
-  +--> ?PR?_WAIT_MS_SPINOR?AT25SF041
-
-?PR?_AT25SF041_WRITE?AT25SF041                   -----    -----      03BBH    0008H
-  +--> ?PR?_WAIT_MS_SPINOR?AT25SF041
-
 
 
 UNRESOLVED EXTERNAL SYMBOLS:
@@ -419,7 +419,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   -------         MODULE        MAIN
   C:0000H         SYMBOL        _ICE_DUMMY_
   X:04E6H         PUBLIC        calib_value
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 8
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 8
 
 
   D:0080H         PUBLIC        P0
@@ -479,7 +479,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   -------         PROC          TM0_ISR
   C:0009H         LINE#         86
   C:0009H         LINE#         88
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 9
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 9
 
 
   -------         ENDPROC       TM0_ISR
@@ -539,187 +539,187 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:0B9CH         LINE#         152
   C:0BA1H         LINE#         155
   C:0BBAH         LINE#         156
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 10
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 10
 
 
   C:0BBAH         LINE#         157
   C:0BD6H         LINE#         158
   C:0C1DH         LINE#         159
-  C:0C2EH         LINE#         160
   C:0C2EH         LINE#         161
   C:0C2EH         LINE#         162
-  C:0C31H         LINE#         165
-  C:0C31H         LINE#         168
-  C:0C36H         LINE#         169
-  C:0C3BH         LINE#         171
-  C:0C40H         LINE#         172
-  C:0C45H         LINE#         173
-  C:0C4AH         LINE#         174
-  C:0C4FH         LINE#         176
-  C:0C60H         LINE#         177
-  C:0C65H         LINE#         178
-  C:0C6AH         LINE#         180
-  C:0C71H         LINE#         181
-  C:0C79H         LINE#         182
-  C:0C7EH         LINE#         183
-  C:0C86H         LINE#         184
-  C:0C8BH         LINE#         185
-  C:0C95H         LINE#         186
-  C:0C9AH         LINE#         187
-  C:0CA2H         LINE#         189
-  C:0CAAH         LINE#         190
-  C:0CAFH         LINE#         191
-  C:0CB9H         LINE#         192
-  C:0CB9H         LINE#         193
-  C:0CBBH         LINE#         194
-  C:0CBDH         LINE#         195
-  C:0CC7H         LINE#         196
-  C:0CC7H         LINE#         197
-  C:0CCCH         LINE#         198
-  C:0CCCH         LINE#         210
-  C:0CD9H         LINE#         211
-  C:0CD9H         LINE#         212
-  C:0CE3H         LINE#         213
-  C:0CFAH         LINE#         214
-  C:0CFAH         LINE#         215
-  C:0CFCH         LINE#         216
-  C:0CFEH         LINE#         218
-  C:0CFEH         LINE#         219
-  C:0D09H         LINE#         220
-  C:0D09H         LINE#         221
-  C:0D0EH         LINE#         222
-  C:0D0EH         LINE#         223
-  C:0D1BH         LINE#         224
-  C:0D1BH         LINE#         227
-  C:0D25H         LINE#         228
-  C:0D3CH         LINE#         229
-  C:0D3CH         LINE#         230
-  C:0D3EH         LINE#         231
-  C:0D40H         LINE#         233
-  C:0D40H         LINE#         234
-  C:0D4BH         LINE#         235
-  C:0D4BH         LINE#         236
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 11
+  C:0C31H         LINE#         164
+  C:0C34H         LINE#         165
+  C:0C3BH         LINE#         166
+  C:0C3BH         LINE#         167
+  C:0C3EH         LINE#         169
+  C:0C53H         LINE#         171
+  C:0C5AH         LINE#         172
+  C:0C5DH         LINE#         174
+  C:0C72H         LINE#         175
+  C:0C79H         LINE#         178
+  C:0C7CH         LINE#         180
+  C:0C91H         LINE#         181
+  C:0C98H         LINE#         183
+  C:0C9BH         LINE#         185
+  C:0CB0H         LINE#         186
+  C:0CB7H         LINE#         188
+  C:0CBAH         LINE#         190
+  C:0CCFH         LINE#         191
+  C:0CD6H         LINE#         193
+  C:0CD9H         LINE#         195
+  C:0CEEH         LINE#         196
+  C:0CF5H         LINE#         198
+  C:0CF8H         LINE#         200
+  C:0D0DH         LINE#         201
+  C:0D14H         LINE#         203
+  C:0D17H         LINE#         205
+  C:0D2CH         LINE#         206
+  C:0D33H         LINE#         208
+  C:0D36H         LINE#         210
+  C:0D4BH         LINE#         211
+  C:0D52H         LINE#         213
+  C:0D55H         LINE#         215
+  C:0D6AH         LINE#         216
+  C:0D71H         LINE#         218
+  C:0D74H         LINE#         220
+  C:0D89H         LINE#         221
+  C:0D90H         LINE#         225
+  C:0D90H         LINE#         226
+  C:0D90H         LINE#         227
+  C:0D93H         LINE#         230
+  C:0D93H         LINE#         233
+  C:0D98H         LINE#         234
+  C:0D9DH         LINE#         236
+  C:0DA2H         LINE#         237
+  C:0DA7H         LINE#         238
+  C:0DACH         LINE#         239
+  C:0DB1H         LINE#         241
+  C:0DC2H         LINE#         242
+  C:0DC7H         LINE#         243
+  C:0DCCH         LINE#         245
+  C:0DD3H         LINE#         246
+  C:0DDBH         LINE#         247
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 11
 
 
-  C:0D50H         LINE#         237
-  C:0D52H         LINE#         238
-  C:0D52H         LINE#         247
-  C:0D74H         LINE#         248
-  C:0D74H         LINE#         249
-  C:0D7EH         LINE#         250
-  C:0D84H         LINE#         251
-  C:0D86H         LINE#         252
-  C:0D88H         LINE#         253
-  C:0D8AH         LINE#         254
-  C:0D8AH         LINE#         255
-  C:0D8DH         LINE#         257
-  C:0D8DH         LINE#         258
-  C:0D93H         LINE#         259
-  C:0D9BH         LINE#         260
-  C:0DA1H         LINE#         261
-  C:0DA9H         LINE#         262
-  C:0DE4H         LINE#         266
-  C:0DF1H         LINE#         267
-  C:0DF1H         LINE#         268
-  C:0DFEH         LINE#         269
-  C:0E31H         LINE#         270
-  C:0E3EH         LINE#         271
-  C:0E3EH         LINE#         273
-  C:0E6DH         LINE#         274
-  C:0E6DH         LINE#         275
-  C:0E8FH         LINE#         276
-  C:0E8FH         LINE#         277
-  C:0F0BH         LINE#         278
-  C:0F89H         LINE#         279
-  C:0F89H         LINE#         280
-  C:0F8CH         LINE#         282
-  C:0F8FH         LINE#         283
-  C:0F96H         LINE#         284
-  C:0F96H         LINE#         285
-  C:0F99H         LINE#         287
-  C:0FAEH         LINE#         289
-  C:0FB5H         LINE#         290
-  C:0FB8H         LINE#         292
-  C:0FCDH         LINE#         293
-  C:0FD4H         LINE#         296
-  C:0FD7H         LINE#         298
-  C:0FECH         LINE#         299
-  C:0FF3H         LINE#         301
-  C:0FF6H         LINE#         303
-  C:100BH         LINE#         304
-  C:1012H         LINE#         306
-  C:1015H         LINE#         308
-  C:102AH         LINE#         309
-  C:1031H         LINE#         311
-  C:1034H         LINE#         313
-  C:1049H         LINE#         314
-  C:1050H         LINE#         316
-  C:1053H         LINE#         318
-  C:1068H         LINE#         319
-  C:106FH         LINE#         321
-  C:1072H         LINE#         323
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 12
+  C:0DE0H         LINE#         248
+  C:0DE8H         LINE#         249
+  C:0DEDH         LINE#         250
+  C:0DF7H         LINE#         251
+  C:0DFCH         LINE#         252
+  C:0E04H         LINE#         254
+  C:0E0CH         LINE#         255
+  C:0E11H         LINE#         256
+  C:0E1BH         LINE#         257
+  C:0E1BH         LINE#         258
+  C:0E1DH         LINE#         259
+  C:0E1FH         LINE#         260
+  C:0E29H         LINE#         261
+  C:0E29H         LINE#         262
+  C:0E2EH         LINE#         263
+  C:0E2EH         LINE#         275
+  C:0E3BH         LINE#         276
+  C:0E3BH         LINE#         277
+  C:0E45H         LINE#         278
+  C:0E5CH         LINE#         279
+  C:0E5CH         LINE#         280
+  C:0E5EH         LINE#         281
+  C:0E60H         LINE#         283
+  C:0E60H         LINE#         284
+  C:0E6BH         LINE#         285
+  C:0E6BH         LINE#         286
+  C:0E70H         LINE#         287
+  C:0E70H         LINE#         288
+  C:0E7DH         LINE#         289
+  C:0E7DH         LINE#         292
+  C:0E87H         LINE#         293
+  C:0E9EH         LINE#         294
+  C:0E9EH         LINE#         295
+  C:0EA0H         LINE#         296
+  C:0EA2H         LINE#         298
+  C:0EA2H         LINE#         299
+  C:0EADH         LINE#         300
+  C:0EADH         LINE#         301
+  C:0EB2H         LINE#         302
+  C:0EB4H         LINE#         303
+  C:0EB4H         LINE#         312
+  C:0ED6H         LINE#         313
+  C:0ED6H         LINE#         314
+  C:0EE0H         LINE#         315
+  C:0EE6H         LINE#         316
+  C:0EE8H         LINE#         317
+  C:0EEAH         LINE#         318
+  C:0EECH         LINE#         319
+  C:0EECH         LINE#         320
+  C:0EEFH         LINE#         322
+  C:0EEFH         LINE#         323
+  C:0EF5H         LINE#         324
+  C:0EFDH         LINE#         325
+  C:0F03H         LINE#         326
+  C:0F0BH         LINE#         327
+  C:0F46H         LINE#         331
+  C:0F53H         LINE#         332
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 12
 
 
-  C:1087H         LINE#         324
-  C:108EH         LINE#         326
-  C:1091H         LINE#         328
-  C:10A6H         LINE#         329
-  C:10ADH         LINE#         331
-  C:10B0H         LINE#         333
-  C:10C5H         LINE#         334
-  C:10CCH         LINE#         336
-  C:10CFH         LINE#         338
-  C:10E4H         LINE#         339
-  C:10EBH         LINE#         431
-  C:10F2H         LINE#         435
-  C:10F5H         LINE#         436
-  C:1106H         LINE#         437
-  C:1106H         LINE#         438
-  C:1106H         LINE#         440
+  C:0F53H         LINE#         333
+  C:0F60H         LINE#         334
+  C:0F93H         LINE#         335
+  C:0FA0H         LINE#         336
+  C:0FA0H         LINE#         338
+  C:0FCFH         LINE#         339
+  C:0FCFH         LINE#         340
+  C:0FF1H         LINE#         341
+  C:0FF1H         LINE#         342
+  C:106DH         LINE#         343
+  C:10EBH         LINE#         436
+  C:10F2H         LINE#         440
+  C:10F5H         LINE#         441
+  C:1106H         LINE#         442
   C:1106H         LINE#         443
-  C:1109H         LINE#         445
-  C:1109H         LINE#         446
-  C:112BH         LINE#         447
-  C:112BH         LINE#         448
-  C:11A7H         LINE#         449
-  C:11FCH         LINE#         450
-  C:11FCH         LINE#         451
-  C:11FCH         LINE#         452
-  C:11FFH         LINE#         456
-  C:11FFH         LINE#         459
-  C:1233H         LINE#         460
-  C:1233H         LINE#         461
-  C:1255H         LINE#         462
-  C:1255H         LINE#         463
-  C:12D1H         LINE#         464
-  C:134FH         LINE#         484
-  C:1352H         LINE#         485
-  C:1363H         LINE#         486
-  C:1363H         LINE#         487
-  C:136BH         LINE#         489
-  C:136BH         LINE#         492
-  C:136EH         LINE#         494
-  C:136EH         LINE#         496
-  C:1390H         LINE#         497
-  C:1390H         LINE#         498
-  C:140CH         LINE#         500
-  C:1439H         LINE#         501
-  C:1454H         LINE#         502
-  C:1481H         LINE#         503
-  C:149CH         LINE#         505
-  C:1538H         LINE#         508
-  C:1538H         LINE#         509
-  C:1538H         LINE#         510
-  C:1538H         LINE#         512
+  C:1106H         LINE#         445
+  C:1106H         LINE#         448
+  C:1109H         LINE#         450
+  C:1109H         LINE#         451
+  C:112BH         LINE#         452
+  C:112BH         LINE#         453
+  C:11A7H         LINE#         454
+  C:11FCH         LINE#         455
+  C:11FCH         LINE#         456
+  C:11FCH         LINE#         457
+  C:11FFH         LINE#         461
+  C:11FFH         LINE#         464
+  C:1233H         LINE#         465
+  C:1233H         LINE#         466
+  C:1255H         LINE#         467
+  C:1255H         LINE#         468
+  C:12D1H         LINE#         469
+  C:134FH         LINE#         489
+  C:1352H         LINE#         490
+  C:1363H         LINE#         491
+  C:1363H         LINE#         492
+  C:136BH         LINE#         494
+  C:136BH         LINE#         497
+  C:136EH         LINE#         499
+  C:136EH         LINE#         501
+  C:1390H         LINE#         502
+  C:1390H         LINE#         503
+  C:140CH         LINE#         505
+  C:1439H         LINE#         506
+  C:1454H         LINE#         507
+  C:1481H         LINE#         508
+  C:149CH         LINE#         510
+  C:1538H         LINE#         513
+  C:1538H         LINE#         514
   C:1538H         LINE#         515
-  C:1554H         LINE#         516
-  C:1559H         LINE#         518
-  C:155BH         LINE#         519
+  C:1538H         LINE#         517
+  C:1538H         LINE#         520
+  C:1554H         LINE#         521
+  C:1559H         LINE#         523
+  C:155BH         LINE#         524
   -------         ENDPROC       MAIN
   -------         PROC          _DISPLAY_PROX
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 13
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 13
 
 
   D:0002H         SYMBOL        dat
@@ -729,17 +729,17 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   X:0640H         SYMBOL        hundred
   X:0641H         SYMBOL        thousand
   -------         ENDDO         
-  C:4510H         LINE#         603
-  C:4514H         LINE#         604
-  C:4514H         LINE#         606
-  C:4520H         LINE#         607
-  C:4530H         LINE#         608
-  C:454CH         LINE#         609
-  C:457CH         LINE#         610
-  C:4586H         LINE#         611
-  C:4590H         LINE#         612
-  C:459AH         LINE#         613
-  C:45A4H         LINE#         615
+  C:4510H         LINE#         608
+  C:4514H         LINE#         609
+  C:4514H         LINE#         611
+  C:4520H         LINE#         612
+  C:4530H         LINE#         613
+  C:454CH         LINE#         614
+  C:457CH         LINE#         615
+  C:4586H         LINE#         616
+  C:4590H         LINE#         617
+  C:459AH         LINE#         618
+  C:45A4H         LINE#         620
   -------         ENDPROC       _DISPLAY_PROX
   -------         PROC          _DISPLAY_POS
   X:0460H         SYMBOL        sign_dat
@@ -751,35 +751,35 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   X:0467H         SYMBOL        after_dot
   X:0468H         SYMBOL        dat
   -------         ENDDO         
-  C:3994H         LINE#         618
-  C:399AH         LINE#         619
-  C:399AH         LINE#         623
-  C:39B6H         LINE#         624
-  C:39D0H         LINE#         625
-  C:39F4H         LINE#         627
-  C:3A3EH         LINE#         629
-  C:3A55H         LINE#         630
-  C:3A62H         LINE#         631
-  C:3A84H         LINE#         632
-  C:3AB9H         LINE#         633
-  C:3AD1H         LINE#         634
-  C:3AD1H         LINE#         636
-  C:3AD1H         LINE#         637
-  C:3AD1H         LINE#         638
+  C:3994H         LINE#         623
+  C:399AH         LINE#         624
+  C:399AH         LINE#         628
+  C:39B6H         LINE#         629
+  C:39D0H         LINE#         630
+  C:39F4H         LINE#         632
+  C:3A3EH         LINE#         634
+  C:3A55H         LINE#         635
+  C:3A62H         LINE#         636
+  C:3A84H         LINE#         637
+  C:3AB9H         LINE#         638
   C:3AD1H         LINE#         639
-  C:3AD1H         LINE#         640
+  C:3AD1H         LINE#         641
+  C:3AD1H         LINE#         642
+  C:3AD1H         LINE#         643
   C:3AD1H         LINE#         644
-  C:3AD3H         LINE#         646
-  C:3AD3H         LINE#         648
-  C:3AD8H         LINE#         649
-  C:3AE2H         LINE#         650
-  C:3AECH         LINE#         651
-  C:3AF6H         LINE#         652
-  C:3AFBH         LINE#         653
-  C:3B05H         LINE#         657
-  C:3B05H         LINE#         659
+  C:3AD1H         LINE#         645
+  C:3AD1H         LINE#         649
+  C:3AD3H         LINE#         651
+  C:3AD3H         LINE#         653
+  C:3AD8H         LINE#         654
+  C:3AE2H         LINE#         655
+  C:3AECH         LINE#         656
+  C:3AF6H         LINE#         657
+  C:3AFBH         LINE#         658
+  C:3B05H         LINE#         662
+  C:3B05H         LINE#         664
   -------         ENDPROC       _DISPLAY_POS
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 14
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 14
 
 
   -------         ENDMOD        MAIN
@@ -839,7 +839,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:4B71H         LINE#         20
   C:4B73H         LINE#         21
   C:4B73H         LINE#         22
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 15
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 15
 
 
   C:4B75H         LINE#         23
@@ -899,7 +899,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   D:0002H         SYMBOL        val
   D:0005H         SYMBOL        addr
   C:4C24H         LINE#         71
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 16
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 16
 
 
   C:4C26H         LINE#         72
@@ -959,7 +959,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:4631H         LINE#         130
   C:4636H         LINE#         132
   C:463BH         LINE#         134
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 17
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 17
 
 
   C:4674H         LINE#         135
@@ -1019,7 +1019,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   D:00A8H         PUBLIC        IE
   B:00A8H.4       PUBLIC        ES
   D:00B8H         PUBLIC        IP
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 18
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 18
 
 
   C:4C3CH         PUBLIC        _ASCIItoBCD
@@ -1079,7 +1079,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   -------         ENDPROC       _DECTOBCD
   -------         PROC          _ASCII_LETTER
   D:0007H         SYMBOL        dat
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 19
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 19
 
 
   C:4D5FH         LINE#         60
@@ -1139,7 +1139,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   D:00D0H         PUBLIC        PSW
   -------         PROC          LCD_INIT
   C:4807H         LINE#         9
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 20
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 20
 
 
   C:4807H         LINE#         10
@@ -1199,7 +1199,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:49ADH         LINE#         81
   C:49AFH         LINE#         82
   C:49B6H         LINE#         83
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 21
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 21
 
 
   C:49BAH         LINE#         85
@@ -1259,7 +1259,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:4C69H         LINE#         129
   C:4C69H         LINE#         130
   C:4C6FH         LINE#         131
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 22
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 22
 
 
   C:4C6FH         LINE#         132
@@ -1319,7 +1319,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   X:03C2H         SYMBOL        KeyTemp2
   X:03C3H         SYMBOL        KeyValue
   -------         ENDDO         
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 23
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 23
 
 
   C:367FH         LINE#         27
@@ -1379,7 +1379,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:3731H         LINE#         98
   C:3737H         LINE#         100
   C:3739H         LINE#         101
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 24
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 24
 
 
   C:3739H         LINE#         102
@@ -1439,7 +1439,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:37E2H         LINE#         168
   C:37E2H         LINE#         169
   C:37E2H         LINE#         170
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 25
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 25
 
 
   C:37E2H         LINE#         171
@@ -1499,7 +1499,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:30AFH         LINE#         226
   C:30AFH         LINE#         227
   C:30B2H         LINE#         229
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 26
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 26
 
 
   C:30B2H         LINE#         230
@@ -1559,7 +1559,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:3235H         LINE#         307
   C:3235H         LINE#         308
   C:3237H         LINE#         310
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 27
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 27
 
 
   C:3237H         LINE#         311
@@ -1619,7 +1619,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   D:00A0H         PUBLIC        P2
   D:00B0H         PUBLIC        P3
   D:00C0H         PUBLIC        P4
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 28
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 28
 
 
   D:00C8H         PUBLIC        P5
@@ -1679,7 +1679,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:48D2H         LINE#         49
   C:48D2H         LINE#         50
   C:48D2H         LINE#         52
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 29
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 29
 
 
   C:48D4H         LINE#         55
@@ -1739,7 +1739,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:3351H         LINE#         96
   C:34E8H         LINE#         98
   -------         ENDPROC       _FINDDET3X3
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 30
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 30
 
 
   -------         PROC          _FINDDET4X4
@@ -1799,7 +1799,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   X:03F4H         SYMBOL        pos_interpolate_azimuth
   X:0430H         SYMBOL        current_local_sun_time
   X:0434H         SYMBOL        azimuth
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 31
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 31
 
 
   X:0438H         SYMBOL        elevation
@@ -1859,7 +1859,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:0870H         LINE#         206
   C:0870H         LINE#         207
   C:0881H         LINE#         210
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 32
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 32
 
 
   C:089BH         LINE#         211
@@ -1919,7 +1919,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   X:04C6H         SYMBOL        dSin_Latitude
   X:04CAH         SYMBOL        dCos_HourAngle
   X:04CEH         SYMBOL        dParallax
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 33
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 33
 
 
   -------         ENDDO         
@@ -1979,7 +1979,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:22C5H         LINE#         61
   C:22DCH         LINE#         62
   C:2304H         LINE#         63
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 34
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 34
 
 
   C:231BH         LINE#         64
@@ -2039,7 +2039,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   D:00D0H         PUBLIC        PSW
   -------         PROC          ADC_INIT
   C:4BAFH         LINE#         7
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 35
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 35
 
 
   C:4BAFH         LINE#         8
@@ -2099,7 +2099,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   D:0088H         PUBLIC        TCON
   C:2AAFH         PUBLIC        _Find_Real_Max
   D:00D0H         PUBLIC        PSW
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 36
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 36
 
 
   -------         PROC          VOLTAGE_IS_STABLE
@@ -2159,7 +2159,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:2BB2H         LINE#         63
   C:2BD2H         LINE#         66
   C:2BF9H         LINE#         68
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 37
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 37
 
 
   C:2C55H         LINE#         69
@@ -2219,7 +2219,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   X:03D0H         SYMBOL        max_ADC
   X:03D2H         SYMBOL        JP_max_pos
   -------         ENDDO         
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 38
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 38
 
 
   C:3B06H         LINE#         116
@@ -2279,7 +2279,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:4AADH         SYMBOL        L?0031
   C:4AAFH         SYMBOL        L?0032
   -------         PROC          _WAIT_MS_I2C
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 39
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 39
 
 
   D:0006H         SYMBOL        ms
@@ -2339,7 +2339,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:4C63H         LINE#         61
   C:4C63H         LINE#         64
   C:4C63H         LINE#         65
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 40
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 40
 
 
   C:4C66H         LINE#         66
@@ -2399,7 +2399,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:4B2FH         LINE#         133
   C:4B33H         LINE#         134
   C:4B33H         LINE#         135
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 41
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 41
 
 
   C:4B35H         LINE#         136
@@ -2459,7 +2459,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   D:00C0H         PUBLIC        P4
   D:00C8H         PUBLIC        P5
   D:00E8H         PUBLIC        P6
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 42
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 42
 
 
   D:00F8H         PUBLIC        P7
@@ -2519,7 +2519,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:4877H         LINE#         28
   C:4877H         LINE#         29
   C:4879H         LINE#         30
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 43
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 43
 
 
   C:487BH         LINE#         32
@@ -2579,7 +2579,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   X:03C1H         SYMBOL        i
   -------         ENDDO         
   C:3E90H         LINE#         83
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 44
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 44
 
 
   C:3E92H         LINE#         84
@@ -2639,7 +2639,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   -------         ENDPROC       _AT25SF041_WRITE
   -------         PROC          _AT25SF041_READ
   D:0003H         SYMBOL        opcode
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 45
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 45
 
 
   X:0632H         SYMBOL        addr
@@ -2699,7 +2699,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:3E5BH         LINE#         223
   C:3E5FH         LINE#         224
   C:3E5FH         LINE#         230
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 46
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 46
 
 
   C:3E7EH         LINE#         233
@@ -2759,7 +2759,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   -------         ENDPROC       READ_STATUS_REGISTER_BYTE1
   -------         PROC          SPI_NOR_WRITE_DATA
   X:061AH         SYMBOL        dat
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 47
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 47
 
 
   X:0625H         SYMBOL        addr
@@ -2819,7 +2819,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
 
   -------         MODULE        ?C_STARTUP
   C:45A5H         SEGMENT       ?C_C51STARTUP
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 48
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 48
 
 
   I:0022H         SEGMENT       ?STACK
@@ -2879,7 +2879,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   -------         MODULE        ?C?FCAST
   C:1890H         PUBLIC        ?C?FCASTC
   C:188BH         PUBLIC        ?C?FCASTI
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 49
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 49
 
 
   C:1886H         PUBLIC        ?C?FCASTL
@@ -2939,7 +2939,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   -------         MODULE        ?C?UIDIV
   C:1AF2H         PUBLIC        ?C?UIDIV
   -------         ENDMOD        ?C?UIDIV
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 50
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 50
 
 
 
@@ -2999,7 +2999,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   C:1CF9H         PUBLIC        ?C?LLDXDATA
   -------         ENDMOD        ?C?LLDXDATA
 
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 51
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 51
 
 
   -------         MODULE        ?C?LLDCODE
@@ -3059,7 +3059,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
   -------         ENDMOD        ?C?LLDPDATA
 
   -------         MODULE        ?C?LLDIDATA0
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 52
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 52
 
 
   C:1EB0H         PUBLIC        ?C?LLDIDATA0
@@ -3119,7 +3119,7 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
 
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_ASCIITOBCD?UART1
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 53
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 53
 
 
 
@@ -3156,30 +3156,30 @@ SYMBOL TABLE OF MODULE:  .\Obj\GPIO_RTC_Test (MAIN)
 *** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
     SYMBOL:  AUTO_MODE
     MODULE:  .\Obj\main.obj (MAIN)
-    ADDRESS: 0CB0H
+    ADDRESS: 0E12H
 
 *** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
     SYMBOL:  AUTO_MODE
     MODULE:  .\Obj\main.obj (MAIN)
-    ADDRESS: 0CBEH
+    ADDRESS: 0E20H
 
 *** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
     SYMBOL:  AUTO_MODE
     MODULE:  .\Obj\main.obj (MAIN)
-    ADDRESS: 0CD0H
+    ADDRESS: 0E32H
 
 *** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
     SYMBOL:  AUTO_MODE
     MODULE:  .\Obj\main.obj (MAIN)
-    ADDRESS: 0D12H
+    ADDRESS: 0E74H
 
 *** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
     SYMBOL:  AUTO_MODE
     MODULE:  .\Obj\main.obj (MAIN)
-    ADDRESS: 0DE5H
+    ADDRESS: 0F47H
 
 *** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  12:54:15  PAGE 54
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/25/2019  13:00:29  PAGE 54
 
 
     SYMBOL:  _SENDUART1
