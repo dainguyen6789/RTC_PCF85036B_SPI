@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 10:15:53 PAGE 1   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 10:31:21 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE CALIBRATION
@@ -62,48 +62,48 @@ line level    source
   50   3                Move(calib_step_move,1);
   51   3                *current_position=*current_position+0.5;
   52   3                voltage_at_scanned_pos[i]=ADC_GetResult(ch);
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 10:15:53 PAGE 2   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 10:31:21 PAGE 2   
 
-  53   3                if(i==29)
-  54   3                {
-  55   4                  *max_ADC_JP_value=voltage_at_scanned_pos[29];
-  56   4                }
-  57   3                  
-  58   3              }
-  59   2              else
-  60   2              {
-  61   3                // go back to JP max position
-  62   3                if(i<=29)
-  63   3                  Move(calib_step_move*(29-(i-1)),1);//
-  64   3                  //*current_position=*current_position+calib_step_move*(29-i);
-  65   3                else
-  66   3                  Move(calib_step_move*(i-1-29),0);// 
-  67   3                
-  68   3                *current_position=*current_position+calib_step_move*(29-(i-1));
-  69   3                break;// break FOR LOOP
-  70   3              }
-  71   2              
-  72   2              //move cursor to line 1, pos 6
-  73   2              //Write_PI4IOE5V96248(&dat);
-  74   2              Command(0x08);
-  75   2              Command(0x05);
-  76   2              
-  77   2              WriteData(0x41);//display "A"
-  78   2              WriteData(0x44);//display "D"
-  79   2              WriteData(0x43);//display "C" 
-  80   2              WriteData(0x3A);//display ":" 
-  81   2              //LCD_clear();
-  82   2              //real_voltage=(float)voltage_at_scanned_pos[i]/1024*5;
-  83   2              Display_Pos((float)voltage_at_scanned_pos[i]/1024*5);
-  84   2              WriteData(0x56);//display "V" 
-  85   2              WriteData(0x10);//display " " 
-  86   2              Wait_ms(1500);
-  87   2          }
-  88   1      
-  89   1          if(i==60)// make sure that all of the calibration value are scanned with GOOD SUN
-  90   1          {
-  91   2            max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,39]
-  92   2            *calib_max_ADC_Value=voltage_at_scanned_pos[max_location];
+  53   3      
+  54   3                  
+  55   3              }
+  56   2              else
+  57   2              {
+  58   3                // go back to JP max position
+  59   3                if(i<=29)
+  60   3                  Move(calib_step_move*(29-(i-1)),1);//
+  61   3                  //*current_position=*current_position+calib_step_move*(29-i);
+  62   3                else
+  63   3                  Move(calib_step_move*(i-1-29),0);// 
+  64   3                
+  65   3                *current_position=*current_position+calib_step_move*(29-(i-1));
+  66   3                break;// break FOR LOOP
+  67   3              }
+  68   2              
+  69   2              //move cursor to line 1, pos 6
+  70   2              //Write_PI4IOE5V96248(&dat);
+  71   2              Command(0x08);
+  72   2              Command(0x05);
+  73   2              
+  74   2              WriteData(0x41);//display "A"
+  75   2              WriteData(0x44);//display "D"
+  76   2              WriteData(0x43);//display "C" 
+  77   2              WriteData(0x3A);//display ":" 
+  78   2              //LCD_clear();
+  79   2              //real_voltage=(float)voltage_at_scanned_pos[i]/1024*5;
+  80   2              Display_Pos((float)voltage_at_scanned_pos[i]/1024*5);
+  81   2              WriteData(0x56);//display "V" 
+  82   2              WriteData(0x10);//display " " 
+  83   2              Wait_ms(1500);
+  84   2          }
+  85   1      
+  86   1          if(i==60)// make sure that all of the calibration value are scanned with GOOD SUN
+  87   1          {
+  88   2            max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,39]
+  89   2            *calib_max_ADC_Value=voltage_at_scanned_pos[max_location];
+  90   2      
+  91   2            *max_ADC_JP_value=voltage_at_scanned_pos[29];
+  92   2          
   93   2            // move to the optimal position in the area of +/-10mm from JP max theorical pos
   94   2            Move(calib_step_move*(59-max_location),0);
   95   2            *current_position=*current_position-calib_step_move*(59-max_location);
@@ -126,7 +126,7 @@ line level    source
  112   1        return max_location;// pos in the array
  113   1        
  114   1      }
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 10:15:53 PAGE 3   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 10:31:21 PAGE 3   
 
  115          //input currnt_pos is the JP max theorical position
  116          float calibration(unsigned char mnths,unsigned char dys,
@@ -163,7 +163,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1495    ----
+   CODE SIZE        =   1482    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----     195
    PDATA SIZE       =   ----    ----

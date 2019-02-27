@@ -50,10 +50,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					Move(calib_step_move,1);
 					*current_position=*current_position+0.5;
 					voltage_at_scanned_pos[i]=ADC_GetResult(ch);
-					if(i==29)
-					{
-						*max_ADC_JP_value=voltage_at_scanned_pos[29];
-					}
+
 						
 				}
 				else
@@ -90,6 +87,9 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 		{
 			max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,39]
 			*calib_max_ADC_Value=voltage_at_scanned_pos[max_location];
+
+			*max_ADC_JP_value=voltage_at_scanned_pos[29];
+		
 			// move to the optimal position in the area of +/-10mm from JP max theorical pos
 			Move(calib_step_move*(59-max_location),0);
 			*current_position=*current_position-calib_step_move*(59-max_location);
