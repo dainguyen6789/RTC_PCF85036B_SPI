@@ -58,9 +58,28 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					{
 						AT25SF041_WriteEnable();
 						//Wait_ms_SPINOR(50);	
+						AT25SF041_Write(Byte_Page_Program, *address_to_write,ADC_GetResult(2)/4);	// float value
+						Wait_ms_SPINOR(50);	
+						++*address_to_write;
+						
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
 						AT25SF041_Write(Byte_Page_Program, *address_to_write,voltage_at_scanned_pos[i]/4);	
 						Wait_ms_SPINOR(50);	
 						++*address_to_write;
+						
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
+						AT25SF041_Write(Byte_Page_Program, *address_to_write,*current_position);	// floor rounding value
+						Wait_ms_SPINOR(50);	
+						++*address_to_write;	
+						
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
+						AT25SF041_Write(Byte_Page_Program, *address_to_write,(*current_position-(char)*current_position)*100);	// float value
+						Wait_ms_SPINOR(50);	
+						++*address_to_write;
+	
 					}
 						
 				}
