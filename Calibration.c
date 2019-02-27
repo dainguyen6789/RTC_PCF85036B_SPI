@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ADCh.h"
+#include "AT25SF041.h"
 void Wait_ms(int ms);
 unsigned int ADC_GetResult(unsigned char ch);
 void Move(float  distance, bit direction);
@@ -32,7 +33,7 @@ int voltage_is_stable(void)
 	}
 	return 1;
 }
-void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,unsigned int *max_ADC_JP_value)
+void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,unsigned int *max_ADC_JP_value, unsigned long int *address_to_write)
 {
 		unsigned char ch=0;
 		float calib_step_move=0.5;
@@ -50,7 +51,17 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					Move(calib_step_move,1);
 					*current_position=*current_position+0.5;
 					voltage_at_scanned_pos[i]=ADC_GetResult(ch);
-
+					// 	Because the uC Flash Memory is almost full, 
+					//	so I did not change/increase the size of "struct data_to_store"
+					// 	STORE THE CALIB VOLTAGE IN THE SPI NOR FLASH after every 1mm
+					if(i%2==0)
+					{
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
+						AT25SF041_Write(Byte_Page_Program, *address_to_write,voltage_at_scanned_pos[i]/4);	
+						Wait_ms_SPINOR(50);	
+						++*address_to_write;
+					}
 						
 				}
 				else
@@ -115,11 +126,11 @@ unsigned int Max_Value(unsigned int *input)
 //input currnt_pos is the JP max theorical position
 float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos,unsigned int *calib_max_ADC_Val,float *theorical_max_pos,unsigned int *max_ADC_JP_value)
+										 float  *currnt_pos,unsigned int *calib_max_ADC_Val,float *theorical_max_pos,unsigned int *max_ADC_JP_value,unsigned long int *NOR_address_to_write)
 {
 	float calib_value=0;
 	unsigned int temporary_calib_max_ADC=0,temp_max_ADC_JP_value=0;//
-	
+	unsigned long int temp_NOR_address_to_write=*NOR_address_to_write;
 	float JP_max_pos=*currnt_pos;
 	*calib_max_ADC_Val=0;
 	*max_ADC_JP_value=0;
@@ -131,7 +142,10 @@ float calibration(unsigned char mnths,unsigned char dys,
 		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-15);// off set is Zero means we go to  (first, go to JP max theorical position -5)
 		*theorical_max_pos=JP_max_pos+15;// compensate +15 because of previous line.
 		// 	find the real max value in the area of JP +/- 15mm
-		Find_Real_Max(&JP_max_pos,&temporary_calib_max_ADC,&temp_max_ADC_JP_value); //find real max and move to real max position
+		Find_Real_Max(&JP_max_pos,&temporary_calib_max_ADC,&temp_max_ADC_JP_value,&temp_NOR_address_to_write); //find real max and move to real max position
+		
+		*NOR_address_to_write=temp_NOR_address_to_write;
+		
 		*calib_max_ADC_Val=temporary_calib_max_ADC;
 		*max_ADC_JP_value=temp_max_ADC_JP_value;
 		calib_value=JP_max_pos-*theorical_max_pos;
