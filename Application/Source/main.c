@@ -320,24 +320,21 @@ void main(void)
 								{
 									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP);// find the real max value within JP max +/- 10mm
-									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
-									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
-									//count++;
-									/*dat_to_store.month=months;
+									
+									dat_to_store.month=months;
 									dat_to_store.date=days;
 									dat_to_store.hour=hours;
-									
 									dat_to_store.min=mins;
-									//dat_to_store.calib_max_voltage_ADC=max_ADC_Val;
-									dat_to_store.calib_max_pos_floor=current_position;
-								
+									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
+									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
 									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
-									//dat_to_store.light_ADC=sunlight_ADC;
-									//dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP;
-								
-									dat_to_store.LUT_max_pos_floor=theorical_JP_max_pos;
-									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;			
-									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR		*/							
+									dat_to_store.light_ADC=sunlight_ADC/4;
+									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
+									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
+									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;								
+									Wait_ms_SPINOR(50);
+									
+									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR						
 
 								}
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
