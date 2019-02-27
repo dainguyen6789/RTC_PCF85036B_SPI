@@ -46,7 +46,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 		}
 		for(i=0;i<60;i++)
 		{
-				if(ADC_GetResult(2)>=sunlight_ADC_Threshold)
+				//if(ADC_GetResult(2)>=sunlight_ADC_Threshold)
 				{
 					Move(calib_step_move,1);
 					*current_position=*current_position+0.5;
@@ -83,7 +83,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					}
 						
 				}
-				else
+				/*else
 				{
 					// go back to JP max position
 					if(i<=29)
@@ -94,7 +94,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					
 					*current_position=*current_position+calib_step_move*(29-(i-1));
 					break;// break FOR LOOP
-				}
+				}*/
 				
 				//move cursor to line 1, pos 6
 				//Write_PI4IOE5V96248(&dat);

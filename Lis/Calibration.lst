@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 16:11:05 PAGE 1   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 16:41:45 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE CALIBRATION
@@ -58,11 +58,11 @@ line level    source
   46   2          }
   47   1          for(i=0;i<60;i++)
   48   1          {
-  49   2              if(ADC_GetResult(2)>=sunlight_ADC_Threshold)
+  49   2              //if(ADC_GetResult(2)>=sunlight_ADC_Threshold)
   50   2              {
   51   3                Move(calib_step_move,1);
   52   3                *current_position=*current_position+0.5;
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 16:11:05 PAGE 2   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 16:41:45 PAGE 2   
 
   53   3                voltage_at_scanned_pos[i]=ADC_GetResult(ch);
   54   3                //  Because the uC Flash Memory is almost full, 
@@ -98,18 +98,18 @@ line level    source
   83   4                }
   84   3                  
   85   3              }
-  86   2              else
+  86   2              /*else
   87   2              {
-  88   3                // go back to JP max position
-  89   3                if(i<=29)
-  90   3                  Move(calib_step_move*(29-(i-1)),1);//
-  91   3                  //*current_position=*current_position+calib_step_move*(29-i);
-  92   3                else
-  93   3                  Move(calib_step_move*(i-1-29),0);// 
-  94   3                
-  95   3                *current_position=*current_position+calib_step_move*(29-(i-1));
-  96   3                break;// break FOR LOOP
-  97   3              }
+  88   2                // go back to JP max position
+  89   2                if(i<=29)
+  90   2                  Move(calib_step_move*(29-(i-1)),1);//
+  91   2                  //*current_position=*current_position+calib_step_move*(29-i);
+  92   2                else
+  93   2                  Move(calib_step_move*(i-1-29),0);// 
+  94   2                
+  95   2                *current_position=*current_position+calib_step_move*(29-(i-1));
+  96   2                break;// break FOR LOOP
+  97   2              }*/
   98   2              
   99   2              //move cursor to line 1, pos 6
  100   2              //Write_PI4IOE5V96248(&dat);
@@ -126,7 +126,7 @@ line level    source
  111   2              WriteData(0x56);//display "V" 
  112   2              WriteData(0x10);//display " " 
  113   2              Wait_ms(1500);
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 16:11:05 PAGE 3   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 16:41:45 PAGE 3   
 
  114   2          }
  115   1      
@@ -190,7 +190,7 @@ line level    source
  170   2          calib_value=JP_max_pos-*theorical_max_pos;
  171   2          *currnt_pos=JP_max_pos;
  172   2          return calib_value;
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 16:11:05 PAGE 4   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       02/27/2019 16:41:45 PAGE 4   
 
  173   2        }
  174   1        else
@@ -199,7 +199,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1979    ----
+   CODE SIZE        =   1778    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----     205
    PDATA SIZE       =   ----    ----
