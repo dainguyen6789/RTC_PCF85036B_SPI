@@ -32,7 +32,7 @@ int voltage_is_stable(void)
 	}
 	return 1;
 }
-void  Find_Real_Max(float  *current_position, unsigned int *max_ADC_value,unsigned int *max_ADC_JP_value)
+void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,unsigned int *max_ADC_JP_value)
 {
 		unsigned char ch=0;
 		float calib_step_move=0.5;
@@ -89,7 +89,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *max_ADC_value,unsign
 		if(i==60)// make sure that all of the calibration value are scanned with GOOD SUN
 		{
 			max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,39]
-			*max_ADC_value=voltage_at_scanned_pos[max_location];
+			*calib_max_ADC_Value=voltage_at_scanned_pos[max_location];
 			// move to the optimal position in the area of +/-10mm from JP max theorical pos
 			Move(calib_step_move*(59-max_location),0);
 			*current_position=*current_position-calib_step_move*(59-max_location);
@@ -115,13 +115,13 @@ unsigned int Max_Value(unsigned int *input)
 //input currnt_pos is the JP max theorical position
 float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos,unsigned int *max_ADC_Val,float *theorical_max_pos,unsigned int *max_ADC_JP_value)
+										 float  *currnt_pos,unsigned int *calib_max_ADC_Val,float *theorical_max_pos,unsigned int *max_ADC_JP_value)
 {
 	float calib_value=0;
-	unsigned int max_ADC=0;//
+	unsigned int temporary_calib_max_ADC=0,temp_max_ADC_JP_value=0;//
 	
 	float JP_max_pos=*currnt_pos;
-	*max_ADC_Val=0;
+	*calib_max_ADC_Val=0;
 	*max_ADC_JP_value=0;
 	*theorical_max_pos=0;
 	// if voltage is stable 
@@ -131,8 +131,9 @@ float calibration(unsigned char mnths,unsigned char dys,
 		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-15);// off set is Zero means we go to  (first, go to JP max theorical position -5)
 		*theorical_max_pos=JP_max_pos+15;// compensate +15 because of previous line.
 		// 	find the real max value in the area of JP +/- 15mm
-		Find_Real_Max(&JP_max_pos,&max_ADC,&max_ADC_JP_value); //find real max and move to real max position
-		*max_ADC_Val=max_ADC;
+		Find_Real_Max(&JP_max_pos,&temporary_calib_max_ADC,&temp_max_ADC_JP_value); //find real max and move to real max position
+		*calib_max_ADC_Val=temporary_calib_max_ADC;
+		*max_ADC_JP_value=temp_max_ADC_JP_value;
 		calib_value=JP_max_pos-*theorical_max_pos;
 		*currnt_pos=JP_max_pos;
 		return calib_value;
