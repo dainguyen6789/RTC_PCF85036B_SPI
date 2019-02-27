@@ -73,6 +73,15 @@ sbit SPISS=P1^2;
 
 //char BCDtoDec(char bcd);
 
+void PCF85063BTL_Delay(unsigned int us);
+void SPI_SendByte(unsigned char dat);// Send dat to SPI device/Slave
+unsigned char SPI_ReceiveByte(void);
+unsigned char SPI_ReadTime(unsigned char addr);
+void SPI_WriteTime(unsigned char val,unsigned char addr);
+void SPI_Init(void);
+void Read_time(unsigned char *months,unsigned char *days,unsigned char *hours,unsigned char *mins,unsigned char *seconds);
+unsigned char BCDtoDec(unsigned char bcd);
+unsigned int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd); // this function is used to count the date in a year example: 22 March is the 80th day of the year
 
 
 

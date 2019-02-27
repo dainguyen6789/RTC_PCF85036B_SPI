@@ -326,6 +326,11 @@ void Key_Process(void)//
 					}
 				}
 			}		
+			
+			if(PressedKey[5]==KEY_C)// 
+			{
+				SPI_NOR_ClearEnable=1;
+			}
 			LCD_clear();
 			Command(0x08);
 			Command(0x00);			

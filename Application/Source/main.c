@@ -27,18 +27,18 @@
 #define PointFour_mm_steps 48 //
 
 
-void Delay_ms(unsigned int ms);
+//void Delay_ms(unsigned int ms);
 void SendString(char *s);
 void SendUART1(unsigned char dat);
 void initUART1(void);
-unsigned char BCDtoDec(unsigned char BCD);
+//unsigned char BCDtoDec(unsigned char BCD);
 unsigned char ten(unsigned char BCD);
 unsigned char unit(unsigned char BCD);
-unsigned char SPI_ReadTime(unsigned char addr);
-void SPI_WriteTime(unsigned char val,unsigned char addr);
+//unsigned char SPI_ReadTime(unsigned char addr);
+//void SPI_WriteTime(unsigned char val,unsigned char addr);
 unsigned char ASCIItoBCD(unsigned char ascii[2]); // time format hh:mm:ss
 void SendUART1(unsigned char dat);
-void SPI_Init(void);
+//void SPI_Init(void);
 void WriteData(unsigned char dat);
 void LCD_Init(void);
 void DisplayLCD(unsigned char BCD);
@@ -110,6 +110,7 @@ void main(void)
 	small_move=0;
 	
 	auto_mode=0;
+	SPI_NOR_ClearEnable=0;
 	//=======================================
 	/*float a=-7.0014e-5;
 	float b=1.1071e-2;
@@ -118,12 +119,6 @@ void main(void)
 	float dd=138;*/
 //	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
 	//=======================================
-	{
-		AT25SF041_WriteEnable();
-		//Wait_ms_SPINOR(50);
-		AT25SF041_ChipErase();
-		Wait_ms_SPINOR(5);
-	}		
 	P3M1=0x00;
 	P3M0=0xFF;
 	P3=0x4C;
@@ -243,13 +238,6 @@ void main(void)
 				prox_flag=0;		
 				small_move=0;				
 			}
-
-			/*if (prox_data<=300 && prox_flag==0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
-			{
-				current_position=0;
-				prox_flag=1;
-				move=0;
-			}*/
 			
 		if (P23 && prox_flag==0 && current_position<=0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
 			{
@@ -272,7 +260,19 @@ void main(void)
 		//Read_time(&months,&days,&hours,&mins,&seconds);
 		if(auto_mode)
 		{
+			
 			sunlight_ADC=ADC_GetResult(2);
+			///Clear SPI NOR FLASH if month=0x99;
+			if(SPI_NOR_ClearEnable==1)
+			{
+					AT25SF041_WriteEnable();
+					//Wait_ms_SPINOR(50);
+					AT25SF041_ChipErase();
+					Wait_ms_SPINOR(5);
+					SPI_NOR_INTERNAL_FLASH_ADDR=0;
+					SPI_NOR_ClearEnable=0;
+			}
+			
 			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
 					if(iUse_prevday_calib_value==0)// FIRST day of calibration
 					{

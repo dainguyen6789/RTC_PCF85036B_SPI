@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 10:41:13 PAGE 1   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 11:17:27 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE KEYPAD
@@ -62,7 +62,7 @@ line level    source
   48   3            KEYPORT |= (1<<Column2)|(1<<Column3)|(1<<Column4);//
   49   3            KeyTemp1=KEYPORT | (~((1<<Line1)|(1<<Line2)|(1<<Line3)|(1<<Line4)));//  KEYPORT | 00011111
   50   3            if(KeyTemp1!=0xff)      //
-C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 10:41:13 PAGE 2   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 11:17:27 PAGE 2   
 
   51   3            {
   52   4              while(KeyTemp1!=0xff) // if pressed any key on COL1
@@ -126,7 +126,7 @@ line level    source
  109   6                
  110   6                }break;   
  111   5                case ~(1<<Line4):     //
-C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 10:41:13 PAGE 3   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 11:17:27 PAGE 3   
 
  112   5                {
  113   6                  KeyValue=KEY0;
@@ -190,7 +190,7 @@ line level    source
  171   6                  KeyValue=KEY_A;
  172   6                
  173   6                }break;
-C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 10:41:13 PAGE 4   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 11:17:27 PAGE 4   
 
  174   5                case ~(1<<Line2):     //S11°
  175   5                {
@@ -254,7 +254,7 @@ line level    source
  233   2          return;
  234   2        }
  235   1        if (KeyNum_Old==Unpress && KeyNum==KEY_A )
-C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 10:41:13 PAGE 5   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 11:17:27 PAGE 5   
 
  236   1        {
  237   2          if(auto_mode)
@@ -318,7 +318,7 @@ line level    source
  295   7                    
  296   7                  }
  297   6                  else //4 6 
-C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 10:41:13 PAGE 6   
+C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 11:17:27 PAGE 6   
 
  298   6                  {
  299   7                    if(days<=30)
@@ -351,53 +351,58 @@ line level    source
  326   6                }
  327   5              }
  328   4            }   
- 329   3            LCD_clear();
- 330   3            Command(0x08);
- 331   3            Command(0x00);      
- 332   3            WriteData(0x68);//display "h"
- 333   3            WriteData(0x68);//display "h"
- 334   3            WriteData(0x6D);//display "m"
- 335   3            WriteData(0x6D);//display "m"
- 336   3            WriteData(0x23);//display "#" SETTIME_KEY     
- 337   3          }
- 338   2          //LCD Display the pressed buttons
- 339   2        for(d=0;d<KeyCount;d++)
- 340   2        {
- 341   3          if(KeyCount<=4)
- 342   3          {
- 343   4            Command(0x08);
- 344   4            Command(0x00+d);
- 345   4            WriteData(PressedKey[d]|0x30);
- 346   4          }
- 347   3        } 
- 348   2      
- 349   2        }
- 350   1        
- 351   1      
- 352   1        
- 353   1      }
- 354          /***********************************************
- 355          ************************************************/
- 356          void KeyPad_IO_Init(void)
- 357          { 
- 358   1        P0M1 &=~( (1<<0)|(1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );  
- 359   1        P0M0 &=~( (1<<0)|(1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );    
-C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 10:41:13 PAGE 7   
+ 329   3            
+ 330   3            if(PressedKey[5]==KEY_C)// 
+ 331   3            {
+ 332   4              SPI_NOR_ClearEnable=1;
+ 333   4            }
+ 334   3            LCD_clear();
+ 335   3            Command(0x08);
+ 336   3            Command(0x00);      
+ 337   3            WriteData(0x68);//display "h"
+ 338   3            WriteData(0x68);//display "h"
+ 339   3            WriteData(0x6D);//display "m"
+ 340   3            WriteData(0x6D);//display "m"
+ 341   3            WriteData(0x23);//display "#" SETTIME_KEY     
+ 342   3          }
+ 343   2          //LCD Display the pressed buttons
+ 344   2        for(d=0;d<KeyCount;d++)
+ 345   2        {
+ 346   3          if(KeyCount<=4)
+ 347   3          {
+ 348   4            Command(0x08);
+ 349   4            Command(0x00+d);
+ 350   4            WriteData(PressedKey[d]|0x30);
+ 351   4          }
+ 352   3        } 
+ 353   2      
+ 354   2        }
+ 355   1        
+ 356   1      
+ 357   1        
+ 358   1      }
+ 359          /***********************************************
+C51 COMPILER V9.52.0.0   KEYPAD                                                            02/27/2019 11:17:27 PAGE 7   
 
- 360   1        P0M0=0x00;
- 361   1        P0M1=0x00;
- 362   1      }
- 363          
- 364          
- 365          
- 366          
- 367          
+ 360          ************************************************/
+ 361          void KeyPad_IO_Init(void)
+ 362          { 
+ 363   1        P0M1 &=~( (1<<0)|(1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );  
+ 364   1        P0M0 &=~( (1<<0)|(1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) | (1<<7) );    
+ 365   1        P0M0=0x00;
+ 366   1        P0M1=0x00;
+ 367   1      }
  368          
  369          
+ 370          
+ 371          
+ 372          
+ 373          
+ 374          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1111    ----
+   CODE SIZE        =   1124    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =      9       9
    PDATA SIZE       =   ----    ----
