@@ -139,4 +139,48 @@ void Display_Line(int line)
 	}
 }
 
+void Display_Pos(float sign_dat)
+{
+	unsigned char unit, ten, hundred,thousand;
+	unsigned char after_dot;
+	int dat;
+	dat=abs(sign_dat);
+	if (sign_dat>0)
+		after_dot=(unsigned char)((sign_dat-dat)*10);
+	else
+		after_dot=(unsigned char)((-sign_dat-dat)*10);
+	
+	unit =dat%10;// remainder after division
+	thousand=dat/1000;
+	hundred=(dat-thousand*1000)/100;
+	ten=(dat-thousand*1000-hundred*100)/10;
+	if (sign_dat>=0)
+	{
+		//WriteData(thousand|0x30);
+		WriteData(hundred|0x30);
+		WriteData(ten|0x30);
+		WriteData(unit|0x30);
+		WriteData(0x2E);//.
+		WriteData((after_dot)|0x30);
+		//WriteData(0x6D);//m
+		//WriteData(0x6D);//m
+		//WriteData(0x20);// "blank"
+	}
+	else
+	{
+		
+		WriteData(0x2D);// "-"
+		WriteData(hundred|0x30);
+		WriteData(ten|0x30);
+		WriteData(unit|0x30);
+		WriteData(0x2E);//.
+		WriteData(after_dot|0x30);
+		//WriteData(0x6D);//m
+		//WriteData(0x6D);//m
+
+	}
+	return;
+}
+
+
 

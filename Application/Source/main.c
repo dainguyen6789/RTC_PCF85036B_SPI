@@ -39,30 +39,21 @@ unsigned char unit(unsigned char BCD);
 unsigned char ASCIItoBCD(unsigned char ascii[2]); // time format hh:mm:ss
 void SendUART1(unsigned char dat);
 //void SPI_Init(void);
-void WriteData(unsigned char dat);
-void LCD_Init(void);
-void DisplayLCD(unsigned char BCD);
-void Read_time(unsigned char *months,unsigned char *days,unsigned char *hours,unsigned char *mins,unsigned char *seconds);
-void LCD_return_home(void);
-void Key_Process(void);
-void Display_Line(int line);
-void Command(unsigned char dat);//LCD command
+//void WriteData(unsigned char dat);
+//void LCD_Init(void);
+
+//void Read_time(unsigned char *months,unsigned char *days,unsigned char *hours,unsigned char *mins,unsigned char *seconds);
+
 //unsigned int Read_VCNL4035(unsigned int command_code);
 void I2C_Init();
-void Display_Prox(unsigned int prox_data);
 void Step_move(unsigned int step, bit dir);
 void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,float *currnt_pos,float offset_calib);
-void Display_Pos(float sign_dat);
 float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
 										 float  *currnt_pos,unsigned int *calib_max_ADC_Val,float *theorical_max_pos,unsigned int *max_ADC_JP_value,unsigned long int *NOR_address_to_write);
-unsigned int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd); // this function is used to count the date in a year example: 22 March is the 80th day of the year
 unsigned char BCDtoDec1(unsigned char bcd);
 float calib_interpolate(float hours, float mins);
 float  linear_interpolate(struct point p1,struct point p2, float  x);
-void Write_PI4IOE5V96248(struct DATA_FOR_IO_6PORTS *xdat);
-float  linear_interpolate(struct point p1,struct point p2, float  x);
-unsigned int ADC_GetResult(unsigned char ch);
 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -492,60 +483,5 @@ void main(void)
 }*/
 
 
-void Display_Prox(unsigned int dat)
-{
-	unsigned char unit, ten, hundred,thousand;
-	unit =dat%10;// remainder after division
-	thousand=dat/1000;
-	hundred=(dat-thousand*1000)/100;
-	ten=(dat-thousand*1000-hundred*100)/10;
-	WriteData(thousand|0x30);
-	WriteData(hundred|0x30);
-	WriteData(ten|0x30);
-	WriteData(unit|0x30);
-	return;
-}
 
 
-void Display_Pos(float sign_dat)
-{
-	unsigned char unit, ten, hundred,thousand;
-	unsigned char after_dot;
-	int dat;
-	dat=abs(sign_dat);
-	if (sign_dat>0)
-		after_dot=(unsigned char)((sign_dat-dat)*10);
-	else
-		after_dot=(unsigned char)((-sign_dat-dat)*10);
-	
-	unit =dat%10;// remainder after division
-	thousand=dat/1000;
-	hundred=(dat-thousand*1000)/100;
-	ten=(dat-thousand*1000-hundred*100)/10;
-	if (sign_dat>=0)
-	{
-		//WriteData(thousand|0x30);
-		WriteData(hundred|0x30);
-		WriteData(ten|0x30);
-		WriteData(unit|0x30);
-		WriteData(0x2E);//.
-		WriteData((after_dot)|0x30);
-		//WriteData(0x6D);//m
-		//WriteData(0x6D);//m
-		//WriteData(0x20);// "blank"
-	}
-	else
-	{
-		
-		WriteData(0x2D);// "-"
-		WriteData(hundred|0x30);
-		WriteData(ten|0x30);
-		WriteData(unit|0x30);
-		WriteData(0x2E);//.
-		WriteData(after_dot|0x30);
-		//WriteData(0x6D);//m
-		//WriteData(0x6D);//m
-
-	}
-	return;
-}

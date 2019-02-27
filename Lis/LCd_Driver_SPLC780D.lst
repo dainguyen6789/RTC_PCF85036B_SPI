@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               02/27/2019 16:41:43 PAGE 1   
+C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               02/27/2019 17:17:16 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE LCD_DRIVER_SPLC780D
@@ -62,7 +62,7 @@ line level    source
   52   1        LCD_D4=(dat&(1<<4)) >>4;
   53   1        LCD_E=1;
   54   1        Wait_ms(1);
-C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               02/27/2019 16:41:43 PAGE 2   
+C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               02/27/2019 17:17:16 PAGE 2   
 
   55   1        LCD_E=0;
   56   1        // 4 low bits
@@ -126,7 +126,7 @@ line level    source
  114          
  115          void LCD_return_home(void)
  116          {
-C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               02/27/2019 16:41:43 PAGE 3   
+C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               02/27/2019 17:17:16 PAGE 3   
 
  117   1        Command(0x00);
  118   1        Command(0x02);
@@ -153,18 +153,54 @@ line level    source
  139   2        }
  140   1      }
  141          
- 142          
+ 142          void Display_Pos(float sign_dat)
+ 143          {
+ 144   1        unsigned char unit, ten, hundred,thousand;
+ 145   1        unsigned char after_dot;
+ 146   1        int dat;
+ 147   1        dat=abs(sign_dat);
+*** WARNING C206 IN LINE 147 OF Application\Source\LCd_Driver_SPLC780D.c: 'abs': missing function-prototype
+*** ERROR C267 IN LINE 147 OF Application\Source\LCd_Driver_SPLC780D.c: 'abs': requires ANSI-style prototype
+ 148   1        if (sign_dat>0)
+ 149   1          after_dot=(unsigned char)((sign_dat-dat)*10);
+ 150   1        else
+ 151   1          after_dot=(unsigned char)((-sign_dat-dat)*10);
+ 152   1        
+ 153   1        unit =dat%10;// remainder after division
+ 154   1        thousand=dat/1000;
+ 155   1        hundred=(dat-thousand*1000)/100;
+ 156   1        ten=(dat-thousand*1000-hundred*100)/10;
+ 157   1        if (sign_dat>=0)
+ 158   1        {
+ 159   2          //WriteData(thousand|0x30);
+ 160   2          WriteData(hundred|0x30);
+ 161   2          WriteData(ten|0x30);
+ 162   2          WriteData(unit|0x30);
+ 163   2          WriteData(0x2E);//.
+ 164   2          WriteData((after_dot)|0x30);
+ 165   2          //WriteData(0x6D);//m
+ 166   2          //WriteData(0x6D);//m
+ 167   2          //WriteData(0x20);// "blank"
+ 168   2        }
+ 169   1        else
+ 170   1        {
+ 171   2          
+ 172   2          WriteData(0x2D);// "-"
+ 173   2          WriteData(hundred|0x30);
+ 174   2          WriteData(ten|0x30);
+ 175   2          WriteData(unit|0x30);
+ 176   2          WriteData(0x2E);//.
+C51 COMPILER V9.52.0.0   LCD_DRIVER_SPLC780D                                               02/27/2019 17:17:16 PAGE 4   
 
+ 177   2          WriteData(after_dot|0x30);
+ 178   2          //WriteData(0x6D);//m
+ 179   2          //WriteData(0x6D);//m
+ 180   2      
+ 181   2        }
+ 182   1        return;
+ 183   1      }
+ 184          
+ 185          
+ 186          
 
-MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    376    ----
-   CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----       2
-   PDATA SIZE       =   ----    ----
-   DATA SIZE        =   ----    ----
-   IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----    ----
-END OF MODULE INFORMATION.
-
-
-C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  1 WARNING(S),  1 ERROR(S)

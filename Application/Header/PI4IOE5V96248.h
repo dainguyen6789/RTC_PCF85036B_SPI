@@ -23,4 +23,5 @@ struct DATA_FOR_IO_6PORTS
 	
 
 };
+void Write_PI4IOE5V96248(struct DATA_FOR_IO_6PORTS *xdat);
 

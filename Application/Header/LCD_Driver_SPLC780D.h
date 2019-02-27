@@ -14,3 +14,11 @@
  sbit 			LCD_D6	=	P3^6;	
  sbit 			LCD_D7	=	P3^7;	 
  void Wait_ms(int ms);
+ void LCD_Init(void);
+ void DisplayLCD(unsigned char BCD);
+ void LCD_return_home(void);
+ void WriteData(unsigned char dat);
+ void Display_Line(int line);
+ void Display_Pos(float sign_dat);
+ void Command(unsigned char dat);//LCD command
+

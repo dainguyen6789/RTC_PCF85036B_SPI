@@ -37,5 +37,8 @@
  extern int  auto_mode;
  extern char SPI_NOR_ClearEnable;
 void Delay_ms(unsigned int ms);
+void Key_Process(void);
+void KeyPad_IO_Init(void);
+
 
  

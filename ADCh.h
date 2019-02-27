@@ -14,4 +14,7 @@
 #define sunlight_ADC_Threshold 512 //820
 
 extern int adc_data;
+
 //extern int  calib_mode=1;
+unsigned int ADC_GetResult(unsigned char ch);
+void ADC_Init(void);
