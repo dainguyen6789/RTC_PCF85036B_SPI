@@ -303,7 +303,7 @@ void main(void)
 
 									dat_to_store.light_ADC=sunlight_ADC/4;
 									
-									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP;
+									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
 									//dat_to_store.Voltage_at_LUT_pos=0;
 								
 								
