@@ -262,17 +262,6 @@ void main(void)
 		{
 			
 			sunlight_ADC=ADC_GetResult(2);
-			///Clear SPI NOR FLASH if month=0x99;
-			if(SPI_NOR_ClearEnable==1)
-			{
-					AT25SF041_WriteEnable();
-					//Wait_ms_SPINOR(50);
-					AT25SF041_ChipErase();
-					Wait_ms_SPINOR(5);
-					SPI_NOR_INTERNAL_FLASH_ADDR=0;
-					SPI_NOR_ClearEnable=0;
-			}
-			
 			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
 					if(iUse_prevday_calib_value==0)// FIRST day of calibration
 					{
@@ -285,97 +274,19 @@ void main(void)
 									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP);// find the real max value within JP max +/- 10mm
 									
 
-									//*(calib_value+count)=calibration(0x10,0x30,0x12,0x00,0x00,&current_position);//
-									//calib_time[count]=(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60;
-									//count++;
 									dat_to_store.month=months;
 									dat_to_store.date=days;
 									dat_to_store.hour=hours;
-									
 									dat_to_store.min=mins;
 									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
 									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
-									//at_to_store.calib_max_pos_floor=1;
-
-								
 									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
-									//dat_to_store.calib_max_pos_float=20;// consider only 2 digit after .
-
 									dat_to_store.light_ADC=sunlight_ADC/4;
-									
 									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
-									//dat_to_store.Voltage_at_LUT_pos=0;
-								
-								
 									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
-									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;	
-									//dat_to_store.LUT_max_pos_floor=3;
-									//dat_to_store.LUT_max_pos_float=4;	
-									//dat_to_store.LUT_max_pos_floor=0;
-									//dat_to_store.LUT_max_pos_float=0;										
-									//if(*addr==0)
-									/*{
-										AT25SF041_WriteEnable();
-										//Wait_ms_SPINOR(50);
-										AT25SF041_ChipErase();
-										Wait_ms_SPINOR(5);
-									}								
-									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
-									AT25SF041_Write(Byte_Page_Program, 0,dat_to_store.month);
-									
-									Wait_ms_SPINOR(100);
-									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
-									AT25SF041_Write(Byte_Page_Program, 1,dat_to_store.date);	
-									Wait_ms_SPINOR(100);
-
-
-									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
-									AT25SF041_Write(Byte_Page_Program, 2,dat_to_store.hour);	
-									Wait_ms_SPINOR(100);
-
-									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
-									AT25SF041_Write(Byte_Page_Program, 3,dat_to_store.min);
-									Wait_ms_SPINOR(100);									
-									
-									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
-									AT25SF041_Write(Byte_Page_Program, 4,dat_to_store.calib_max_voltage_ADC);
+									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;								
 									Wait_ms_SPINOR(50);
 									
-									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
-									AT25SF041_Write(Byte_Page_Program, 5,dat_to_store.calib_max_pos_floor);
-									
-									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
-									AT25SF041_Write(Byte_Page_Program, 6,dat_to_store.calib_max_pos_float);
-									Wait_ms_SPINOR(50);
-									
-									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
-									AT25SF041_Write(Byte_Page_Program, 7,dat_to_store.light_ADC);
-									Wait_ms_SPINOR(50);
-									
-									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
-									AT25SF041_Write(Byte_Page_Program, 8,dat_to_store.Voltage_at_LUT_pos);
-									Wait_ms_SPINOR(100);
-
-									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
-									AT25SF041_Write(Byte_Page_Program, 9,dat_to_store.LUT_max_pos_floor);
-									Wait_ms_SPINOR(50);
-									
-									AT25SF041_WriteEnable();
-									//Wait_ms_SPINOR(100);
-									AT25SF041_Write(Byte_Page_Program, 10,dat_to_store.LUT_max_pos_float);
-									Wait_ms_SPINOR(50);*/									
-							
-									Wait_ms_SPINOR(50);
 									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
 					
 
@@ -458,11 +369,48 @@ void main(void)
 
 		}	
 				
-				// Code for the PUMP, enable PUMP from 7AM tp 5PM
+		// Code for the PUMP, enable PUMP from 7AM tp 5PM
 		if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 				P55=1;
 		else
 				P55=0;
+		
+		// CLEAR SPI NOR by 99990 command from KEyPAd
+		if(SPI_NOR_ClearEnable==1)
+		{
+			LCD_clear();
+			Display_Line(1);
+			WriteData(0x43);//display "C"
+			WriteData(0x4C);//display "L"
+			WriteData(0x45);//display "E"	
+			WriteData(0x41);//display "A"	
+			WriteData(0x52);//display "R"	
+			WriteData(0x2E);//display "."	
+			WriteData(0x2E);//display "."	
+			WriteData(0x46);//display "F"	
+			WriteData(0x4C);//display "L"	
+			WriteData(0x41);//display "A"	
+			WriteData(0x53);//display "S"	
+			WriteData(0x48);//display "H"	
+
+			//==================================
+			AT25SF041_WriteEnable();
+			//Wait_ms_SPINOR(50);
+			AT25SF041_ChipErase();
+			Wait_ms_SPINOR(5);
+			SPI_NOR_INTERNAL_FLASH_ADDR=0;
+			SPI_NOR_ClearEnable=0;
+			//===================================
+			LCD_clear();
+			Command(0x08);
+			Command(0x00);			
+			WriteData(0x68);//display "h"
+			WriteData(0x68);//display "h"
+			WriteData(0x6D);//display "m"
+			WriteData(0x6D);//display "m"
+			WriteData(0x23);//display "#" SETTIME_KEY		
+			
+		}
 	}
 
 		

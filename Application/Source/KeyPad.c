@@ -327,18 +327,21 @@ void Key_Process(void)//
 				}
 			}		
 			
-			if(PressedKey[5]==KEY_C)// 
+			if(PressedKey[0]==KEY9&&PressedKey[1]==KEY9&&PressedKey[2]==KEY9&&PressedKey[3]==KEY9&&PressedKey[4]==KEY0)// 
 			{
 				SPI_NOR_ClearEnable=1;
 			}
-			LCD_clear();
-			Command(0x08);
-			Command(0x00);			
-			WriteData(0x68);//display "h"
-			WriteData(0x68);//display "h"
-			WriteData(0x6D);//display "m"
-			WriteData(0x6D);//display "m"
-			WriteData(0x23);//display "#" SETTIME_KEY			
+			if(SPI_NOR_ClearEnable==0)
+			{
+				LCD_clear();
+				Command(0x08);
+				Command(0x00);			
+				WriteData(0x68);//display "h"
+				WriteData(0x68);//display "h"
+				WriteData(0x6D);//display "m"
+				WriteData(0x6D);//display "m"
+				WriteData(0x23);//display "#" SETTIME_KEY		
+			}				
 		}
 		//LCD Display the pressed buttons
 	for(d=0;d<KeyCount;d++)
