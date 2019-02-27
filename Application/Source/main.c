@@ -298,17 +298,17 @@ void main(void)
 									//at_to_store.calib_max_pos_floor=1;
 
 								
-									dat_to_store.calib_max_pos_float=(unsigned char)(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
-									//dat_to_store.calib_max_pos_float=2;// consider only 2 digit after .
+									//dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
+									dat_to_store.calib_max_pos_float=20;// consider only 2 digit after .
 
 									dat_to_store.light_ADC=sunlight_ADC/4;
 									
-									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;
+									dat_to_store.Voltage_at_LUT_pos=15;
 									//dat_to_store.Voltage_at_LUT_pos=0;
 								
 								
 									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
-									dat_to_store.LUT_max_pos_float=(unsigned char)(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;	
+									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;	
 									//dat_to_store.LUT_max_pos_floor=3;
 									//dat_to_store.LUT_max_pos_float=4;	
 									//dat_to_store.LUT_max_pos_floor=0;
