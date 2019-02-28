@@ -182,5 +182,13 @@ void Display_Pos(float sign_dat)
 	return;
 }
 
+int abs(int dat)
+{
+	if (dat>0)
+		return dat;
+	else
+		return -dat;
+}
+
 
 

@@ -21,4 +21,4 @@
  void Display_Line(int line);
  void Display_Pos(float sign_dat);
  void Command(unsigned char dat);//LCD command
-
+int abs(int dat);
