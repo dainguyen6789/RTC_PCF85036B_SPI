@@ -53,30 +53,30 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					voltage_at_scanned_pos[i]=ADC_GetResult(ch);
 					// 	Because the uC Flash Memory is almost full, 
 					//	so I did not change/increase the size of "struct data_to_store"
-					// 	STORE THE CALIB VOLTAGE IN THE SPI NOR FLASH after every 1mm
+					// 	STORE THE CALIB VOLTAGE IN THE SPI NOR FLASH after every 1mm, total 4*30=120 byte of data for each calib time
 					if(i%2==0)
 					{
 						AT25SF041_WriteEnable();
 						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, *address_to_write,ADC_GetResult(2)/4);	// float value
+						AT25SF041_Write(Byte_Page_Program, *address_to_write,ADC_GetResult(2)/4);	// SUNLIGHT
 						Wait_ms_SPINOR(50);	
 						++*address_to_write;
 						
 						AT25SF041_WriteEnable();
 						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, *address_to_write,voltage_at_scanned_pos[i]/4);	
+						AT25SF041_Write(Byte_Page_Program, *address_to_write,voltage_at_scanned_pos[i]/4);// SOLAR CELL ADC VOLTAGE	
 						Wait_ms_SPINOR(50);	
 						++*address_to_write;
 						
 						AT25SF041_WriteEnable();
 						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, *address_to_write,*current_position);	// floor rounding value
+						AT25SF041_Write(Byte_Page_Program, *address_to_write,*current_position);	// SOLAR CELL Instant Position when calib
 						Wait_ms_SPINOR(50);	
 						++*address_to_write;	
 						
 						AT25SF041_WriteEnable();
 						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, *address_to_write,(*current_position-(char)*current_position)*100);	// float value
+						AT25SF041_Write(Byte_Page_Program, *address_to_write,(*current_position-(char)*current_position)*100);	// SOLAR CELL Instant Position when calib
 						Wait_ms_SPINOR(50);	
 						++*address_to_write;
 	

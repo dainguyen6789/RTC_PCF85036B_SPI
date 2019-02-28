@@ -277,7 +277,7 @@ void main(void)
 									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
 									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;								
 									Wait_ms_SPINOR(50);
-									
+									//TOTAL: 120bytes for calib + 11 Bytes for  dat_to_store= 131 BYTES
 									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
 					
 
