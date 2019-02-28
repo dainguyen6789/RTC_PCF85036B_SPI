@@ -123,6 +123,7 @@ void main(void)
 	LCD_Init();
 	SPI_Init();
 	KeyPad_IO_Init();
+	initUART1();
 	//initUART1();
 	//I2C_Init();
 	ADC_Init();
@@ -141,21 +142,21 @@ void main(void)
 	Delay_ms(500);
 
 	address=0;
-	//while(1)
+	while(1)
 	{
 		Wait_ms_SPINOR(5);
 		AT25SF041_CS_Set();
 		Wait_ms_SPINOR(5);
 		//AT25SF041_WriteEnable();
 
-		SPI_NOR_DATA=AT25SF041_Read(Read_Array,6);
+		SPI_NOR_DATA=AT25SF041_Read(Read_Array,22);
 		Wait_ms_SPINOR(500);
-		if(SPI_NOR_DATA==0x27)
+		if(SPI_NOR_DATA==84)
 		{
 			WriteData(0x35);
 		}
 		WriteData(SPI_NOR_DATA);
-
+		SendUART1(SPI_NOR_DATA);
 	}
 	
 
@@ -167,11 +168,11 @@ void main(void)
 
 
 
-/*void Uart() interrupt 4 using 1
+void Uart() interrupt 4 using 1
 {
 	if(RI) 
 	{
-		RX_Data_Uart_Cnt++;
+	/*	RX_Data_Uart_Cnt++;
 		RI=0;
 		if (RX_Data_Uart_Cnt<=2)
 		Rec_data_hour[RX_Data_Uart_Cnt-1]=SBUF;
@@ -191,7 +192,7 @@ void main(void)
 				//SPI_WriteTime(hour_count,Hours);		// data , register address
 				//SPI_WriteTime(min_count,Minutes);
 			}
-		}
+		}*/
 
 		
 	}
@@ -199,8 +200,9 @@ void main(void)
 	{
 		TI=0;
 		busy=0;
+		
 	}
-}*/
+}
 
 
 /*float calib_interpolate(float hours, float mins)
@@ -228,13 +230,15 @@ void main(void)
 }*/
 
 
-/*void SendUART1(unsigned char dat)
+void SendUART1(unsigned char dat)
 {
 	while(busy);
 	busy=1;
 	ACC=dat;
 	SBUF=ACC;
-}*/
+}
+
+
 
 
 void Display_Prox(unsigned int dat)
