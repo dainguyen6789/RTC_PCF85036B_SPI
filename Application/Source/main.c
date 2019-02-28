@@ -16,7 +16,7 @@
 #include "SunPos.h"
 #include "PI4IOE5V96248.h"
 #include "AT25SF041.h"
-
+#include "UART1.h"
 //#include "Receiver_Position_Data.h"
 
 #define FOSC 18432000L 	 
@@ -117,23 +117,21 @@ void main(void)
 	float dd=138;*/
 //	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
 	//=======================================
-	P3M1=0x00;
-	P3M0=0xFF;
-	P3=0x4C;
+	//P3M1=0x00;
+	//P3M0=0xFF;
+	//P3=0x4C;
 	LCD_Init();
-	SPI_Init();
-	KeyPad_IO_Init();
+	//SPI_Init();
+//	KeyPad_IO_Init();
 	initUART1();
-	//initUART1();
-	//I2C_Init();
-	ADC_Init();
-	//Timer0===================================
-	AUXR|=0x80;
-	TL0=T1MS;
-	TH0=T1MS>>8;
+	AUXR|=0x81;
+	//TL0=T1MS;
+	//TH0=T1MS>>8;
 	TMOD=0x00;
-	TR0=1;
-	ET0=1;
+	//TR0=1;
+	//ET0=1;
+	initUART1();
+	
 	//========================================
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
 	SPI_WriteTime(0x12,Hours);		// data , register address
@@ -142,22 +140,21 @@ void main(void)
 	Delay_ms(500);
 
 	address=0;
-	while(1)
+	while(address<=400)
 	{
 		Wait_ms_SPINOR(5);
 		AT25SF041_CS_Set();
 		Wait_ms_SPINOR(5);
 		//AT25SF041_WriteEnable();
 
-		SPI_NOR_DATA=AT25SF041_Read(Read_Array,22);
-		Wait_ms_SPINOR(500);
-		if(SPI_NOR_DATA==84)
-		{
-			WriteData(0x35);
-		}
-		WriteData(SPI_NOR_DATA);
-		SendUART1(SPI_NOR_DATA);
+		SPI_NOR_DATA=AT25SF041_Read(Read_Array,address);
+		//Wait_ms_SPINOR(500);
+		//WriteData(SPI_NOR_DATA);
+		SendSPIDataToUART(SPI_NOR_DATA,address);
+		address++;
+
 	}
+	//while(1);
 	
 
 }
@@ -172,7 +169,7 @@ void Uart() interrupt 4 using 1
 {
 	if(RI) 
 	{
-	/*	RX_Data_Uart_Cnt++;
+/*		RX_Data_Uart_Cnt++;
 		RI=0;
 		if (RX_Data_Uart_Cnt<=2)
 		Rec_data_hour[RX_Data_Uart_Cnt-1]=SBUF;
@@ -187,8 +184,8 @@ void Uart() interrupt 4 using 1
 				hour_count=ASCIItoBCD(Rec_data_hour);
 				min_count=ASCIItoBCD(Rec_data_min);
 				st_time=1;
-				//SendUART1(hour_count);
-				//SendUART1(min_count);
+				SendUART1(hour_count);
+				SendUART1(min_count);
 				//SPI_WriteTime(hour_count,Hours);		// data , register address
 				//SPI_WriteTime(min_count,Minutes);
 			}
@@ -230,13 +227,6 @@ void Uart() interrupt 4 using 1
 }*/
 
 
-void SendUART1(unsigned char dat)
-{
-	while(busy);
-	busy=1;
-	ACC=dat;
-	SBUF=ACC;
-}
 
 
 

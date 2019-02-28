@@ -1,7 +1,7 @@
 #include "stc15f2k60s2.h"
 #include "PCF85063BTL.h"
 #include <stdlib.h>
-//#include "UART1.h"
+#include "UART1.h"
 #define TBAUD (65536-FOSC/4/BAUD)
 #define FOSC 18432000L
 #define BAUD 115200
@@ -72,6 +72,84 @@ unsigned char ASCIItoBCD(unsigned char ascii[2]) // time format hh:mm:ss
 	return ten<<4|unit;
 	
 }
+
+void SendDecValtoUART(unsigned char dat)
+{
+	unsigned char hundred, ten, unit;
+	hundred=dat/100;
+	ten=(dat-hundred*100)/10;
+	unit=dat-hundred*100-ten*10;
+	SendUART1(hundred+48);// ASCII Value
+	SendUART1(ten+48);
+	SendUART1(unit+48);
+	
+}
+
+void SendBCDValtoUART(unsigned char dat)
+{
+	unsigned char ten, unit;
+	ten=dat/16;
+	unit=dat%16;
+	SendUART1(ten+48);
+	SendUART1(unit+48);	
+	
+}
+void SendSPIDataToUART(unsigned char dat,unsigned long int adr)
+{
+	if(adr%131==0)
+	{
+		SendString("\r\n Sample (ADC_SUN,ADC_Cell,calob_pos_floor_float): ");
+		SendDecValtoUART(dat);
+		SendString(",");
+	}
+	//ADC val of solar cell when calib
+	else if(adr%131<120  && adr%131!=0)
+	{
+		SendDecValtoUART(dat);
+		SendString(" ;");
+
+	}
+	
+	else if (adr%131>=120)
+	{
+		if(adr%131==120 )
+		{
+			SendString("MM-DD-HH-MN-MAX_CELL_VOL-MAX_CALIB_POS[2]-SUNLIGHT_ADC-ADC_LUT-PosLUT[2] ");
+
+			SendBCDValtoUART(dat);
+			SendString(",");
+		}
+		else if(adr%131==121)
+		{
+			SendBCDValtoUART(dat);
+			SendString(",");
+		}	
+		else if(adr%131==122)
+		{
+			SendBCDValtoUART(dat);
+			SendString(",");
+		}				
+		else if(adr%131==123)
+		{
+			SendBCDValtoUART(dat);
+			SendString(",");
+		}			
+		else
+		{
+			SendDecValtoUART(dat);
+			SendString(":");
+		}
+	}
+}
+
+void SendUART1(unsigned char dat)
+{
+	while(busy);
+	busy=1;
+	ACC=dat;
+	SBUF=ACC;
+}
+
 
 
  
