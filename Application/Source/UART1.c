@@ -98,7 +98,7 @@ void SendSPIDataToUART(unsigned char dat,unsigned long int adr)
 {
 	if(adr%131==0)
 	{
-		SendString("\r\n Sample (ADC_SUN,ADC_Cell,calob_pos_floor_float): ");
+		SendString("\r\n Sample (ADC_SUN,ADC_Cell,calib_pos_floor_float): ");
 		SendDecValtoUART(dat);
 		SendString(",");
 	}
