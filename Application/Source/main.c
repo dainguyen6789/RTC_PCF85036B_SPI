@@ -64,7 +64,7 @@ static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 float calib_value[21],calib_time[21];// 600/calib_stamp+1
 unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
-float current_position=127;
+float current_position=0;
 //int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);

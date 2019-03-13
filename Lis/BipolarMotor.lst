@@ -1,10 +1,10 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      02/28/2019 09:59:26 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/13/2019 15:06:01 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
 OBJECT MODULE PLACED IN .\Obj\BipolarMotor.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE BipolarMotor.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXT
-                    -END PRINT(.\Lis\BipolarMotor.lst) TABS(2) OBJECT(.\Obj\BipolarMotor.obj)
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE BipolarMotor.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXTEND
+                    - PRINT(.\Lis\BipolarMotor.lst) TABS(2) OBJECT(.\Obj\BipolarMotor.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   51   2            
   52   2          }
   53   1        
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      02/28/2019 09:59:26 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/13/2019 15:06:01 PAGE 2   
 
   54   1        else      // neg direction
   55   1          {
@@ -126,7 +126,7 @@ line level    source
  113   1                  a14*findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43));
  114   1      }
  115              
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      02/28/2019 09:59:26 PAGE 3   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/13/2019 15:06:01 PAGE 3   
 
  116          //===================================================== 
  117          
@@ -190,7 +190,7 @@ line level    source
              -90-elevation)*pi/180)          );// JP calculation
  168   1      
  169   1        
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      02/28/2019 09:59:26 PAGE 4   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/13/2019 15:06:01 PAGE 4   
 
  170   1        //if (current_local_sun_time>12)
  171   1        //  azimuth=360-azimuth;
@@ -249,12 +249,12 @@ line level    source
  224   3            
  225   3          }
  226   2          
- 227   2          desired_distance=JP_pos+71+offset_calib;
+ 227   2          desired_distance=JP_pos+150+offset_calib;
  228   2          //desired_distance=azimuth;
  229   2          distance=desired_distance-*currnt_pos;
  230   2          if(abs(distance)>=0.5&& desired_distance>=-15 &&desired_distance<=210 )// move if the change is more tha
              -n 0.5mm
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      02/28/2019 09:59:26 PAGE 5   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/13/2019 15:06:01 PAGE 5   
 
  231   2          {
  232   3            if(distance>0)
