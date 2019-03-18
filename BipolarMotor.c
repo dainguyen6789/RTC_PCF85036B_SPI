@@ -83,7 +83,7 @@ void Move(float  distance, bit direction)
 {
 		unsigned int step;
 		//step= (unsigned int)(distance*337.5/3.14159);//
-		step= (unsigned int)(distance*120);
+		step= (unsigned int)(distance*97);
 		Step_move(step,direction);
 }
 //=====================================================

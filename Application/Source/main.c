@@ -24,7 +24,7 @@
 #define PointOne_mm_steps 12
 
 #define PointTwo_mm_steps 24 //(11.5*2)
-#define PointFour_mm_steps 48 //
+#define PointFour_mm_steps 39 //
 
 
 //void Delay_ms(unsigned int ms);
@@ -64,7 +64,7 @@ static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 float calib_value[21],calib_time[21];// 600/calib_stamp+1
 unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
-float current_position=127;
+float current_position=0;
 //int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);
