@@ -290,7 +290,8 @@ void main(void)
 									
 									for(count=0;count<=119;count++)
 									{
-										AT25SF041_Write(Byte_Page_Program, &SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
+										AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
+										SPI_NOR_INTERNAL_FLASH_ADDR++;
 									}									
 									max_ADC_Val = ADC_GetResult(0);// read from channel 0
 									max_ADC_Val_JP = max_ADC_Val;
@@ -365,7 +366,8 @@ void main(void)
 								{
 									for(count=0;count<=119;count++)
 									{
-										AT25SF041_Write(Byte_Page_Program, &SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
+										AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
+										SPI_NOR_INTERNAL_FLASH_ADDR++;
 									}
 									max_ADC_Val = ADC_GetResult(0);// read from channel 0
 									max_ADC_Val_JP = max_ADC_Val;
