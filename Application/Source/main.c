@@ -269,10 +269,12 @@ void main(void)
 									dat_to_store.date=days;
 									dat_to_store.hour=hours;
 									dat_to_store.min=mins;
+									
 									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
 									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
 									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
 									dat_to_store.light_ADC=sunlight_ADC/4;
+									
 									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
 									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
 									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;								
@@ -282,9 +284,14 @@ void main(void)
 					
 
 								}
+								// Store the data even in low light condition
 								else if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 && sunlight_ADC < sunlight_ADC_Threshold)
 								{
-									AT25SF041_Write(Byte_Page_Program, &SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
+									
+									for(count=0;count<=119;count++)
+									{
+										AT25SF041_Write(Byte_Page_Program, &SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
+									}									
 									max_ADC_Val = ADC_GetResult(0);// read from channel 0
 									max_ADC_Val_JP = max_ADC_Val;
 									
@@ -339,10 +346,12 @@ void main(void)
 									dat_to_store.date=days;
 									dat_to_store.hour=hours;
 									dat_to_store.min=mins;
+									
 									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
 									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
 									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
 									dat_to_store.light_ADC=sunlight_ADC/4;
+									
 									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
 									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
 									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;								
@@ -351,9 +360,13 @@ void main(void)
 									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR						
 
 								}
+								// Store the data even in low light condition
 								else if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 && sunlight_ADC < sunlight_ADC_Threshold)
 								{
-									AT25SF041_Write(Byte_Page_Program, &SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
+									for(count=0;count<=119;count++)
+									{
+										AT25SF041_Write(Byte_Page_Program, &SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
+									}
 									max_ADC_Val = ADC_GetResult(0);// read from channel 0
 									max_ADC_Val_JP = max_ADC_Val;
 									
