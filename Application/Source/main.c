@@ -287,14 +287,17 @@ void main(void)
 								// Store the data even in low light condition
 								else if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 && sunlight_ADC < sunlight_ADC_Threshold)
 								{
-									
+									// store  120 bytes of "0" value when calibration does not work  in order to syncronize the pattern.
 									for(count=0;count<=119;count++)
 									{
 										AT25SF041_WriteEnable();
 										AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
 										Wait_ms_SPINOR(50);	
 										SPI_NOR_INTERNAL_FLASH_ADDR++;
-									}								
+									}		
+									//use count variable to identify the position of calib_value[count]
+									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+									theorical_JP_max_pos=current_position-calib_value[count];								
 									max_ADC_Val = ADC_GetResult(0);// read from channel 0
 									max_ADC_Val_JP = max_ADC_Val;
 									
@@ -366,6 +369,7 @@ void main(void)
 								// Store the data even in low light condition
 								else if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 && sunlight_ADC < sunlight_ADC_Threshold)
 								{
+									// store  120 bytes of "0" value when calibration does not work  in order to syncronize the pattern.
 									for(count=0;count<=119;count++)
 									{
 										AT25SF041_WriteEnable();
@@ -373,6 +377,11 @@ void main(void)
 										Wait_ms_SPINOR(50);	
 										SPI_NOR_INTERNAL_FLASH_ADDR++;
 									}
+									//use count variable to identify the position of calib_value[count]
+									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+									theorical_JP_max_pos=current_position-calib_value[count];
+									
+									
 									max_ADC_Val = ADC_GetResult(0);// read from channel 0
 									max_ADC_Val_JP = max_ADC_Val;
 									
