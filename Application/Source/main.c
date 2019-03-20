@@ -140,7 +140,7 @@ void main(void)
 	Delay_ms(500);
 
 	address=0;
-	while(SPI_NOR_DATA!=0xFF)
+	while(address<20000)
 	{
 		Wait_ms_SPINOR(5);
 		AT25SF041_CS_Set();
