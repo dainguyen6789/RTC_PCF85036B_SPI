@@ -1,4 +1,4 @@
-
+// This is  from janusz
 #include "stc15f2k60s2.h"
 #include "a25lc040.h"
 #include <stdio.h>
