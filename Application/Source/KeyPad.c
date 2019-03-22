@@ -17,6 +17,7 @@ bit direction=0;
 bit auto_move=0;
 bit selected_motor=0;
 bit calib_mode=0;
+//bit auto_mode=0; //jk
 //=============================================
 void Delay_ms(unsigned int ms)
 {

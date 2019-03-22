@@ -103,7 +103,7 @@ void main(void)
 	
 	small_move=0;
 	//small_move_rotation=0;
-	auto_mode=0;
+	auto_mode=1; //jk
 	calib_mode=1;
 	selected_motor=1;
 
