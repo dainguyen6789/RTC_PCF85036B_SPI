@@ -31,11 +31,19 @@
  #define  KEY_D 		16
  
  extern bit move,move_rotation;
- extern bit direction,direction_rotation;// motor direction
+ extern bit direction;// motor direction
+#ifndef direction_rotation
+ extern bit direction_rotation;
+ #endif 
  extern bit small_move,small_move_rotation;
  extern bit selected_motor;
- extern int  auto_mode;
- extern bit  calib_mode;
+#ifndef   auto_mode       //jk
+ extern int  auto_mode;          //jk 
+#endif                    //jk  
+// extern int  auto_mode; //jk
+#ifndef   calib_mode       //jk 
+ extern bit  calib_mode;  //jk
+#endif                    //jk 
  extern int lcd;
 
  

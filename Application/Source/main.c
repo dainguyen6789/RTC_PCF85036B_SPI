@@ -70,6 +70,10 @@ float current_position=1850,current_angle=0;
 void Step_move_2ndMotor(unsigned int step, bit dir);
 bit pos_angle_display=0;
 
+int  auto_mode;  //jk
+bit direction_rotation; //jk
+//bit  calib_mode; //jk
+
 //calib_value=malloc(24);
 //calib_time=malloc(24);
 
@@ -122,7 +126,7 @@ void main(void)
 	KeyPad_IO_Init();
 	//initUART1();
 	I2C_Init();
-	ADC_Init();
+	//ADC_Init(); //jk
 	//Timer0===================================
 	AUXR|=0x80;
 	TL0=T1MS;
@@ -342,12 +346,14 @@ void main(void)
 				}
 				Update_position(months,days,hours,mins,seconds,&current_position,0,&current_angle);
 		}
+		
+#if calib_mode==1;		
 		if (Day_Of_Year(months,days)==calib_day+7)
 		{
 			calib_mode=1;
 			count=0;
 		}
-		
+ 		
 		if(calib_mode && BCDtoDec1(mins)%30==0 &&  BCDtoDec1(seconds&0x7f)==0)// calib every 30mins
 		{
 			*(calib_value+count)=calibration(months,days,hours,mins,seconds,&current_position,&current_angle);// find the real max value within JP max +/- 10mm
@@ -359,6 +365,7 @@ void main(void)
 			}
 			count++;			
 		}
+#endif		
 
 	}
 	
