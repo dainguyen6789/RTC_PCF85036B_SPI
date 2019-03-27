@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/25/2019 10:53:02 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 10:59:27 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -62,7 +62,7 @@ line level    source
   52   1            {
   53   2                P4 |=1<<1;// P41=1 // moving distance (mm)=pi^2*step*4/675
   54   2                Wait_ms(2);
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/25/2019 10:53:02 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 10:59:27 PAGE 2   
 
   55   2                P4 &= ~(1<<1);
   56   2                Wait_ms(2);
@@ -126,7 +126,7 @@ line level    source
  110   2            if(direction)
  111   2              current_position=current_position+0.0565;//2*angle*R=2*0.039/180*pi*83mm
  112   2            else
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/25/2019 10:53:02 PAGE 3   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 10:59:27 PAGE 3   
 
  113   2              current_position=current_position-0.0565;
  114   2            if(i%50==0)
@@ -190,7 +190,7 @@ line level    source
  172   1        float  pos_interpolate_azimuth[num_of_azimuth_stamp],angle_interpolate_azimuth[num_of_azimuth_stamp],curr
              -ent_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
  173   1        float declination;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/25/2019 10:53:02 PAGE 4   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 10:59:27 PAGE 4   
 
  174   1        struct point p1,p2;
  175   1        struct cTime time;
@@ -254,7 +254,7 @@ line level    source
  225   3            {
  226   4              for (yy=0;yy<num_of_elevation_stamp;yy++)
  227   4              {
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/25/2019 10:53:02 PAGE 5   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 10:59:27 PAGE 5   
 
  228   5                p1.x=date_azimuth_mapping_symmetry_side[i];
  229   5                p2.x=date_azimuth_mapping_symmetry_side[i+1];
@@ -318,7 +318,7 @@ line level    source
  286   5                p1.x=date_azimuth_mapping[i];
  287   5                p2.x=date_azimuth_mapping[i+1];
  288   5                
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/25/2019 10:53:02 PAGE 6   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 10:59:27 PAGE 6   
 
  289   5                p1.y=RX_angle[yy][i];
  290   5                p2.y=RX_angle[yy][i+1];
@@ -382,7 +382,7 @@ line level    source
 *** WARNING C280 IN LINE 167 OF BipolarMotor.c: 'offset_calib': unreferenced local variable
 *** WARNING C280 IN LINE 169 OF BipolarMotor.c: 'date': unreferenced local variable
 *** WARNING C280 IN LINE 171 OF BipolarMotor.c: 'angle': unreferenced local variable
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/25/2019 10:53:02 PAGE 7   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 10:59:27 PAGE 7   
 
  346          
  347          void Display_Pos(float sign_dat)
@@ -446,7 +446,7 @@ line level    source
  405   3            WriteData(0xDF);// "blank"
  406   3            WriteData(0x20);// "blank"
  407   3            WriteData(0x20);// "blank"
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/25/2019 10:53:02 PAGE 8   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 10:59:27 PAGE 8   
 
  408   3          }
  409   2          //WriteData(0x6D);//m
