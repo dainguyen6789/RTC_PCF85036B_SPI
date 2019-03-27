@@ -98,15 +98,26 @@ void SendSPIDataToUART(unsigned char dat,unsigned long int adr)
 {
 	if(adr%131==0)
 	{
-		SendString("\r\n Sample (ADC_SUN,ADC_Cell,calib_pos_floor_float): ");
+		//SendString("\r \n Sample (ADC_SUN,ADC_Cell,calib_pos_floor_float): ");
+		//SendString("\r \n \n");
 		SendDecValtoUART(dat);
-		SendString(",");
+		SendString(";");
 	}
 	//ADC val of solar cell when calib
 	else if(adr%131<120  && adr%131!=0)
 	{
 		SendDecValtoUART(dat);
-		SendString(" ;");
+		if(adr%4!=3)
+		{
+			SendString(";");
+		}
+		else // remain 3
+		{
+			if(adr%131!=119 && adr%131!=0)
+				SendString("\r\n");
+			else
+				SendString(";");// @pos 119+x*131
+		}
 
 	}
 	
