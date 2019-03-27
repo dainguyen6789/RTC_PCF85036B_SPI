@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/26/2019 14:19:01 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 11:52:38 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -62,7 +62,7 @@ line level    source
   52   1            {
   53   2                P4 |=1<<1;// P41=1 // moving distance (mm)=pi^2*step*4/675
   54   2                Wait_ms(2);
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/26/2019 14:19:01 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 11:52:38 PAGE 2   
 
   55   2                P4 &= ~(1<<1);
   56   2                Wait_ms(2);
@@ -126,7 +126,7 @@ line level    source
              -39, R=83/2mm  //Dai
  110   1            step= (unsigned long int)(distance*39.939); // num of steps=distance*360/(2*pi*R*0.036); step angle =
              - 0.039, R=79.7/2mm  //jk 26 March 2019
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/26/2019 14:19:01 PAGE 3   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 11:52:38 PAGE 3   
 
  111   1        
  112   1          for( i=0;i<step;i++)
@@ -190,7 +190,7 @@ line level    source
  170          void Update_position(unsigned char mnths,unsigned char dys,
  171                               unsigned char hurs,unsigned char mns,unsigned char sconds,
  172                               float  *currnt_pos, float offset_calib,float  *currnt_angle)
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/26/2019 14:19:01 PAGE 4   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 11:52:38 PAGE 4   
 
  173          {
  174   1        //We use all the time Summer time
@@ -254,7 +254,7 @@ line level    source
  224   2          for (i=0;i<num_of_azimuth_stamp;i++)
  225   2          {
  226   3            if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/26/2019 14:19:01 PAGE 5   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 11:52:38 PAGE 5   
 
  227   3            {
  228   4              for (yy=0;yy<num_of_elevation_stamp;yy++)
@@ -318,7 +318,7 @@ line level    source
  284   3              Move(distance,1,*currnt_pos);
  285   3            else if (distance<0)
  286   3              Move(-distance,0,*currnt_pos);
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/26/2019 14:19:01 PAGE 6   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 11:52:38 PAGE 6   
 
  287   3            previous_move_time=BCDtoDec1(sconds&0x7f);
  288   3            *currnt_pos=desired_distance;
@@ -382,7 +382,7 @@ line level    source
  345   3          }
  346   2              
  347   2          angle_distance=JP_angle-*currnt_angle;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/26/2019 14:19:01 PAGE 7   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 11:52:38 PAGE 7   
 
  348   2          if(abs(angle_distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is 
              -more than 0.5mm OR >30s
@@ -446,7 +446,7 @@ line level    source
  404   2          WriteData(0x2D);// "-"
  405   2          WriteData(thousand|0x30);
  406   2          WriteData(hundred|0x30);
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/26/2019 14:19:01 PAGE 8   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/27/2019 11:52:38 PAGE 8   
 
  407   2          WriteData(ten|0x30);
  408   2          WriteData(unit|0x30);

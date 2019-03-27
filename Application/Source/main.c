@@ -143,7 +143,7 @@ void main(void)
 	//==============================================================
 	// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
 	//==============================================================
-	Display_Line(1);	
+	Display_Line(1); 
 	WriteData(0x68);//display "h"
 	WriteData(0x68);//display "h"
 	WriteData(0x6D);//display "m"
@@ -151,6 +151,8 @@ void main(void)
 	WriteData(0x23);//display "#" SETTIME_KEY*/
 	//WriteData((int) rx_pos_12h);
 	//Step_move(200, 1);// 1.8* step angle, 200 steps ~ 1 round
+
+	
 	while(1)                                      
 	{
 		Key_Process();
