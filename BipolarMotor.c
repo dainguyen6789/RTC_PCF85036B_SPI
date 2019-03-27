@@ -79,16 +79,19 @@ void Step_move_2ndMotor(unsigned int step, bit dir)
 void Move_2ndMotor(float  angle_distance, bit direction,float current_angle)
 {
 		unsigned int step,i;
-		step= (unsigned int)(angle_distance/0.039);// use geared motor 
+		//step= (unsigned int)(angle_distance/0.039);// use geared motor // Dai
 		//	https://www.omc-stepperonline.com/geared-stepper-motor/nema-23-stepper-motor-bipolar-l76mm-w-gear-raio-471-planetary-gearbox-23hs30-2804s-pg47.html
 		// we have another gear on the shaft with ratio 1:1
+	
+	  step= (unsigned int)(angle_distance/0.0122);  // jk 26 March 2019 motor 1.8 deg , with gear ration 50:1, one pulley 2R=183.2mm ( with belt), another 2R= 61.87mm
+	
 		for( i=0;i<step;i++)
 		{
 			Step_move_2ndMotor(step,direction);
 			if(direction)
-				current_angle=current_angle+0.039;// for LCD display only
+				current_angle=current_angle+0.0122;   // for LCD display only, before 0.039
 			else
-				current_angle=current_angle-0.039;// for LCD display only
+				current_angle=current_angle-0.0122;   // for LCD display only, before 0.039
 			if(i%50==0)
 			{
 				Command(0x08);
@@ -103,14 +106,16 @@ void Move(float  distance, bit direction,float current_position)
 {
 		unsigned long int step,i;
 		//int i;
-		step= (unsigned long int)(distance*17.7);// num of steps=distance*180/(2*pi*R*0.039); step angle = 0.039, R=83/2mm
+//		step= (unsigned long int)(distance*17.7);// num of steps=distance*180/(2*pi*R*0.039); step angle = 0.039, R=83/2mm  //Dai
+	    step= (unsigned long int)(distance*39.939); // num of steps=distance*360/(2*pi*R*0.036); step angle = 0.039, R=79.7/2mm  //jk 26 March 2019
+	
 		for( i=0;i<step;i++)
 		{
 			Step_move(step,direction);// move one step
 			if(direction)
-				current_position=current_position+0.0565;//2*angle*R=2*0.039/180*pi*83mm
+				current_position=current_position+0.02504;  //before 0.0565
 			else
-				current_position=current_position-0.0565;
+				current_position=current_position-0.02504;   //before 0.0565
 			if(i%50==0)
 			{			
 				Command(0x08);
@@ -190,18 +195,26 @@ void Update_position(unsigned char mnths,unsigned char dys,
   
 	
 	
+	
 	desired_distance=*currnt_pos;
 	//desired_angle=*currnt_angle;
-	//date=Day_Of_Year(mnths,dys)+4;
+	date=Day_Of_Year(mnths,dys);
 	//date=237;
 	declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
-	time_offset=1/60*(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180));
+	time_offset=(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(date-81)/365)*pi/180) -7.53*cos((360*(date-81)/365)*pi/180) -1.5*sin((360*(date-81)/365)*pi/180))/60;
 
   current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset-1;//current time=sun time= clock time -1
 	//=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/365)*3.1416/180)    -   1.5*SIN((360*($B$8-81)/365)*3.1416/180))
 	elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
 						cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180)           );
-	azimuth=180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
+	azimuth=sin((15*(current_local_sun_time-12))*pi/180);
+	azimuth=azimuth*cos(declination*pi/180);
+	azimuth=azimuth/sin((90-elevation)*pi/180);
+	azimuth=asin(azimuth);
+	azimuth=azimuth*(180/pi);
+	azimuth=azimuth+180;
+	
+//	azimuth=180+(180/pi)*asin(sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180));// JP calculation
 	//azimuth=(180/pi)*acos(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
 
 	
@@ -265,7 +278,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 		//desired_distance=declination;// +offset_calib;
 
 		distance=desired_distance-*currnt_pos;
-		if(abs(distance)>0.5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>30)// move if the change is more than 0.5mm OR >30s
+		if(abs(distance)>5 | abs(previous_move_time-BCDtoDec1(sconds&0x7f))>60)// move if the change is more than 5mm OR >60s // jk changed before  0.5mm and 30 sec
 		{
 			if(distance>0)
 				Move(distance,1,*currnt_pos);
