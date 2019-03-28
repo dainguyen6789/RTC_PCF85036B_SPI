@@ -269,7 +269,7 @@ void main(void)
 									else // Store the data even in low light condition
 									{
 											// store  120 bytes of "0" value when calibration does not work  in order to syncronize the pattern.
-											for(count=0;count<=119;count++)
+											for(count=0;count<=323;count++)
 											{
 												AT25SF041_WriteEnable();
 												AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
@@ -339,7 +339,7 @@ void main(void)
 									else // Store the data even in low light condition
 									{
 											// store  120 bytes of "0" value when calibration does not work  in order to syncronize the pattern.
-											for(count=0;count<=119;count++)
+											for(count=0;count<=323;count++)
 											{
 												AT25SF041_WriteEnable();
 												AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
