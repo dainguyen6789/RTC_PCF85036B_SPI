@@ -254,11 +254,9 @@ void main(void)
 			
 			sunlight_ADC=ADC_GetResult(2);
 			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
-					if(iUse_prevday_calib_value==0)// FIRST day of calibration
-					{
-							// CALIBRATION every 30mins, from 7AM to 17PM
-							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
-							{
+			{
+						if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
+						{
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
 								{
 									if(sunlight_ADC>=sunlight_ADC_Threshold)
@@ -311,15 +309,15 @@ void main(void)
 								}
 
 											
-							}
-							else 
-							{
+					}
+					if(iUse_prevday_calib_value==0)// FIRST day of calibration
+					{
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
 								}
-							}
+							
 					}
 					
 					// how to update for next day and use the calib value from the previous day???
@@ -327,83 +325,6 @@ void main(void)
 					{
 						
 							// calib every 30mins, from 7AM to 17PM
-							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
-							{
-								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
-								{
-									if(sunlight_ADC>=sunlight_ADC_Threshold)
-									{
-									count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-									calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
-									}
-									else // Store the data even in low light condition
-									{
-											// store  120 bytes of "0" value when calibration does not work  in order to syncronize the pattern.
-											for(count=0;count<=323;count++)
-											{
-												AT25SF041_WriteEnable();
-												AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
-												Wait_ms_SPINOR(50);	
-												SPI_NOR_INTERNAL_FLASH_ADDR++;
-											}
-											//use count variable to identify the position of calib_value[count]
-											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);											
-											theorical_JP_max_pos=current_position;
-											max_ADC_Val = ADC_GetResult(0);// read from channel 0
-											max_ADC_Val_JP = max_ADC_Val;
-									}
-									dat_to_store.month=months;
-									dat_to_store.date=days;
-									dat_to_store.hour=hours;
-									dat_to_store.min=mins;
-									
-									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
-									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
-									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
-									dat_to_store.light_ADC=sunlight_ADC/4;
-									
-									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
-									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
-									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;								
-									Wait_ms_SPINOR(50);
-									
-									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR						
-
-								}
-								// Store the data even in low light condition
-								/*else if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 && sunlight_ADC < sunlight_ADC_Threshold)
-								{
-
-									
-									
-									dat_to_store.month=months;
-									dat_to_store.date=days;
-									dat_to_store.hour=hours;
-									dat_to_store.min=mins;
-									
-									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;// scale down to store in one BYTE.		
-									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
-									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
-									dat_to_store.light_ADC=sunlight_ADC/4; // scale down to store in one BYTE.
-									
-									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
-									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
-									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;	
-									
-									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR									
-								}	*/							
-								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
-								{
-									iUse_prevday_calib_value=1;
-									//count=0;
-								}
-								
-											
-							}
-							else
-							{
-								
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)								
 								{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
@@ -417,8 +338,9 @@ void main(void)
 
 
 								}
-							}
+							
 					}
+				}
 
 		}	
 				
