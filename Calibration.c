@@ -53,8 +53,8 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					voltage_at_scanned_pos[i]=ADC_GetResult(ch);
 					// 	Because the uC Flash Memory is almost full, 
 					//	so I did not change/increase the size of "struct data_to_store"
-					// 	STORE THE CALIB VOLTAGE IN THE SPI NOR FLASH after every 1mm, total 4*30=120 byte of data for each calib time
-					if(i%2==0)
+					// 	STORE THE CALIB VOLTAGE IN THE SPI NOR FLASH after every calib, total 4*60=240 byte of data for each calib time
+					//if(i%2==0)
 					{
 						AT25SF041_WriteEnable();
 						//Wait_ms_SPINOR(50);	
