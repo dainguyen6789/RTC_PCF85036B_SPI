@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 10:32:50 PAGE 1   
+C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 11:57:28 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE UART1
@@ -62,7 +62,7 @@ line level    source
   52   1        return BCD&0x0f;
   53   1      }
   54          unsigned char DectoBCD(unsigned char dec)
-C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 10:32:50 PAGE 2   
+C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 11:57:28 PAGE 2   
 
   55          {
   56   1        
@@ -106,88 +106,92 @@ line level    source
   94   1        SendUART1(unit+48); 
   95   1        
   96   1      }
-  97          void SendSPIDataToUART(unsigned char dat,unsigned long int adr)
-  98          {
-  99   1        if(adr%131==0)
- 100   1        {
- 101   2          //SendString("\r \n Sample (ADC_SUN,ADC_Cell,calib_pos_floor_float): ");
- 102   2          SendString("\r\n nnn");
- 103   2          SendDecValtoUART(dat);
- 104   2          SendString(";");
- 105   2        }
- 106   1        //ADC val of solar cell when calib
- 107   1        else if(adr%131<120  && adr%131!=0)
- 108   1        {
- 109   2          SendDecValtoUART(dat);
- 110   2          if ((adr%131)%4==3)//  remain 0, 
- 111   2          {
- 112   3            if(adr%131!=119 && adr%131!=0)
- 113   3              SendString("\r\n ok");// make new line
- 114   3            else
- 115   3              SendString(";");
- 116   3          }
-C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 10:32:50 PAGE 3   
+  97          // Change to read the ALL the data +/-20mm range and record the data every 0.5mm movement.
+  98          void SendSPIDataToUART(unsigned char dat,unsigned long int adr)
+  99          {
+ 100   1        // 4bytes*(81 calib)=324+11
+ 101   1        if(adr%335==0)
+ 102   1        {
+ 103   2          //SendString("\r \n Sample (ADC_SUN,ADC_Cell,calib_pos_floor_float): ");
+ 104   2          SendString("\r\n nnn");
+ 105   2          SendDecValtoUART(dat);
+ 106   2          SendString(";");
+ 107   2        }
+ 108   1        //ADC val of solar cell when calib
+ 109   1        else if(adr%335<324  && adr%335!=0)
+ 110   1        {
+ 111   2          SendDecValtoUART(dat);
+ 112   2          if ((adr%335)%4==3)//  remain 0, 
+ 113   2          {
+ 114   3            if(adr%335!=323 && adr%335!=0)
+ 115   3              SendString("\r\n ok");// make new line
+ 116   3            else
+C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 11:57:28 PAGE 3   
 
- 117   2          else if((adr%131)%4!=3)
- 118   2          {
- 119   3            SendString(";");
- 120   3          }
- 121   2          
- 122   2        }
- 123   1        
- 124   1        else if (adr%131>=120)
- 125   1        {
- 126   2          if(adr%131==120 )
- 127   2          {
- 128   3            SendString("MM-DD-HH-MN-MAX_CELL_VOL-MAX_CALIB_POS[2]-SUNLIGHT_ADC-ADC_LUT-PosLUT[2] ");
- 129   3      
- 130   3            SendBCDValtoUART(dat);
- 131   3            SendString(",");
- 132   3          }
- 133   2          else if(adr%131==121)
- 134   2          {
- 135   3            SendBCDValtoUART(dat);
- 136   3            SendString(",");
- 137   3          } 
- 138   2          else if(adr%131==122)
- 139   2          {
- 140   3            SendBCDValtoUART(dat);
- 141   3            SendString(",");
- 142   3          }       
- 143   2          else if(adr%131==123)
- 144   2          {
- 145   3            SendBCDValtoUART(dat);
- 146   3            SendString(",");
- 147   3          }     
- 148   2          else
- 149   2          {
- 150   3            SendDecValtoUART(dat);
- 151   3            SendString(":");
- 152   3          }
- 153   2        }
- 154   1      }
- 155          
- 156          void SendUART1(unsigned char dat)
- 157          {
- 158   1        while(busy);
- 159   1        busy=1;
- 160   1        ACC=dat;
- 161   1        SBUF=ACC;
- 162   1      }
- 163          
- 164          
+ 117   3              SendString(";");
+ 118   3          }
+ 119   2          else if((adr%335)%4!=3)
+ 120   2          {
+ 121   3            SendString(";");
+ 122   3          }
+ 123   2          
+ 124   2        }
+ 125   1        
+ 126   1        else if (adr%335>=324)
+ 127   1        {
+ 128   2          if(adr%335==324 )
+ 129   2          {
+ 130   3            SendString("MM-DD-HH-MN-MAX_CELL_VOL-MAX_CALIB_POS[2]-SUNLIGHT_ADC-ADC_LUT-PosLUT[2] ");
+ 131   3      
+ 132   3            SendBCDValtoUART(dat);
+ 133   3            SendString(",");
+ 134   3          }
+ 135   2          else if(adr%335==325)
+ 136   2          {
+ 137   3            SendBCDValtoUART(dat);
+ 138   3            SendString(",");
+ 139   3          } 
+ 140   2          else if(adr%335==326)
+ 141   2          {
+ 142   3            SendBCDValtoUART(dat);
+ 143   3            SendString(",");
+ 144   3          }       
+ 145   2          else if(adr%335==327)
+ 146   2          {
+ 147   3            SendBCDValtoUART(dat);
+ 148   3            SendString(",");
+ 149   3          }     
+ 150   2          else
+ 151   2          {
+ 152   3            SendDecValtoUART(dat);
+ 153   3            SendString(":");
+ 154   3          }
+ 155   2        }
+ 156   1      }
+ 157          
+ 158          void SendUART1(unsigned char dat)
+ 159          {
+ 160   1        while(busy);
+ 161   1        busy=1;
+ 162   1        ACC=dat;
+ 163   1        SBUF=ACC;
+ 164   1      }
  165          
- 166           
+ 166          
+ 167          
+ 168           
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    879    ----
+   CODE SIZE        =    895    ----
    CONSTANT SIZE    =     93    ----
    XDATA SIZE       =   ----      11
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
+C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 11:57:28 PAGE 4   
+
 END OF MODULE INFORMATION.
 
 

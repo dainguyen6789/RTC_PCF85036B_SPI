@@ -94,9 +94,11 @@ void SendBCDValtoUART(unsigned char dat)
 	SendUART1(unit+48);	
 	
 }
+// Change to read the ALL the data +/-20mm range and record the data every 0.5mm movement.
 void SendSPIDataToUART(unsigned char dat,unsigned long int adr)
 {
-	if(adr%131==0)
+	// 4bytes*(81 calib)=324+11
+	if(adr%335==0)
 	{
 		//SendString("\r \n Sample (ADC_SUN,ADC_Cell,calib_pos_floor_float): ");
 		SendString("\r\n nnn");
@@ -104,43 +106,43 @@ void SendSPIDataToUART(unsigned char dat,unsigned long int adr)
 		SendString(";");
 	}
 	//ADC val of solar cell when calib
-	else if(adr%131<120  && adr%131!=0)
+	else if(adr%335<324  && adr%335!=0)
 	{
 		SendDecValtoUART(dat);
-		if ((adr%131)%4==3)//  remain 0, 
+		if ((adr%335)%4==3)//  remain 0, 
 		{
-			if(adr%131!=119 && adr%131!=0)
+			if(adr%335!=323 && adr%335!=0)
 				SendString("\r\n ok");// make new line
 			else
 				SendString(";");
 		}
-		else if((adr%131)%4!=3)
+		else if((adr%335)%4!=3)
 		{
 			SendString(";");
 		}
 		
 	}
 	
-	else if (adr%131>=120)
+	else if (adr%335>=324)
 	{
-		if(adr%131==120 )
+		if(adr%335==324 )
 		{
 			SendString("MM-DD-HH-MN-MAX_CELL_VOL-MAX_CALIB_POS[2]-SUNLIGHT_ADC-ADC_LUT-PosLUT[2] ");
 
 			SendBCDValtoUART(dat);
 			SendString(",");
 		}
-		else if(adr%131==121)
+		else if(adr%335==325)
 		{
 			SendBCDValtoUART(dat);
 			SendString(",");
 		}	
-		else if(adr%131==122)
+		else if(adr%335==326)
 		{
 			SendBCDValtoUART(dat);
 			SendString(",");
 		}				
-		else if(adr%131==123)
+		else if(adr%335==327)
 		{
 			SendBCDValtoUART(dat);
 			SendString(",");
