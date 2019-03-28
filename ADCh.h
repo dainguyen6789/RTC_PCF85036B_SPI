@@ -11,7 +11,7 @@
 #define ADC_SPEEDLL 0x00
 //#define P1_0_INPUT_P1M0 0x00
 //#define P1_0_INPUT_P1M0 0x01
-#define sunlight_ADC_Threshold 512 //820
+#define sunlight_ADC_Threshold 250 //820
 
 extern int adc_data;
 
