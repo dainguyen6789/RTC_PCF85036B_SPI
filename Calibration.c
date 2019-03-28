@@ -37,14 +37,14 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 {
 		unsigned char ch=0;
 		float calib_step_move=0.5;
-		unsigned int voltage_at_scanned_pos[60],max_location;
+		unsigned int voltage_at_scanned_pos[81],max_location;
 		int i;
 		// move/scan +`
-		for(i=0;i<60;i++)
+		for(i=0;i<81;i++)// 81 values
 		{
 			voltage_at_scanned_pos[i]=0;
 		}
-		for(i=0;i<60;i++)
+		for(i=0;i<81;i++)
 		{
 				//if(ADC_GetResult(2)>=sunlight_ADC_Threshold)
 				{
@@ -110,19 +110,19 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 				Display_Pos((float)voltage_at_scanned_pos[i]/1024*5);
 				WriteData(0x56);//display "V"	
 				WriteData(0x10);//display " "	
-				Wait_ms(1500);
+				Wait_ms(500);
 		}
 
-		if(i==60)// make sure that all of the calibration value are scanned with GOOD SUN
+		if(i==81)// make sure that all of the calibration value are scanned with GOOD SUN
 		{
-			max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,39]
+			max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,80]
 			*calib_max_ADC_Value=voltage_at_scanned_pos[max_location];
 
-			*max_ADC_JP_value=voltage_at_scanned_pos[29];
+			*max_ADC_JP_value=voltage_at_scanned_pos[40];
 		
 			// move to the optimal position in the area of +/-10mm from JP max theorical pos
-			Move(calib_step_move*(59-max_location),0);
-			*current_position=*current_position-calib_step_move*(59-max_location);
+			Move(calib_step_move*(80-max_location),0);
+			*current_position=*current_position-calib_step_move*(80-max_location);
 			Wait_ms(500);
 		}
 
@@ -131,9 +131,9 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 
 unsigned int Max_Value(unsigned int *input)
 {
-	unsigned int max=0,max_location=29,i;
+	unsigned int max=0,max_location=40,i;
 	//int i;
-	for(i=0;i<=59;i++)
+	for(i=0;i<=80;i++) //total 81 diff values
 	{
 		max=max>*(input+i)? max:*(input+i);
 		if (max==*(input+i)&& max!=0)
