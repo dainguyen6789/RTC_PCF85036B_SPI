@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 11:57:28 PAGE 1   
+C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 12:03:41 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE UART1
@@ -62,7 +62,7 @@ line level    source
   52   1        return BCD&0x0f;
   53   1      }
   54          unsigned char DectoBCD(unsigned char dec)
-C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 11:57:28 PAGE 2   
+C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 12:03:41 PAGE 2   
 
   55          {
   56   1        
@@ -113,7 +113,7 @@ line level    source
  101   1        if(adr%335==0)
  102   1        {
  103   2          //SendString("\r \n Sample (ADC_SUN,ADC_Cell,calib_pos_floor_float): ");
- 104   2          SendString("\r\n nnn");
+ 104   2          SendString("\r\n");
  105   2          SendDecValtoUART(dat);
  106   2          SendString(";");
  107   2        }
@@ -124,9 +124,9 @@ line level    source
  112   2          if ((adr%335)%4==3)//  remain 0, 
  113   2          {
  114   3            if(adr%335!=323 && adr%335!=0)
- 115   3              SendString("\r\n ok");// make new line
+ 115   3              SendString("\r\n");// make new line
  116   3            else
-C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 11:57:28 PAGE 3   
+C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 12:03:41 PAGE 3   
 
  117   3              SendString(";");
  118   3          }
@@ -184,13 +184,13 @@ line level    source
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =    895    ----
-   CONSTANT SIZE    =     93    ----
+   CONSTANT SIZE    =     83    ----
    XDATA SIZE       =   ----      11
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
-C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 11:57:28 PAGE 4   
+C51 COMPILER V9.52.0.0   UART1                                                             03/28/2019 12:03:41 PAGE 4   
 
 END OF MODULE INFORMATION.
 
