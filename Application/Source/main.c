@@ -278,7 +278,8 @@ void main(void)
 											}		
 											//use count variable to identify the position of calib_value[count]
 											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-											theorical_JP_max_pos=current_position-calib_value[count];								
+											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
+											theorical_JP_max_pos=current_position;								
 											max_ADC_Val = ADC_GetResult(0);// read from channel 0
 											max_ADC_Val_JP = max_ADC_Val;										
 									}
@@ -347,9 +348,8 @@ void main(void)
 											}
 											//use count variable to identify the position of calib_value[count]
 											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-											theorical_JP_max_pos=current_position-calib_value[count];
-											
-											
+											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);											
+											theorical_JP_max_pos=current_position;
 											max_ADC_Val = ADC_GetResult(0);// read from channel 0
 											max_ADC_Val_JP = max_ADC_Val;
 									}

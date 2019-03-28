@@ -207,7 +207,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	location.dLatitude=45.51;
 	time.iYear=2019;
 	time.iMonth=BCDtoDec1(mnths);
-	time.iDay=Day_Of_Year(mnths,dys);
+	time.iDay=BCDtoDec1(dys);
 	time.dHours=BCDtoDec1(hurs)+5;
 	time.dMinutes=BCDtoDec1(mns);
 	time.dSeconds=BCDtoDec1(sconds&0x7f);

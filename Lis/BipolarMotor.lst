@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/28/2019 11:44:50 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/28/2019 12:33:53 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -62,7 +62,7 @@ line level    source
   51   2            
   52   2          }
   53   1        
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/28/2019 11:44:50 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/28/2019 12:33:53 PAGE 2   
 
   54   1        else      // neg direction
   55   1          {
@@ -126,7 +126,7 @@ line level    source
  113   1                  a14*findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43));
  114   1      }
  115              
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/28/2019 11:44:50 PAGE 3   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/28/2019 12:33:53 PAGE 3   
 
  116          //===================================================== 
  117          
@@ -190,7 +190,7 @@ line level    source
  175   3              p2.x=elevation_stamp[i+1];
  176   3              
  177   3              p1.y=pos_interpolate_azimuth[i];
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/28/2019 11:44:50 PAGE 4   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/28/2019 12:33:53 PAGE 4   
 
  178   3              p2.y=pos_interpolate_azimuth[i+1];
  179   3              
@@ -224,7 +224,7 @@ line level    source
  207   1        location.dLatitude=45.51;
  208   1        time.iYear=2019;
  209   1        time.iMonth=BCDtoDec1(mnths);
- 210   1        time.iDay=Day_Of_Year(mnths,dys);
+ 210   1        time.iDay=BCDtoDec1(dys);
  211   1        time.dHours=BCDtoDec1(hurs)+5;
  212   1        time.dMinutes=BCDtoDec1(mns);
  213   1        time.dSeconds=BCDtoDec1(sconds&0x7f);
@@ -254,7 +254,7 @@ line level    source
  230   1        //if (current_local_sun_time>12)
  231   1        //  azimuth=360-azimuth;
  232   1        
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/28/2019 11:44:50 PAGE 5   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/28/2019 12:33:53 PAGE 5   
 
  233   1        if(BCDtoDec1(sconds&0x7f)%2==0 && elevation >=2.2 && elevation <=68)
  234   1        {
@@ -283,7 +283,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   4477    ----
+   CODE SIZE        =   4471    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =    911     303
    PDATA SIZE       =   ----    ----
