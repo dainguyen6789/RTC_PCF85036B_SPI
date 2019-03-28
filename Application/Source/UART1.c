@@ -99,7 +99,7 @@ void SendSPIDataToUART(unsigned char dat,unsigned long int adr)
 	if(adr%131==0)
 	{
 		//SendString("\r \n Sample (ADC_SUN,ADC_Cell,calib_pos_floor_float): ");
-		//SendString("\r \n \n");
+		SendString("\r\n nnn");
 		SendDecValtoUART(dat);
 		SendString(";");
 	}
@@ -107,18 +107,18 @@ void SendSPIDataToUART(unsigned char dat,unsigned long int adr)
 	else if(adr%131<120  && adr%131!=0)
 	{
 		SendDecValtoUART(dat);
-		if(adr%4!=3)
+		if ((adr%131)%4==3)//  remain 0, 
+		{
+			if(adr%131!=119 && adr%131!=0)
+				SendString("\r\n ok");// make new line
+			else
+				SendString(";");
+		}
+		else if((adr%131)%4!=3)
 		{
 			SendString(";");
 		}
-		else // remain 3
-		{
-			if(adr%131!=119 && adr%131!=0)
-				SendString("\r\n");
-			else
-				SendString(";");// @pos 119+x*131
-		}
-
+		
 	}
 	
 	else if (adr%131>=120)
