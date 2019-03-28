@@ -125,54 +125,14 @@ float  linear_interpolate(struct point p1,struct point p2, float  x)
 	
 	return fx;
 }
+//============================================================================
 
-
-
-void Update_position(unsigned char mnths,unsigned char dys,
-										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos, float offset_calib)
+float TheoricalJP_Position(float azimuth,float elevation)
 {
-	unsigned int date,i=0,yy=0;
-	//char num_of_elevation_stamp=15;
-	float  desired_distance=0,distance=0,JP_pos=0;
-	double  pos_interpolate_azimuth[num_of_elevation_stamp],current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
-	float declination;
-	struct point p1,p2;
-	struct cTime time;
-	struct cLocation location;
-	struct cSunCoordinates *sunCoord;
-	//hurs=hurs-1;// change to sun time
-	//dys=dys+4;
-	location.dLongitude=-73.59;
-	location.dLatitude=45.51;
-	time.iYear=2019;
-	time.iMonth=BCDtoDec1(mnths);
-	time.iDay=BCDtoDec1(dys);
-	time.dHours=BCDtoDec1(hurs)+5;
-	time.dMinutes=BCDtoDec1(mns);
-	time.dSeconds=BCDtoDec1(sconds&0x7f);
-
-	
-	desired_distance=*currnt_pos;
-	
-	//date=Day_Of_Year(mnths,dys)+4;
-	//date=237;
-	declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
-	time_offset=(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180))/60;
-	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//-1;//current time=sun time= clock time -1
-	//=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/365)*3.1416/180)    -   1.5*SIN((360*($B$8-81)/365)*3.1416/180))
-	elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
-						cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180)           );
-	azimuth=180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
-	//azimuth=(180/pi)*acos(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
-
-	
-	//if (current_local_sun_time>12)
-	//	azimuth=360-azimuth;
-	
-	if(BCDtoDec1(sconds&0x7f)%2==0 && elevation >=2.2 && elevation <=68)
-	{
-		// interpolate for azimuth
+		double  pos_interpolate_azimuth[num_of_elevation_stamp];
+		float  JP_pos=0;
+		int i,yy;
+		struct point p1,p2;
 		for (i=0;i<num_of_azimuth_stamp;i++)
 		{
 			if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
@@ -223,7 +183,57 @@ void Update_position(unsigned char mnths,unsigned char dys,
 			}
 			
 		}
+		return JP_pos;
 		
+	}
+	//============================================================================
+
+void Update_position(unsigned char mnths,unsigned char dys,
+										 unsigned char hurs,unsigned char mns,unsigned char sconds,
+										 float  *currnt_pos, float offset_calib)
+{
+	unsigned int date,i=0,yy=0;
+	//char num_of_elevation_stamp=15;
+	float  desired_distance=0,distance=0,JP_pos=0;
+	double current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
+	float declination;
+	//struct point p1,p2;
+	struct cTime time;
+	struct cLocation location;
+	struct cSunCoordinates *sunCoord;
+	//hurs=hurs-1;// change to sun time
+	//dys=dys+4;
+	location.dLongitude=-73.59;
+	location.dLatitude=45.51;
+	time.iYear=2019;
+	time.iMonth=BCDtoDec1(mnths);
+	time.iDay=Day_Of_Year(mnths,dys);
+	time.dHours=BCDtoDec1(hurs)+5;
+	time.dMinutes=BCDtoDec1(mns);
+	time.dSeconds=BCDtoDec1(sconds&0x7f);
+
+	
+	desired_distance=*currnt_pos;
+	
+	//date=Day_Of_Year(mnths,dys)+4;
+	//date=237;
+	declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
+	time_offset=(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180))/60;
+	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//-1;//current time=sun time= clock time -1
+	//=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/365)*3.1416/180)    -   1.5*SIN((360*($B$8-81)/365)*3.1416/180))
+	elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
+						cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180)           );
+	azimuth=180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
+	//azimuth=(180/pi)*acos(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
+
+	
+	//if (current_local_sun_time>12)
+	//	azimuth=360-azimuth;
+	
+	if(BCDtoDec1(sconds&0x7f)%2==0 && elevation >=2.2 && elevation <=68)
+	{
+		
+		JP_pos=TheoricalJP_Position(azimuth,elevation);
 		desired_distance=JP_pos+71+offset_calib;
 		//desired_distance=azimuth;
 		distance=desired_distance-*currnt_pos;
