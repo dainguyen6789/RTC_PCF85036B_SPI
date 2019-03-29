@@ -4,15 +4,20 @@
 #include "math.h"
 #include "SunPos.h"
 #include "KeyPad.h"
+#include "PI4IOE5V96248.h"
+
 //#include "PCF85963BTL.h"
 //#include "PCF85063BTL.h"
 
 void Delay_ms(unsigned int ms);
 int Day_Of_Year(unsigned char months,unsigned char days);
 unsigned char BCDtoDec1(char bcd);
+void Write_PI4IOE5V96248(struct DATA_FOR_IO_6PORTS *xdat);
 void Display_Pos(float sign_dat);
 void WriteData(unsigned char dat);
 void Command(unsigned char dat);
+
+
 
 int lcd=0;
 float  degree;
@@ -28,6 +33,8 @@ float  findDet4x4 (float  a11, float  a12, float  a13, float  a14,
 float
 cubic_interpolate (float *p1, float *p2, float *p3, float *p4, float x);
 
+struct DATA_FOR_IO_6PORTS dat;
+
 unsigned char BCDtoDec1(unsigned char bcd)
 {
 	unsigned char hi,lo;
@@ -35,11 +42,85 @@ unsigned char BCDtoDec1(unsigned char bcd)
 	lo=bcd&0x0F;
 	return hi*10+lo;
 }
+// jk with IO multplexer
+
+void vOneStepMove(bit bDir)
+{
+	//unsigned char temp;
+	if(bDir)	//pos direction
+		{
+			dat.port5=0x00|0x04;//port5.1 is used to move the motor, port5.0 is used to control the direction, 0x40 is used to set bit P52 (enable the motor driver)
+			Write_PI4IOE5V96248(&dat);
+			Delay_ms(2);
+			dat.port5=0x02|0x04;
+			Write_PI4IOE5V96248(&dat);
+			Delay_ms(2);
+			
+		}
+	
+	else			// neg direction
+		{
+			dat.port5=0x01|0x04;//port5.1 is used to move the motor, port5.0 is used to control the direction.
+			Write_PI4IOE5V96248(&dat);
+			Delay_ms(2);
+			dat.port5=0x03|0x04;
+			Write_PI4IOE5V96248(&dat);
+			Delay_ms(2);
+		}	
+}
 
 
+void vOneStepMove_2ndMotor(bit bDir)
+{
+	//unsigned char temp;
+	if(bDir)	//pos direction
+		{
+			dat.port4=0x00|0x04;//port4.1 is used to move the motor, port4.0 is used to control the direction, 0x40 is used to set bit P52 (enable the motor driver)
+			Write_PI4IOE5V96248(&dat);
+			Delay_ms(2);
+			dat.port4=0x02|0x04;
+			Write_PI4IOE5V96248(&dat);
+			Delay_ms(2);			
+		}	
+	else			// neg direction
+		{
+			dat.port4=0x01|0x04;//port5.1 is used to move the motor, port5.0 is used to control the direction.
+			Write_PI4IOE5V96248(&dat);
+			Delay_ms(2);
+			dat.port4=0x03|0x04;
+			Write_PI4IOE5V96248(&dat);
+			Delay_ms(2);
+		}	
+}
 
 
+void Step_move(unsigned int step, bit dir)
+{
+			unsigned int i=0;
+			//P3M1=0x00;
+			//P3M0=0xFF;
+			for(i=0;i<step;i++)
+			{
+							vOneStepMove(dir);
+							//Wait_ms(30);
+			}
+}
 
+
+void Step_move_2ndMotor(unsigned int step, bit dir)
+{
+			unsigned int i=0;
+			//P3M1=0x00;
+			//P3M0=0xFF;
+			for(i=0;i<step;i++)
+			{
+							vOneStepMove_2ndMotor(dir);
+							//Wait_ms(30);
+			}
+}
+
+
+/*
 void Step_move(unsigned int step, bit dir)
 {
 			unsigned int i=0;
@@ -56,9 +137,10 @@ void Step_move(unsigned int step, bit dir)
 					Wait_ms(2);
 			}
 }
-
+*/
 
 // P4.5 direction; P4.3 pulse
+/*
 void Step_move_2ndMotor(unsigned int step, bit dir)
 {
 			unsigned int i=0;
@@ -75,7 +157,7 @@ void Step_move_2ndMotor(unsigned int step, bit dir)
 					Wait_ms(2);
 			}
 }
-
+*/
 void Move_2ndMotor(float  angle_distance, bit direction,float current_angle)
 {
 		unsigned int step,i;
