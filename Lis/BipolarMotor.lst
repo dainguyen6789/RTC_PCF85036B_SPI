@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/29/2019 13:24:39 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      04/02/2019 16:58:40 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -62,7 +62,7 @@ line level    source
   52   2            dat.port5=0x00|0x04;//port5.1 is used to move the motor, port5.0 is used to control the direction, 0x40
              - is used to set bit P52 (enable the motor driver)
   53   2            Write_PI4IOE5V96248(&dat);
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/29/2019 13:24:39 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      04/02/2019 16:58:40 PAGE 2   
 
   54   2            Delay_ms(2);
   55   2            dat.port5=0x02|0x04;
@@ -126,7 +126,7 @@ line level    source
  112   1            unsigned int i=0;
  113   1            //P3M1=0x00;
  114   1            //P3M0=0xFF;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/29/2019 13:24:39 PAGE 3   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      04/02/2019 16:58:40 PAGE 3   
 
  115   1            for(i=0;i<step;i++)
  116   1            {
@@ -190,7 +190,7 @@ line level    source
  172   2            Step_move_2ndMotor(step,direction);
  173   2            if(direction)
  174   2              current_angle=current_angle+0.0122;   // for LCD display only, before 0.039
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/29/2019 13:24:39 PAGE 4   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      04/02/2019 16:58:40 PAGE 4   
 
  175   2            else
  176   2              current_angle=current_angle-0.0122;   // for LCD display only, before 0.039
@@ -254,7 +254,7 @@ line level    source
  232   1                  a12*findDet3x3(a21, a23, a24, a31, a33, a34, a41, a43, a44) +
  233   1                  a13*findDet3x3(a21, a22, a24, a31, a32, a34, a41, a42, a44) -
  234   1                  a14*findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43));
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/29/2019 13:24:39 PAGE 5   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      04/02/2019 16:58:40 PAGE 5   
 
  235   1      }
  236              
@@ -318,7 +318,7 @@ line level    source
              -365)*3.1416/180)    -   1.5*SIN((360*($B$8-81)/365)*3.1416/180))
  290   1        elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
  291   1                  cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180) 
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/29/2019 13:24:39 PAGE 6   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      04/02/2019 16:58:40 PAGE 6   
 
              -          );
  292   1        azimuth=sin((15*(current_local_sun_time-12))*pi/180);
@@ -382,7 +382,7 @@ line level    source
  347   4              p1.y=pos_interpolate_azimuth[i];
  348   4              p2.y=pos_interpolate_azimuth[i+1];
  349   4              
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/29/2019 13:24:39 PAGE 7   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      04/02/2019 16:58:40 PAGE 7   
 
  350   4              JP_pos=linear_interpolate(p1,p2,elevation);
  351   4              //break;
@@ -446,7 +446,7 @@ line level    source
  407   4            }
  408   3            
  409   3          }
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/29/2019 13:24:39 PAGE 8   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      04/02/2019 16:58:40 PAGE 8   
 
  410   2          // MOVEMENT CONTROL FOR ANGLE ROTATION
  411   2          // interpolate for elevation
@@ -510,7 +510,7 @@ line level    source
  466   2          WriteData(0x2E);//.
  467   2          WriteData((after_dot)|0x30);
  468   2          if(!selected_motor)
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      03/29/2019 13:24:39 PAGE 9   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      04/02/2019 16:58:40 PAGE 9   
 
  469   2          {
  470   3            WriteData(0x6D);//m

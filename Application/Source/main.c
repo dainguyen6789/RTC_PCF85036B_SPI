@@ -63,7 +63,8 @@ int RX_Data_Uart_Cnt=0;
 int st_time=0;
 int count=0;
 static int KeyCount=0;
-static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
+//static unsigned char KeyNum_Old,KeyNum,PressedKey[5]="hhmms";  //jk
+unsigned char KeyNum_Old,KeyNum,PressedKey[5]="hhmm#"; //jk
 float calib_value[24],calib_time[24];
 unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
 float current_position=1850,current_angle=0;
@@ -89,10 +90,10 @@ void tm0_isr() interrupt 1 using 1
 
 void main(void)
 {
-//	unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
+//	unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;  //jk // uncommented to original jk
 	//unsigned int prox_data;
 	static int KeyCount=0;
-	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
+	static unsigned char KeyNum_Old,KeyNum,PressedKey[5]="hhmms";	
 	char prox_flag=1,prox_flag_rotation=1;
 //	unsigned char KeyNum;
 	int calib_day=0;
@@ -155,7 +156,7 @@ void main(void)
 	
 	while(1)                                      
 	{
-		Key_Process();
+		Key_Process();		
 		//count++;
 		//if (count==20)
 		{
@@ -212,9 +213,11 @@ void main(void)
 			//LCD_clear();
 			
 			//==============================================================
-			Display_Line(2);
-			DisplayLCD(hours);
-			WriteData(0x3A);//display ":"
+			Display_Line(2);	
+			hours=3;			 //jk
+			mins=5;  //jk
+			DisplayLCD(hours);			
+			WriteData(0x3A);//display ":"		
 			DisplayLCD(mins);
 			WriteData(0x3A);//display ":"
 			DisplayLCD(seconds&0x7f);
@@ -308,7 +311,7 @@ void main(void)
 			}
 
 			
-		if (P33 && prox_flag==0 && current_position<=0)
+		if (P43 && prox_flag==0 && current_position<=0)
 			{
 				current_position=0;
 				prox_flag=1;
@@ -318,7 +321,7 @@ void main(void)
 			}			
 			
 			
-		if (P32 && prox_flag_rotation==0 && current_angle<=0)
+		if (P42 && prox_flag_rotation==0 && current_angle<=0)
 			{
 				current_angle=0;
 				prox_flag_rotation=1;
@@ -346,6 +349,7 @@ void main(void)
 					//offset=calib_interpolate();
 					//Update_position(months,days,hours,mins,seconds,&current_position,calib_interpolate(hours,mins));
 				}
+
 				Update_position(months,days,hours,mins,seconds,&current_position,0,&current_angle);
 		}
 		

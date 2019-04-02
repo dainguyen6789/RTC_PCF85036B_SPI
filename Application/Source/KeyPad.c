@@ -10,6 +10,9 @@ void WriteData(unsigned char dat);
 void SPI_WriteTime(unsigned char val,unsigned char addr);
 void Command(unsigned char dat);
 void LCD_clear(void);
+
+extern unsigned char KeyNum_Old,KeyNum,PressedKey[5]; //jk
+extern unsigned char mins, hours,days,months ; //jk
 //=============================================
 bit move=0;
 bit small_move=0;
@@ -207,10 +210,11 @@ unsigned char Key_Scan(void)
 void Key_Process(void)//
 {
 	static int KeyCount=0;
-	static unsigned char KeyNum_Old,KeyNum,PressedKey[5]="hhmms";
-	int d,hours,mins,months,days;
+//	static unsigned char KeyNum_Old,KeyNum,PressedKey[5]="hhmms"; //jk
+//	int d,hours,mins,months,days;  //jk
+	int d;                           //jk
 	KeyNum_Old=KeyNum;
-	KeyNum=Key_Scan();
+	KeyNum=Key_Scan();	
 	//if( (KeyNum=Key_Scan())!=0 )  	//
 	if (KeyNum==KEY_B )
 	{

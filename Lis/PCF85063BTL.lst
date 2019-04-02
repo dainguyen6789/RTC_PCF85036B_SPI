@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   PCF85063BTL                                                       03/29/2019 13:24:39 PAGE 1   
+C51 COMPILER V9.52.0.0   PCF85063BTL                                                       04/02/2019 16:58:39 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE PCF85063BTL
@@ -62,7 +62,7 @@ line level    source
   52   2          {
   53   3            dat |= 0x01;            //
   54   3          }
-C51 COMPILER V9.52.0.0   PCF85063BTL                                                       03/29/2019 13:24:39 PAGE 2   
+C51 COMPILER V9.52.0.0   PCF85063BTL                                                       04/02/2019 16:58:39 PAGE 2   
 
   55   2          PCF85063BTL_SCK_Set();       //
   56   2          PCF85063BTL_Delay(1);        // 
@@ -105,28 +105,28 @@ line level    source
   93   1        PCF85063BTL_SCK_Clr();
   94   1      }
   95          
-  96          void Read_time(unsigned char *months,unsigned char *days,unsigned char *hours,unsigned char *mins,unsigned
-             - char *seconds)
+  96          void Read_time(unsigned char *L_months,unsigned char *L_days,unsigned char *L_hours,unsigned char *L_mins,
+             -unsigned char *L_seconds)
   97          {
   98   1          //unsigned char seconds,mins, hours;
-  99   1          *months=SPI_ReadTime(Months);
+  99   1          *L_months=SPI_ReadTime(Months);
  100   1        
- 101   1          *days=SPI_ReadTime(Days);
+ 101   1          *L_days=SPI_ReadTime(Days);
  102   1        
- 103   1          *hours=SPI_ReadTime(Hours);
+ 103   1          *L_hours=SPI_ReadTime(Hours);
  104   1          /*SendUART1(ten(*hours)+48);
  105   1          SendUART1(unit(*hours)+48);   
  106   1          SendUART1(0x3A);// ":" ASCII letter*/
  107   1          
- 108   1          *mins=SPI_ReadTime(Minutes);
+ 108   1          *L_mins=SPI_ReadTime(Minutes);
  109   1          /*SendUART1(ten(*mins)+48);
  110   1          SendUART1(unit(*mins)+48);    
  111   1          SendUART1(0x3A);// ":" ASCII letter*/
  112   1          
- 113   1          *seconds=SPI_ReadTime(Seconds);
+ 113   1          *L_seconds=SPI_ReadTime(Seconds);
  114   1          //P0=*seconds;
  115   1          /*SendUART1(ten(*seconds&0x7f)+48);
-C51 COMPILER V9.52.0.0   PCF85063BTL                                                       03/29/2019 13:24:39 PAGE 3   
+C51 COMPILER V9.52.0.0   PCF85063BTL                                                       04/02/2019 16:58:39 PAGE 3   
 
  116   1          SendUART1(unit(*seconds&0x7f)+48);
  117   1          SendUART1(10);      //new line*/
@@ -190,7 +190,7 @@ line level    source
 *** WARNING C291 IN LINE 173 OF Application\Source\PCF85063BTL.c: not every exit path returns a value
 
 
-C51 COMPILER V9.52.0.0   PCF85063BTL                                                       03/29/2019 13:24:39 PAGE 4   
+C51 COMPILER V9.52.0.0   PCF85063BTL                                                       04/02/2019 16:58:39 PAGE 4   
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =    398    ----
