@@ -158,8 +158,8 @@ float calibration(unsigned char mnths,unsigned char dys,
 	if(voltage_is_stable())
 	{
 		// 	move to JP theorical max position-15
-		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-15);// off set is Zero means we go to  (first, go to JP max theorical position -5)
-		*theorical_max_pos=JP_max_pos+15;// compensate +15 because of previous line.
+		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-20);// off set is Zero means we go to  (first, go to JP max theorical position -20)
+		*theorical_max_pos=JP_max_pos+20;// compensate +20 because of previous line.
 		// 	find the real max value in the area of JP +/- 15mm
 		Find_Real_Max(&JP_max_pos,&temporary_calib_max_ADC,&temp_max_ADC_JP_value,&temp_NOR_address_to_write); //find real max and move to real max position
 		
