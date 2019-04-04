@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       04/02/2019 14:59:20 PAGE 1   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       04/04/2019 12:04:11 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE CALIBRATION
@@ -62,7 +62,7 @@ line level    source
   50   2              {
   51   3                Move(calib_step_move,1);
   52   3                *current_position=*current_position+0.5;
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       04/02/2019 14:59:20 PAGE 2   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       04/04/2019 12:04:11 PAGE 2   
 
   53   3                voltage_at_scanned_pos[i]=ADC_GetResult(ch);
   54   3                //  Because the uC Flash Memory is almost full, 
@@ -126,7 +126,7 @@ line level    source
  108   2              //LCD_clear();
  109   2              //real_voltage=(float)voltage_at_scanned_pos[i]/1024*5;
  110   2              Display_Pos((float)voltage_at_scanned_pos[i]/1024*5);
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       04/02/2019 14:59:20 PAGE 3   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       04/04/2019 12:04:11 PAGE 3   
 
  111   2              WriteData(0x56);//display "V" 
  112   2              WriteData(0x10);//display " " 
@@ -163,42 +163,42 @@ line level    source
  143   1        
  144   1      }
  145          //input currnt_pos is the JP max theorical position
- 146          float calibration(unsigned char mnths,unsigned char dys,
- 147                               unsigned char hurs,unsigned char mns,unsigned char sconds,
- 148                               float  *currnt_pos,unsigned int *calib_max_ADC_Val,float *theorical_max_pos,unsigned int *max_A
-             -DC_JP_value,unsigned long int *NOR_address_to_write)
- 149          {
- 150   1        float calib_value=0;
- 151   1        unsigned int temporary_calib_max_ADC=0,temp_max_ADC_JP_value=0;//
- 152   1        unsigned long int temp_NOR_address_to_write=*NOR_address_to_write;
- 153   1        float JP_max_pos=*currnt_pos;
- 154   1        *calib_max_ADC_Val=0;
- 155   1        *max_ADC_JP_value=0;
- 156   1        *theorical_max_pos=0;
- 157   1        // if voltage is stable 
- 158   1        if(voltage_is_stable())
- 159   1        {
- 160   2          //  move to JP theorical max position-15
- 161   2          Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-20);// off set is Zero means we go to  (first, go
+ 146          float calibration(    unsigned char mnths,unsigned char dys,
+ 147                                unsigned char hurs,unsigned char mns,unsigned char sconds,
+ 148                                float  *currnt_pos,unsigned int *calib_max_ADC_Val,float *theorical_max_pos,
+ 149                                unsigned int *max_ADC_JP_value,unsigned long int *NOR_address_to_write)
+ 150          {
+ 151   1        float calib_value=0;
+ 152   1        unsigned int temporary_calib_max_ADC=0,temp_max_ADC_JP_value=0;//
+ 153   1        unsigned long int temp_NOR_address_to_write=*NOR_address_to_write;
+ 154   1        float JP_max_pos=*currnt_pos;
+ 155   1        *calib_max_ADC_Val=0;
+ 156   1        *max_ADC_JP_value=0;
+ 157   1        *theorical_max_pos=0;
+ 158   1        // if voltage is stable 
+ 159   1        if(voltage_is_stable())
+ 160   1        {
+ 161   2          //  move to JP theorical max position-20
+ 162   2          Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-20);// off set is Zero means we go to  (first, go
              - to JP max theorical position -20)
- 162   2          *theorical_max_pos=JP_max_pos+20;// compensate +20 because of previous line.
- 163   2          //  find the real max value in the area of JP +/- 15mm
- 164   2          Find_Real_Max(&JP_max_pos,&temporary_calib_max_ADC,&temp_max_ADC_JP_value,&temp_NOR_address_to_write); /
+ 163   2          *theorical_max_pos=JP_max_pos+20;// compensate +20 because of previous line.
+ 164   2          //  find the real max value in the area of JP +/- 15mm
+ 165   2          Find_Real_Max(&JP_max_pos,&temporary_calib_max_ADC,&temp_max_ADC_JP_value,&temp_NOR_address_to_write); /
              -/find real max and move to real max position
- 165   2          
- 166   2          *NOR_address_to_write=temp_NOR_address_to_write;
- 167   2          
- 168   2          *calib_max_ADC_Val=temporary_calib_max_ADC;
- 169   2          *max_ADC_JP_value=temp_max_ADC_JP_value;
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       04/02/2019 14:59:20 PAGE 4   
+ 166   2          
+ 167   2          *NOR_address_to_write=temp_NOR_address_to_write;
+ 168   2          
+ 169   2          *calib_max_ADC_Val=temporary_calib_max_ADC;
+ 170   2          *max_ADC_JP_value=temp_max_ADC_JP_value;
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       04/04/2019 12:04:11 PAGE 4   
 
- 170   2          calib_value=JP_max_pos-*theorical_max_pos;
- 171   2          *currnt_pos=JP_max_pos;
- 172   2          return calib_value;
- 173   2        }
- 174   1        else
- 175   1          return 0;
- 176   1      }
+ 171   2          calib_value=JP_max_pos-*theorical_max_pos;
+ 172   2          *currnt_pos=JP_max_pos;
+ 173   2          return calib_value;
+ 174   2        }
+ 175   1        else
+ 176   1          return 0;
+ 177   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

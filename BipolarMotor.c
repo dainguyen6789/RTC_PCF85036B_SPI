@@ -6,13 +6,26 @@
 #include "PI4IOE5V96248.h"
 
 //#include "PCF85963BTL.h"
+
+struct DATA_FOR_IO_6PORTS dat;
+
+float declination;
+double current_local_sun_time,time_offset,UTC_time=-5;
+struct cTime time;
+//definition of location
+struct cLocation location;
+struct cSunCoordinates *sunCoord;
+
+
+float elevation_calculation(unsigned char mnths,unsigned char dys,
+										 unsigned char hurs,unsigned char mns,unsigned char sconds);
 void Delay_ms(unsigned int ms);
 int Day_Of_Year(unsigned char months,unsigned char days);
 unsigned char BCDtoDec1(char bcd);
 void Write_PI4IOE5V96248(struct DATA_FOR_IO_6PORTS *xdat);
 float  degree;
 unsigned char previous_move_time=0;
-float  findDet4x4 (float  a11, float  a12, float  a13, float  a14, 
+/*float  findDet4x4 (float  a11, float  a12, float  a13, float  a14, 
             float  a21, float  a22, float  a23, float  a24,
             float  a31, float  a32, float  a33, float  a34,
             float  a41, float  a42, float  a43, float  a44 );
@@ -21,10 +34,18 @@ float  findDet4x4 (float  a11, float  a12, float  a13, float  a14,
             float  a21, float  a22, float  a23,
             float  a31, float  a32, float  a33 );						
 float
-cubic_interpolate (float *p1, float *p2, float *p3, float *p4, float x);
+cubic_interpolate (float *p1, float *p2, float *p3, float *p4, float x);*/
 
-struct DATA_FOR_IO_6PORTS dat;
 
+
+
+
+
+void vSetLocation()
+{
+	location.dLongitude=-73.59;
+	location.dLatitude=45.51;	
+}
 unsigned char BCDtoDec1(unsigned char bcd)
 {
 	unsigned char hi,lo;
@@ -88,7 +109,7 @@ void Move(float  distance, bit direction)
 }
 //=====================================================
 //We need 4 points for cubic interpolation, p1[x],p1[y],..,p4[x],p4[y]
- float  findDet3x3( 
+/* float  findDet3x3( 
             float  a11, float  a12, float  a13, 
             float  a21, float  a22, float  a23,
             float  a31, float  a32, float  a33 )
@@ -111,7 +132,7 @@ float  findDet4x4 (float  a11, float  a12, float  a13, float  a14,
 						a12*findDet3x3(a21, a23, a24, a31, a33, a34, a41, a43, a44) +
 						a13*findDet3x3(a21, a22, a24, a31, a32, a34, a41, a42, a44) -
 						a14*findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43));
-}
+}*/
 		
 //=====================================================	
 
@@ -194,17 +215,13 @@ void Update_position(unsigned char mnths,unsigned char dys,
 {
 	unsigned int date,i=0,yy=0;
 	//char num_of_elevation_stamp=15;
-	float  desired_distance=0,distance=0,JP_pos=0;
-	double current_local_sun_time,azimuth, elevation,time_offset,UTC_time=-5;
-	float declination;
-	//struct point p1,p2;
-	struct cTime time;
-	struct cLocation location;
-	struct cSunCoordinates *sunCoord;
+	float  desired_distance=0,distance=0,JP_pos=0,elevation;
+	double azimuth,time_offset,UTC_time=-5;
 	//hurs=hurs-1;// change to sun time
 	//dys=dys+4;
-	location.dLongitude=-73.59;
-	location.dLatitude=45.51;
+	//location.dLongitude=-73.59;
+	//location.dLatitude=45.51;
+	
 	time.iYear=2019;
 	time.iMonth=BCDtoDec1(mnths);
 	time.iDay=BCDtoDec1(dys);
@@ -221,8 +238,10 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	time_offset=(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180))/60;
 	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//-1;//current time=sun time= clock time -1
 	//=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/365)*3.1416/180)    -   1.5*SIN((360*($B$8-81)/365)*3.1416/180))
+	
 	elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
 						cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180)           );
+	
 	azimuth=180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
 	//azimuth=(180/pi)*acos(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );// JP calculation
 
@@ -249,6 +268,26 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	}
 	return;
 
+}
+// this value is in degree
+float elevation_calculation(unsigned char mnths,unsigned char dys,
+										 unsigned char hurs,unsigned char mns,unsigned char sconds)
+{
+	time.iYear=2019;
+	time.iMonth=BCDtoDec1(mnths);
+	time.iDay=BCDtoDec1(dys);
+	time.dHours=BCDtoDec1(hurs)+5;
+	time.dMinutes=BCDtoDec1(mns);
+	time.dSeconds=BCDtoDec1(sconds&0x7f);
+	//location.dLongitude=-73.59;
+	//location.dLatitude=45.51;	
+	
+	declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
+	time_offset=(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180))/60;
+	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//-1;//current time=sun time= clock time -1
+	
+	return asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
+						cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180)           );
 }
 
 

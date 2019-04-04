@@ -169,5 +169,7 @@ unsigned int Day_Of_Year(unsigned char months_bcd,unsigned char days_bcd) // thi
 	case 12: // Dec
 		return 31*6+28+30*4+days;
 		break;
+	default:
+		return 0;
 }	
 }

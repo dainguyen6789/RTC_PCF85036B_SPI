@@ -47,14 +47,20 @@ void SendUART1(unsigned char dat);
 //unsigned int Read_VCNL4035(unsigned int command_code);
 void I2C_Init();
 void Step_move(unsigned int step, bit dir);
-void Update_position(unsigned char mnths,unsigned char dys,unsigned char hurs,unsigned char mns,unsigned char sconds,float *currnt_pos,float offset_calib);
+void Update_position(unsigned char mnths,unsigned char dys,
+										 unsigned char hurs,unsigned char mns,unsigned char sconds,
+										 float  *currnt_pos, float offset_calib);
 float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos,unsigned int *calib_max_ADC_Val,float *theorical_max_pos,unsigned int *max_ADC_JP_value,unsigned long int *NOR_address_to_write);
+										 float  *currnt_pos,unsigned int *calib_max_ADC_Val,
+										 float *theorical_max_pos,unsigned int *max_ADC_JP_value,
+										 unsigned long int *NOR_address_to_write);
 unsigned char BCDtoDec1(unsigned char bcd);
 float calib_interpolate(float hours, float mins);
 float  linear_interpolate(struct point p1,struct point p2, float  x);
-
+float elevation_calculation(unsigned char mnths,unsigned char dys,
+										 unsigned char hurs,unsigned char mns,unsigned char sconds);
+										 
 bit busy;
 unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
 int RX_Data_Uart_Cnt=0;
@@ -91,7 +97,7 @@ void main(void)
 	struct data_to_store dat_to_store;
 //	unsigned char KeyNum;
 	int calib_day=0, calib_count;
-	float theorical_JP_max_pos=0;
+	float theorical_JP_max_pos=0,elevation;
 //	char numStr[5];
 	
 //	float current_position=0;
@@ -119,6 +125,7 @@ void main(void)
 	//initUART1();
 	//I2C_Init();
 	ADC_Init();
+	vSetLocation();// set location longtitude an
 	//Timer0===================================
 	AUXR|=0x80;
 	TL0=T1MS;
@@ -259,7 +266,10 @@ void main(void)
 						{
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
 								{
-									if(sunlight_ADC>=sunlight_ADC_Threshold)
+									//calculate elevation to decide whether we will calibrate or not
+									elevation=elevation_calculation(months,days,hours,mins,seconds);
+									
+									if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
 									{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm

@@ -143,9 +143,10 @@ unsigned int Max_Value(unsigned int *input)
 	
 }
 //input currnt_pos is the JP max theorical position
-float calibration(unsigned char mnths,unsigned char dys,
-										 unsigned char hurs,unsigned char mns,unsigned char sconds,
-										 float  *currnt_pos,unsigned int *calib_max_ADC_Val,float *theorical_max_pos,unsigned int *max_ADC_JP_value,unsigned long int *NOR_address_to_write)
+float calibration(		unsigned char mnths,unsigned char dys,
+											unsigned char hurs,unsigned char mns,unsigned char sconds,
+											float  *currnt_pos,unsigned int *calib_max_ADC_Val,float *theorical_max_pos,
+											unsigned int *max_ADC_JP_value,unsigned long int *NOR_address_to_write)
 {
 	float calib_value=0;
 	unsigned int temporary_calib_max_ADC=0,temp_max_ADC_JP_value=0;//

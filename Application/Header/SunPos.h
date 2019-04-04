@@ -41,3 +41,6 @@ struct point
 	float y;
 };
 #endif
+
+//declaration of location to use in both files: main.c and BipolarMotor.c
+extern struct cLocation location;
