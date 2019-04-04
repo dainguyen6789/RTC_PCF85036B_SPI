@@ -44,3 +44,5 @@ struct point
 
 //declaration of location to use in both files: main.c and BipolarMotor.c
 extern struct cLocation location;
+
+int FindClosestSamedayCalibTime(int *input_calibration_bool_array,int current_time_stamp_position);

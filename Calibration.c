@@ -175,3 +175,14 @@ float calibration(		unsigned char mnths,unsigned char dys,
 	else
 		return 0;
 }
+int FindClosestSamedayCalibTime(int *input_calibration_bool_array,int current_time_stamp_position)
+{
+	int i;
+	for(i=current_time_stamp_position;i>=0;i--)
+	{
+		if(*(input_calibration_bool_array+i)==1)// find the closest calibrated time stamp
+			return i;// return the position in the array
+		else 
+			return 0;
+	}
+}

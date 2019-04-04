@@ -69,6 +69,7 @@ int count=0;
 static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 float calib_value[21],calib_time[21];// 600/calib_stamp+1
+int calib_bool[21];
 unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
 float current_position=0;
 //int lcd=0;
@@ -272,6 +273,7 @@ void main(void)
 									if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
 									{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+										calib_bool[count]=1;
 										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
 									}
 									else // Store the data even in low light condition
@@ -286,6 +288,8 @@ void main(void)
 											}		
 											//use count variable to identify the position of calib_value[count]
 											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+											calib_bool[count]=0;
+
 											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
 											theorical_JP_max_pos=current_position;								
 											max_ADC_Val = ADC_GetResult(0);// read from channel 0
@@ -342,9 +346,16 @@ void main(void)
 										calib_point1.x=calib_time[count];
 										calib_point1.y=calib_value[count];
 										calib_point2.x=calib_time[count+1];// this is from previous day
-										calib_point2.y=calib_value[count+1];// this is from previous day								
+										if(calib_bool[count]==1 && calib_bool[count+1]==1)
+										{
+											calib_point2.y=calib_value[count+1];// this is from previous day
+											Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
+										}
+										else // was not calib prev day at this time stamp=> use the latest calib value of the same day
+										{
+											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[FindClosestSamedayCalibTime(calib_bool,count)]);
+										}
 										// in the UPDATE function, we only update the motor position when the distance >0.5mm
-										Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
 
 
 								}
