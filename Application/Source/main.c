@@ -268,7 +268,7 @@ void main(void)
 								{
 									//calculate elevation to decide whether we will calibrate or not
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
-									
+									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
 									{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
