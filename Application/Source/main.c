@@ -24,7 +24,7 @@
 #define PointOne_mm_steps 12
 
 #define PointTwo_mm_steps 24 //(11.5*2)
-#define PointFour_mm_steps 48  //
+#define PointFour_mm_steps 39  //
 #define DATA_WITHOUT_RUNNING_CALIBRATION 0
 
 //void Delay_ms(unsigned int ms);
