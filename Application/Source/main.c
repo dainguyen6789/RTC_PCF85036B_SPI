@@ -21,10 +21,10 @@
 #define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000)
 //#define PointThree_mm_steps 10
-#define PointOne_mm_steps 12
+#define PointOne_mm_steps 10
 
-#define PointTwo_mm_steps 24 //(11.5*2)
-#define PointFour_mm_steps 39  //
+#define PointTwo_mm_steps 21 //
+#define PointFour_mm_steps 42  //
 #define DATA_WITHOUT_RUNNING_CALIBRATION 0
 
 //void Delay_ms(unsigned int ms);
