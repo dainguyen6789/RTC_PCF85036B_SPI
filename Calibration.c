@@ -51,6 +51,8 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					for(j=0;j<5;j++)
 					{
 						avg_voltage+=ADC_GetResult(ch);
+						Wait_ms(2);
+
 					}
 					voltage_at_scanned_pos[i]=avg_voltage/5;
 
