@@ -37,8 +37,8 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 {
 		unsigned char ch=0;
 		float calib_step_move=0.5;
-		unsigned int voltage_at_scanned_pos[81],max_location;
-		int i;
+		unsigned int voltage_at_scanned_pos[81],max_location, avg_voltage;
+		int i,j;
 		// move/scan +`
 		for(i=0;i<81;i++)// 81 values
 		{
@@ -48,9 +48,12 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 		{
 				//if(ADC_GetResult(2)>=sunlight_ADC_Threshold)
 				{
-					Move(calib_step_move,1);
-					*current_position=*current_position+0.5;
-					voltage_at_scanned_pos[i]=ADC_GetResult(ch);
+					for(j=0;j<5;j++)
+					{
+						avg_voltage+=ADC_GetResult(ch);
+					}
+					voltage_at_scanned_pos[i]=avg_voltage/5;
+
 					// 	Because the uC Flash Memory is almost full, 
 					//	so I did not change/increase the size of "struct data_to_store"
 					// 	STORE THE CALIB VOLTAGE IN THE SPI NOR FLASH after every calib, total 4*60=240 byte of data for each calib time
@@ -111,6 +114,9 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 				WriteData(0x56);//display "V"	
 				WriteData(0x10);//display " "	
 				Wait_ms(500);
+				
+				Move(calib_step_move,1);
+				*current_position=*current_position+0.5;
 		}
 
 		if(i==81)// make sure that all of the calibration value are scanned with GOOD SUN
@@ -133,7 +139,7 @@ unsigned int Max_Value(unsigned int *input)
 {
 	unsigned int max=0,max_location=40,i;
 	//int i;
-	for(i=0;i<=80;i++) //total 81 diff values
+	for(i=0;i<81;i++) //total 81 diff values
 	{
 		max=max>*(input+i)? max:*(input+i);
 		if (max==*(input+i)&& max!=0)
