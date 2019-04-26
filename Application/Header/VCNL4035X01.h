@@ -10,7 +10,7 @@ sbit 			I2C_SCK	=	P3^2;
 #define		I2C_SDA_Set()		{I2C_SDA=1;}
  
 
-#define VCNL4035_addr 0x60<<1
+#define VCNL4035_addr 0x20
 
 #define ALS_CONF1 0x00
 #define ALS_CONF2 0x00

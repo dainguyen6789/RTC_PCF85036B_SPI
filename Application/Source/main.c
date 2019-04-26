@@ -104,7 +104,7 @@ void main(void)
 			//WriteData(0x2D);//display "-"
 			DisplayLCD(days);				
 			count=0;
-			prox_data=Read_VCNL4035(PS1_Data_L);
+			prox_data=Read_VCNL4035(0x04);
 			Display_Prox(prox_data);
 			
 			//WriteData(Read_VCNL4035(PS3_Data_L));
