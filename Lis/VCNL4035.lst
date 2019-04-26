@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   VCNL4035                                                          04/26/2019 14:24:30 PAGE 1   
+C51 COMPILER V9.52.0.0   VCNL4035                                                          04/26/2019 15:00:37 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE VCNL4035
@@ -62,7 +62,7 @@ line level    source
   52          unsigned char I2C_ACK(void)
   53          {
   54   1        unsigned char i;
-C51 COMPILER V9.52.0.0   VCNL4035                                                          04/26/2019 14:24:30 PAGE 2   
+C51 COMPILER V9.52.0.0   VCNL4035                                                          04/26/2019 15:00:37 PAGE 2   
 
   55   1        unsigned char dat = 0;
   56   1      
@@ -126,7 +126,7 @@ line level    source
  112   3              I2C_SDA_Set();
  113   3          }
  114   2      
-C51 COMPILER V9.52.0.0   VCNL4035                                                          04/26/2019 14:24:30 PAGE 3   
+C51 COMPILER V9.52.0.0   VCNL4035                                                          04/26/2019 15:00:37 PAGE 3   
 
  115   2          Wait_ms_i2c(2);           //
  116   2          I2C_SCK_Set();          //
@@ -151,7 +151,7 @@ line level    source
  134   1        P3M0 &=~( (1<<1) | (1<<2) );  
  135   1        //P4M1 |=0x04;// SCK OPen Drain output
  136   1        //P4M0 |=0x04;
- 137   1        Write_VCNL4035X(0x00,0x00,0x00);
+ 137   1        Write_VCNL4035X(0x00,0x18,0xC2);
  138   1        //Write_VCNL4035X(PS_CONF3,0x00,0x00);
  139   1      }
  140          
@@ -190,7 +190,7 @@ line level    source
  173   1      
  174   1        //I2C_SDA_Set();          //
  175   1        for (i=0; i<8; i++)         //
-C51 COMPILER V9.52.0.0   VCNL4035                                                          04/26/2019 14:24:30 PAGE 4   
+C51 COMPILER V9.52.0.0   VCNL4035                                                          04/26/2019 15:00:37 PAGE 4   
 
  176   1        {
  177   2          dat <<= 1;                //
@@ -254,7 +254,7 @@ line level    source
  235   1        P3M0 &=~( (1<<1) | (1<<2) ); 
  236   1        uC_NACK();
  237   1        Wait_ms_i2c(2);
-C51 COMPILER V9.52.0.0   VCNL4035                                                          04/26/2019 14:24:30 PAGE 5   
+C51 COMPILER V9.52.0.0   VCNL4035                                                          04/26/2019 15:00:37 PAGE 5   
 
  238   1        I2C_Stop();
  239   1        Wait_ms_i2c(2);
@@ -285,7 +285,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    466    ----
+   CODE SIZE        =    468    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----      14
    PDATA SIZE       =   ----    ----

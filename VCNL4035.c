@@ -134,7 +134,7 @@ void I2C_Init()
 	P3M0 &=~( (1<<1) | (1<<2) );  
 	//P4M1 |=0x04;// SCK OPen Drain output
 	//P4M0 |=0x04;
-	Write_VCNL4035X(0x00,0x00,0x00);
+	Write_VCNL4035X(0x00,0x18,0xC2);
 	//Write_VCNL4035X(PS_CONF3,0x00,0x00);
 }
 
