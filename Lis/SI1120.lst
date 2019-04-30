@@ -1,0 +1,54 @@
+C51 COMPILER V9.52.0.0   SI1120                                                            04/30/2019 14:05:04 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE SI1120
+OBJECT MODULE PLACED IN .\Obj\SI1120.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE SI1120.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXTEND PR
+                    -INT(.\Lis\SI1120.lst) TABS(2) OBJECT(.\Obj\SI1120.obj)
+
+line level    source
+
+   1          #include "SI1120.h"
+   2          #include "LCD_Driver_SPLC780D.h"
+   3          
+   4           void SI1120_CONFIG_MODE_VIRH(void)
+   5           {
+   6   1          SI1120_SC=1;
+   7   1          SI1120_MD=1;
+   8   1          SI1120_STX=1;
+   9   1         
+  10   1          Wait_ms(10);
+  11   1         
+  12   1          SI1120_SC=0;
+  13   1          SI1120_STX=0;
+  14   1          SI1120_MD=0;
+  15   1         
+  16   1          Wait_ms(100);
+  17   1         
+  18   1          SI1120_STX=1;
+  19   1         
+  20   1      }
+  21          
+  22          void Enable_EXTINT0(void)
+  23          {
+  24   1        IT0=0;//Both rising and falling edge of INT0
+  25   1        EX0=1; // enbale EXT INT0
+  26   1        EA=1; //each interrupt source would be individually enabled or disabled by setting or clearing its enable
+             - bit.
+  27   1      }
+  28          
+  29          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     36    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

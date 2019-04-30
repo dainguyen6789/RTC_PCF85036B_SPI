@@ -8,6 +8,8 @@
 //#include "UART1.h"
 #include "KeyPad.h"
 #include <REG51F.H>
+//#include "REG51.H"
+
 #include "LCD_Driver_SPLC780D.h"
 //#include "Receiver_Position_Data.h"
 //#include "VCNL4035X01.h"
@@ -16,10 +18,13 @@
 #include "SunPos.h"
 #include "PI4IOE5V96248.h"
 #include "AT25SF041.h"
+#include "SI1120.h"
 //#include "Receiver_Position_Data.h"
 
-#define FOSC 18432000L 	 
-#define T1MS (65536-FOSC/1000)
+#define FOSC 27000000L 	 
+//#define T1MS (65536-FOSC/1000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
+#define T1MS (65536-FOSC/10) //10uS T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
+
 //#define PointThree_mm_steps 10
 #define PointOne_mm_steps 10
 
@@ -77,11 +82,35 @@ float current_position=0;
 //calib_time=malloc(24);
 unsigned char calib_stamp =30;// calib every 30 mins 
 unsigned long int SPI_NOR_INTERNAL_FLASH_ADDR=0;
-
-
+unsigned int timer0_count=0;
+unsigned char start_timer0_count=0;
+unsigned int pwm_time;
+sbit INT0 = 0xB2;
 
 void tm0_isr() interrupt 1 using 1
 {
+	if(start_timer0_count==1)
+		timer0_count++;
+}
+
+void exint0() interrupt 0
+{
+	
+	//==== if falling Edge  ====
+	if(INT0==0)
+	{
+			pwm_time=timer0_count;// real pwm time=timer0_count*10us
+			timer0_count=0;
+			start_timer0_count=0;// disable timer0 time. 
+	}
+	//==== if rising edge ====
+	else
+	{
+		
+			start_timer0_count=1;
+			//time_at_falling_edge=timer0_count;
+	}	
+	
 }
 
 void main(void)
@@ -126,6 +155,11 @@ void main(void)
 	//initUART1();
 	//I2C_Init();
 	ADC_Init();
+	//=========================================
+	// code to initialize the Light Sensor
+	SI1120_CONFIG_MODE_VIRH();
+	Enable_EXTINT0();
+	//=========================================
 	vSetLocation();// set location longtitude an
 	//Timer0===================================
 	AUXR|=0x80;
@@ -304,7 +338,7 @@ void main(void)
 									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
 									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
 									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
-									dat_to_store.light_ADC=sunlight_ADC/4;
+									dat_to_store.light_ADC=pwm_time/4;//this is original value, real value should be  pwm_time*10us
 									
 									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
 									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
