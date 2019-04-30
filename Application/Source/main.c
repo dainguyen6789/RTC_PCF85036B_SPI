@@ -84,6 +84,7 @@ unsigned char calib_stamp =30;// calib every 30 mins
 unsigned long int SPI_NOR_INTERNAL_FLASH_ADDR=0;
 unsigned int timer0_count=0;
 unsigned char start_timer0_count=0;
+// definition of pwm time 
 unsigned int pwm_time;
 sbit INT0 = 0xB2;
 
@@ -96,14 +97,14 @@ void tm0_isr() interrupt 1 using 1
 void exint0() interrupt 0
 {
 	
-	//==== if falling Edge  ====
+	//	==== if falling Edge  ====
 	if(INT0==0)
 	{
-			pwm_time=timer0_count;// real pwm time=timer0_count*10us
+			pwm_time=timer0_count;	// real pwm time=timer0_count*10us
 			timer0_count=0;
-			start_timer0_count=0;// disable timer0 time. 
+			start_timer0_count=0;		// disable timer0 time. 
 	}
-	//==== if rising edge ====
+	//	==== if rising edge ====
 	else
 	{
 		

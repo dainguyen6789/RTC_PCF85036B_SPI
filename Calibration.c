@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include "ADCh.h"
 #include "AT25SF041.h"
+#include "SI1120.h"
+
 void Wait_ms(int ms);
 unsigned int ADC_GetResult(unsigned char ch);
 void Move(float  distance, bit direction);
@@ -39,6 +41,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 		float calib_step_move=0.5;
 		unsigned int voltage_at_scanned_pos[81],max_location, avg_voltage=0;
 		int i,j;
+		float offset_error=0.8;
 		// move/scan +`
 		for(i=0;i<81;i++)// 81 values
 		{
@@ -68,7 +71,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					{
 						AT25SF041_WriteEnable();
 						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, *address_to_write,ADC_GetResult(2)/4);	// SUNLIGHT
+						AT25SF041_Write(Byte_Page_Program, *address_to_write,pwm_time/4);									// SUNLIGHT
 						Wait_ms_SPINOR(50);	
 						++*address_to_write;
 						
@@ -80,7 +83,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 						
 						AT25SF041_WriteEnable();
 						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, *address_to_write,*current_position);	// SOLAR CELL Instant Position when calib
+						AT25SF041_Write(Byte_Page_Program, *address_to_write,*current_position);					// SOLAR CELL Instant Position when calib
 						Wait_ms_SPINOR(50);	
 						++*address_to_write;	
 						
@@ -135,7 +138,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 		
 			// move to the optimal position in the area of +/-10mm from JP max theorical pos
 			Move(calib_step_move*(81-max_location),0);
-			*current_position=*current_position-calib_step_move*(81-max_location);
+			*current_position=*current_position-calib_step_move*(81-max_location)-offset_error;
 			Wait_ms(500);
 		}
 

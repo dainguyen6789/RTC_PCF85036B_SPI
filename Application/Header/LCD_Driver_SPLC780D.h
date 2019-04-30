@@ -8,7 +8,7 @@
 #define Function_Set_4bit	0x18
  sbit 			LCD_E	=	P3^3;	 
  sbit 			LCD_RS	=	P4^0;	   
- sbit 			LCD_RW	=	P3^2;	   
+ sbit 			LCD_RW	=	P1^3;	   
  sbit 			LCD_D4	=	P3^4;	   
  sbit 			LCD_D5	=	P3^5;	
  sbit 			LCD_D6	=	P3^6;	
