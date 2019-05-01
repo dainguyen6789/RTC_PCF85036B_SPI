@@ -14,8 +14,8 @@ void LCD_clear(void);
 bit move=0;
 bit small_move=0;
 bit direction=0;
-bit auto_move=0;
-bit  calib_mode=1;
+int auto_mode=0;
+//bit  calib_mode=1;
 void Delay_ms(unsigned int ms)
 {
   unsigned int De_Cnt;
@@ -203,9 +203,9 @@ unsigned char Key_Scan(void)
 }
 void Key_Process(void)//
 {
-	static int KeyCount=0;
-	static unsigned char KeyNum_Old,KeyNum,PressedKey[5]="hhmms";
-	int d,hours,mins,months,days;
+	static char KeyCount=0;
+	static unsigned int KeyNum_Old,KeyNum,PressedKey[5];
+	unsigned int d,hours,mins,months,days;
 	KeyNum_Old=KeyNum;
 	KeyNum=Key_Scan();
 	//if( (KeyNum=Key_Scan())!=0 )  	//
@@ -259,20 +259,26 @@ void Key_Process(void)//
 			//=========================================================================			
 			// Set Hour,Minute
 			//=========================================================================
-			hours=PressedKey[0]*10+PressedKey[1];
-			mins=PressedKey[2]*10+PressedKey[3];
-			if(PressedKey[4]==KEY_SHARP && hours<=24 && mins<=59)// set hour, minute
+
+			
+			if(PressedKey[4]==KEY_SHARP )// set hour, minute
 			{	
-				SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);//Write BCD value
-				SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);//Write BCD value
+				hours=PressedKey[0]*10+PressedKey[1];
+				mins=PressedKey[2]*10+PressedKey[3];
+				if(hours<=24 && mins<=60)
+				{
+					SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);//Write BCD value
+					SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);//Write BCD value
+				}
 			}
 			//=========================================================================			
 			// Set Month,Day			
 			//=========================================================================
-			months=PressedKey[0]*10+PressedKey[1];
-			days=PressedKey[2]*10+PressedKey[3];			
-			if (PressedKey[4]==KEY_Star && months<=12 )//Set month and day
+
+			else if (PressedKey[4]==KEY_Star)//Set month and day
 			{
+				months=PressedKey[0]*10+PressedKey[1];
+				days=PressedKey[2]*10+PressedKey[3];
 				if(months<=7)//1..7
 				{
 					if(months%2)//month has 31 days,1 3 5 7 

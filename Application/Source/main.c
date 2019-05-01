@@ -132,12 +132,13 @@ void main(void)
 //	char numStr[5];
 	
 //	float current_position=0;
-	calib_mode=1;
+	//calib_mode=1;
+	//auto_mode=0;
+
 	direction=1;
 	move=0;
 	small_move=0;
 	
-	auto_mode=0;
 	SPI_NOR_ClearEnable=0;
 	//=======================================
 	/*float a=-7.0014e-5;

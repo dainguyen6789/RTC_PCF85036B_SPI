@@ -33,7 +33,7 @@
  extern bit move;
  extern bit direction;// motor direction
  extern bit small_move;
- extern bit  calib_mode;
+ //extern int  calib_mode;
  extern int  auto_mode;
  extern char SPI_NOR_ClearEnable;
 void Delay_ms(unsigned int ms);

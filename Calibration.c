@@ -5,6 +5,7 @@
 #include "ADCh.h"
 #include "AT25SF041.h"
 #include "SI1120.h"
+#define  offset_error 0.8
 
 void Wait_ms(int ms);
 unsigned int ADC_GetResult(unsigned char ch);
@@ -41,7 +42,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 		float calib_step_move=0.5;
 		unsigned int voltage_at_scanned_pos[81],max_location, avg_voltage=0;
 		int i,j;
-		float offset_error=0.8;
+//		float offset_error=0.8;
 		// move/scan +`
 		for(i=0;i<81;i++)// 81 values
 		{
@@ -94,7 +95,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 						++*address_to_write;
 	
 					}
-						
+					
 				}
 				/*else
 				{
@@ -128,6 +129,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 				Move(calib_step_move,1);
 				*current_position=*current_position+0.5;
 		}
+		Wait_ms(500);
 
 		if(i==81)// make sure that all of the calibration value are scanned with GOOD SUN
 		{
@@ -137,8 +139,8 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 			*max_ADC_JP_value=voltage_at_scanned_pos[40];
 		
 			// move to the optimal position in the area of +/-10mm from JP max theorical pos
-			Move(calib_step_move*(81-max_location),0);
-			*current_position=*current_position-calib_step_move*(81-max_location)-offset_error;
+			Move(calib_step_move*(81-(float)max_location),0);
+			*current_position=*current_position-(calib_step_move*(81-(float)max_location));
 			Wait_ms(500);
 		}
 
