@@ -11,10 +11,11 @@ void SPI_WriteTime(unsigned char val,unsigned char addr);
 void Command(unsigned char dat);
 void LCD_clear(void);
 
-bit move=0;
-bit small_move=0;
-bit direction=0;
+int move=0;
+int small_move=0;
+int direction=0;
 int auto_mode=0;
+int SPI_NOR_ClearEnable=0;
 //bit  calib_mode=1;
 void Delay_ms(unsigned int ms)
 {
@@ -269,6 +270,7 @@ void Key_Process(void)//
 				{
 					SPI_WriteTime((PressedKey[0]<<4)|PressedKey[1],Hours);//Write BCD value
 					SPI_WriteTime((PressedKey[2]<<4)|PressedKey[3],Minutes);//Write BCD value
+					PressedKey[4]=100;
 				}
 			}
 			//=========================================================================			
@@ -331,6 +333,8 @@ void Key_Process(void)//
 							}									
 					}
 				}
+				PressedKey[4]=100;
+
 			}		
 			
 			if(PressedKey[0]==KEY9&&PressedKey[1]==KEY9&&PressedKey[2]==KEY9&&PressedKey[3]==KEY9&&PressedKey[4]==KEY0)// 

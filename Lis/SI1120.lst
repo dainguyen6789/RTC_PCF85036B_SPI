@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   SI1120                                                            05/01/2019 10:51:10 PAGE 1   
+C51 COMPILER V9.52.0.0   SI1120                                                            05/02/2019 12:35:16 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE SI1120
@@ -14,34 +14,43 @@ line level    source
    4           void SI1120_CONFIG_MODE_VIRH(void)
    5           {
    6   1          SI1120_SC=1;
-   7   1          SI1120_MD=1;
-   8   1          SI1120_STX=1;
+   7   1          SI1120_MD=0;
+   8   1          SI1120_STX=0;
    9   1         
   10   1          Wait_ms(10);
-  11   1         
-  12   1          SI1120_SC=0;
-  13   1          SI1120_STX=0;
-  14   1          SI1120_MD=0;
-  15   1         
-  16   1          Wait_ms(100);
-  17   1         
-  18   1          SI1120_STX=1;
-  19   1         
-  20   1      }
-  21          
-  22          void Enable_EXTINT0(void)
-  23          {
-  24   1        IT0=0;//Both rising and falling edge of INT0
-  25   1        EX0=1; // enbale EXT INT0
-  26   1        EA=1; //each interrupt source would be individually enabled or disabled by setting or clearing its enable
-             - bit.
+  11   1          SI1120_SC=1;
+  12   1          SI1120_MD=1;
+  13   1          SI1120_STX=1;
+  14   1         
+  15   1          Wait_ms(10);
+  16   1         
+  17   1          SI1120_SC=0;
+  18   1          Wait_ms(10);
+  19   1      
+  20   1          SI1120_STX=0;
+  21   1          SI1120_MD=0;
+  22   1         
+  23   1          Wait_ms(10);
+  24   1         
+  25   1          SI1120_STX=1;
+  26   1         
   27   1      }
   28          
-  29          
+  29          void Enable_EXTINT0(void)
+  30          {
+  31   1        P3M0&=~(1<<2);//0
+  32   1        P3M1|=(1<<2);//1
+  33   1        IT0=0;  //Both rising and falling edge of INT0
+  34   1        EX0=1;  // enable EXT INT0
+  35   1        EA=1;   //each interrupt source would be individually enabled or disabled by setting or clearing its enabl
+             -e bit.
+  36   1      }
+  37          
+  38          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     36    ----
+   CODE SIZE        =     62    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

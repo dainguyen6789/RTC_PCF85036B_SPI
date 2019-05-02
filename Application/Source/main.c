@@ -22,8 +22,8 @@
 //#include "Receiver_Position_Data.h"
 
 #define FOSC 27000000L 	 
-//#define T1MS (65536-FOSC/1000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
-#define T1MS (65536-FOSC/10) //10uS T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
+#define T1MS (65536-FOSC/1000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
+//#define T1MS (65536-FOSC/10) //10uS T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 
 //#define PointThree_mm_steps 10
 #define PointOne_mm_steps 10
@@ -90,25 +90,41 @@ sbit INT0 = 0xB2;
 
 void tm0_isr() interrupt 1 using 1
 {
-	if(start_timer0_count==1)
-		timer0_count++;
+	//SI1120_STX=!SI1120_STX;
+	//re-init timer 0
+	TL0=T1MS;
+	TH0=T1MS>>8;
+	timer0_count++;
 }
-
+void tm1_isr() interrupt 3 using 1
+{
+	SI1120_STX=!SI1120_STX;
+	//re-init timer 0
+	TL1=T1MS;
+	TH1=T1MS>>8;
+}
 void exint0() interrupt 0
 {
 	
-	//	==== if falling Edge  ====
+	//	==== if falling edge  ====
 	if(INT0==0)
 	{
-			pwm_time=timer0_count;	// real pwm time=timer0_count*10us
-			timer0_count=0;
-			start_timer0_count=0;		// disable timer0 time. 
+			TL0=T1MS;
+			TH0=T1MS>>8;
+			TR0=1;// run timer0
+			ET0=1;
+			//pwm_time=timer0_count;	// real pwm time=timer0_count*10us
+			//timer0_count=0;
+			//start_timer0_count=0;		// disable timer0 time. 
 	}
 	//	==== if rising edge ====
 	else
 	{
-		
-			start_timer0_count=1;
+			TR0=0;// stop timer 0
+			pwm_time=(TH0<<8+TL0-T1MS)/27;//micro second 10^6 divide FOSC
+			pwm_time=pwm_time+timer0_count*1000;//usesond unit
+			timer0_count=0;
+			//start_timer0_count=1;
 			//time_at_falling_edge=timer0_count;
 	}	
 	
@@ -168,8 +184,10 @@ void main(void)
 	TL0=T1MS;
 	TH0=T1MS>>8;
 	TMOD=0x00;
-	TR0=1;
-	ET0=1;
+	TL1=T1MS;
+	TH1=T1MS>>8;
+	TR1=1;// run timer0
+	ET1=1;
 	//========================================
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
 	SPI_WriteTime(0x12,Hours);		// data , register address
@@ -197,6 +215,7 @@ void main(void)
 	while(1)                                      
 	{
 		Key_Process();
+
 		//count++;
 		//if (count==20)
 		{
