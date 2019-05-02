@@ -85,7 +85,7 @@ unsigned long int SPI_NOR_INTERNAL_FLASH_ADDR=0;
 unsigned int timer0_count=0;
 unsigned char start_timer0_count=0;
 // definition of pwm time 
-unsigned int pwm_time;
+unsigned int pwm_time=0;
 sbit INT0 = 0xB2;
 
 void tm0_isr() interrupt 1 using 1
@@ -229,7 +229,7 @@ void main(void)
 			WriteData(0x53);//display "S"	
 			WriteData(0x3A);//display ":"	
 			//LCD_clear();
-			Display_Pos(current_position);
+			Display_Pos((float)pwm_time);
 			WriteData(0x6D);//m
 			WriteData(0x6D);//m
 			//==============================================================
