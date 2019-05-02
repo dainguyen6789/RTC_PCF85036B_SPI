@@ -33,16 +33,16 @@
 #define DATA_WITHOUT_RUNNING_CALIBRATION 0
 
 //void Delay_ms(unsigned int ms);
-void SendString(char *s);
-void SendUART1(unsigned char dat);
-void initUART1(void);
+//void SendString(char *s);
+//void SendUART1(unsigned char dat);
+//void initUART1(void);
 //unsigned char BCDtoDec(unsigned char BCD);
 unsigned char ten(unsigned char BCD);
 unsigned char unit(unsigned char BCD);
 //unsigned char SPI_ReadTime(unsigned char addr);
 //void SPI_WriteTime(unsigned char val,unsigned char addr);
-unsigned char ASCIItoBCD(unsigned char ascii[2]); // time format hh:mm:ss
-void SendUART1(unsigned char dat);
+//unsigned char ASCIItoBCD(unsigned char ascii[2]); // time format hh:mm:ss
+//void SendUART1(unsigned char dat);
 //void SPI_Init(void);
 //void WriteData(unsigned char dat);
 //void LCD_Init(void);
@@ -67,15 +67,15 @@ float elevation_calculation(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds);
 										 
 bit busy;
-unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
-int RX_Data_Uart_Cnt=0;
-int st_time=0;
+//unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
+//int RX_Data_Uart_Cnt=0;
+//int st_time=0;
 int count=0;
 static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 float calib_value[21],calib_time[21];// 600/calib_stamp+1
 int calib_bool[21];
-unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
+unsigned char seconds,mins, hours,days,months;//,mins1, hours1,mins2, hours2;
 float current_position=0;
 //int lcd=0;
 //calib_value=malloc(24);
@@ -85,7 +85,7 @@ unsigned long int SPI_NOR_INTERNAL_FLASH_ADDR=0;
 unsigned int timer0_count=0;
 unsigned char start_timer0_count=0;
 // definition of pwm time 
-unsigned int pwm_time=0;
+float pwm_time=0;
 sbit INT0 = 0xB2;
 
 void tm0_isr() interrupt 1 using 1
@@ -121,9 +121,13 @@ void exint0() interrupt 0
 	else
 	{
 			TR0=0;// stop timer 0
-			pwm_time=(TH0<<8+TL0-T1MS)/27;//micro second 10^6 divide FOSC
+		
+			pwm_time=(TH0);//micro second 10^6 divide FOSC
+			pwm_time=(pwm_time*pow(2,8)+TL0-T1MS)/27;
 			pwm_time=pwm_time+timer0_count*1000;//usesond unit
 			timer0_count=0;
+			//TL0=T1MS;
+			//TH0=T1MS>>8;
 			//start_timer0_count=1;
 			//time_at_falling_edge=timer0_count;
 	}	
@@ -133,7 +137,7 @@ void exint0() interrupt 0
 void main(void)
 {
 //	unsigned char seconds,mins, hours,days,months,mins1, hours1,mins2, hours2;
-	unsigned int sunlight_ADC;
+	//unsigned int sunlight_ADC;
 	static int KeyCount=0;
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 	char prox_flag=1;
@@ -229,7 +233,7 @@ void main(void)
 			WriteData(0x53);//display "S"	
 			WriteData(0x3A);//display ":"	
 			//LCD_clear();
-			Display_Pos((float)pwm_time);
+			Display_Pos(pwm_time);
 			WriteData(0x6D);//m
 			WriteData(0x6D);//m
 			//==============================================================
@@ -304,10 +308,10 @@ void main(void)
 			LCD_return_home();
 			
 		}
-		hours2=hours1;
-		hours1=hours;
-		mins2=mins1;
-		mins1=mins;
+		//hours2=hours1;
+		//hours1=hours;
+		//mins2=mins1;
+		//mins1=mins;
 		Read_time(&months,&days,&hours,&mins,&seconds);
 
 		//Read_time(&months,&days,&hours,&mins,&seconds);
@@ -315,8 +319,8 @@ void main(void)
 		if(auto_mode)
 		{
 			
-			sunlight_ADC=ADC_GetResult(2);
-			if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
+			//sunlight_ADC=ADC_GetResult(2);
+			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
 			{
 						if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
 						{
@@ -325,13 +329,13 @@ void main(void)
 									//calculate elevation to decide whether we will calibrate or not
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
-									if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
+									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
 									{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										calib_bool[count]=1;
 										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
 									}
-									else // Store the data even in low light condition
+									//else // Store the data even in low light condition
 									{
 											// store  120 bytes of "0" value when calibration does not work  in order to syncronize the pattern.
 											for(count=0;count<=323;count++)
@@ -436,13 +440,13 @@ void main(void)
 			WriteData(0x45);//display "E"	
 			WriteData(0x41);//display "A"	
 			WriteData(0x52);//display "R"	
-			WriteData(0x2E);//display "."	
-			WriteData(0x2E);//display "."	
-			WriteData(0x46);//display "F"	
-			WriteData(0x4C);//display "L"	
-			WriteData(0x41);//display "A"	
-			WriteData(0x53);//display "S"	
-			WriteData(0x48);//display "H"	
+		//	WriteData(0x2E);//display "."	
+		//	WriteData(0x2E);//display "."	
+		//	WriteData(0x46);//display "F"	
+		//	WriteData(0x4C);//display "L"	
+		//	WriteData(0x41);//display "A"	
+		//	WriteData(0x53);//display "S"	
+		//	WriteData(0x48);//display "H"	
 
 			//==================================
 			AT25SF041_WriteEnable();
@@ -453,13 +457,13 @@ void main(void)
 			SPI_NOR_ClearEnable=0;
 			//===================================
 			LCD_clear();
-			Command(0x08);
-			Command(0x00);			
-			WriteData(0x68);//display "h"
-			WriteData(0x68);//display "h"
-			WriteData(0x6D);//display "m"
-			WriteData(0x6D);//display "m"
-			WriteData(0x23);//display "#" SETTIME_KEY		
+			//Command(0x08);
+			//Command(0x00);			
+			//WriteData(0x68);//display "h"
+			//WriteData(0x68);//display "h"
+			//WriteData(0x6D);//display "m"
+			//WriteData(0x6D);//display "m"
+			//WriteData(0x23);//display "#" SETTIME_KEY		
 			
 		}
 	}
