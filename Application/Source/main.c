@@ -23,6 +23,8 @@
 
 #define FOSC 27000000L 	 
 #define T1MS (65536-FOSC/1000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
+#define T (55000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
+
 //#define T1MS (65536-FOSC/10) //10uS T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 
 //#define PointThree_mm_steps 10
@@ -100,8 +102,8 @@ void tm1_isr() interrupt 3 using 1
 {
 	SI1120_STX=!SI1120_STX;
 	//re-init timer 0
-	TL1=T1MS;
-	TH1=T1MS>>8;
+	TL1=T;
+	TH1=T>>8;
 }
 void exint0() interrupt 0
 {
@@ -190,7 +192,7 @@ void main(void)
 	TMOD=0x00;
 	TL1=T1MS;
 	TH1=T1MS>>8;
-	TR1=1;// run timer0
+	TR1=1;// run timer1
 	ET1=1;
 	//========================================
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
@@ -330,6 +332,7 @@ void main(void)
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
+									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
 									{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										calib_bool[count]=1;

@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   SI1120                                                            05/02/2019 17:20:54 PAGE 1   
+C51 COMPILER V9.52.0.0   SI1120                                                            05/03/2019 11:51:49 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE SI1120
@@ -19,34 +19,36 @@ line level    source
    9   1         
   10   1          Wait_ms(10);
   11   1          SI1120_SC=1;
-  12   1          SI1120_MD=1;
-  13   1          SI1120_STX=1;
-  14   1         
-  15   1          Wait_ms(10);
-  16   1         
-  17   1          SI1120_SC=0;
-  18   1          Wait_ms(10);
-  19   1      
-  20   1          SI1120_STX=0;
-  21   1          SI1120_MD=0;
-  22   1         
-  23   1          Wait_ms(10);
+  12   1         //latch
+  13   1          SI1120_MD=0;
+  14   1          SI1120_STX=1;
+  15   1         
+  16   1          Wait_ms(10);
+  17   1         
+  18   1          SI1120_SC=0;
+  19   1          Wait_ms(10);
+  20   1      
+  21   1          SI1120_STX=0;
+  22   1         //Static
+  23   1          SI1120_MD=0;
   24   1         
-  25   1          SI1120_STX=1;
+  25   1          Wait_ms(10);
   26   1         
-  27   1      }
-  28          
-  29          void Enable_EXTINT0(void)
-  30          {
-  31   1        P3M0&=~(1<<2);//0
-  32   1        P3M1|=(1<<2);//1
-  33   1        IT0=0;  //Both rising and falling edge of INT0
-  34   1        EX0=1;  // enable EXT INT0
-  35   1        EA=1;   //each interrupt source would be individually enabled or disabled by setting or clearing its enabl
+  27   1          SI1120_STX=1;
+  28   1         
+  29   1      }
+  30          
+  31          void Enable_EXTINT0(void)
+  32          {
+  33   1        P3M0&=~(1<<2);//0
+  34   1        P3M1|=(1<<2);//1
+  35   1        IT0=0;  //Both rising and falling edge of INT0
+  36   1        EX0=1;  // enable EXT INT0
+  37   1        EA=1;   //each interrupt source would be individually enabled or disabled by setting or clearing its enabl
              -e bit.
-  36   1      }
-  37          
-  38          
+  38   1      }
+  39          
+  40          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

@@ -9,7 +9,8 @@
 	 
 		Wait_ms(10);
 		SI1120_SC=1;
-	 	SI1120_MD=1;
+	 //latch
+	 	SI1120_MD=0;
 	 	SI1120_STX=1;
 	 
 		Wait_ms(10);
@@ -18,6 +19,7 @@
 	 	Wait_ms(10);
 
 		SI1120_STX=0;
+	 //Static
 	 	SI1120_MD=0;
 	 
 		Wait_ms(10);
