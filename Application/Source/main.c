@@ -102,8 +102,8 @@ void tm1_isr() interrupt 3 using 1
 {
 	SI1120_STX=!SI1120_STX;
 	//re-init timer 0
-	TL1=T;
-	TH1=T>>8;
+	TL1=T1MS;
+	TH1=T1MS>>8;
 }
 void exint0() interrupt 0
 {
@@ -332,7 +332,11 @@ void main(void)
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
+									if(pwm_time>=(549.71*cos(elevation)+55.581)) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+
 									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
+									// GHI>=para
+									//GHI=pwm_time
 									{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										calib_bool[count]=1;

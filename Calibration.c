@@ -124,10 +124,12 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 				Display_Pos((float)voltage_at_scanned_pos[i]/1024*5);
 				WriteData(0x56);//display "V"	
 				WriteData(0x10);//display " "	
-				Wait_ms(500);
+				Wait_ms(200);
 				
-				Move(calib_step_move,1);
+				Move(calib_step_move,1);//1: positive direction
 				*current_position=*current_position+0.5;
+				Wait_ms(800);// delay to wait for the electronic load to be stable.
+
 		}
 		Wait_ms(500);
 

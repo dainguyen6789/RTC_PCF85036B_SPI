@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   SI1120                                                            05/03/2019 11:51:49 PAGE 1   
+C51 COMPILER V9.52.0.0   SI1120                                                            05/05/2019 11:43:10 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE SI1120
@@ -19,36 +19,38 @@ line level    source
    9   1         
   10   1          Wait_ms(10);
   11   1          SI1120_SC=1;
-  12   1         //latch
-  13   1          SI1120_MD=0;
+  12   1          //latch
+  13   1          SI1120_MD=1;
   14   1          SI1120_STX=1;
   15   1         
   16   1          Wait_ms(10);
   17   1         
   18   1          SI1120_SC=0;
-  19   1          Wait_ms(10);
-  20   1      
-  21   1          SI1120_STX=0;
-  22   1         //Static
+  19   1      
+  20   1          Wait_ms(10);
+  21   1         //Static
+  22   1         
   23   1          SI1120_MD=0;
-  24   1         
-  25   1          Wait_ms(10);
+  24   1      
+  25   1          SI1120_STX=0;
   26   1         
-  27   1          SI1120_STX=1;
+  27   1          Wait_ms(10);
   28   1         
-  29   1      }
-  30          
-  31          void Enable_EXTINT0(void)
-  32          {
-  33   1        P3M0&=~(1<<2);//0
-  34   1        P3M1|=(1<<2);//1
-  35   1        IT0=0;  //Both rising and falling edge of INT0
-  36   1        EX0=1;  // enable EXT INT0
-  37   1        EA=1;   //each interrupt source would be individually enabled or disabled by setting or clearing its enabl
+  29   1          SI1120_STX=1;
+  30   1         
+  31   1      }
+  32          
+  33          void Enable_EXTINT0(void)
+  34          {
+  35   1        P3M0&=~(1<<2);//0
+  36   1        P3M1|=(1<<2);//1
+  37   1        IT0=0;  //Both rising and falling edge of INT0
+  38   1        EX0=1;  // enable EXT INT0
+  39   1        EA=1;   //each interrupt source would be individually enabled or disabled by setting or clearing its enabl
              -e bit.
-  38   1      }
-  39          
-  40          
+  40   1      }
+  41          
+  42          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
@@ -60,6 +62,8 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
+
+C51 COMPILER V9.52.0.0   SI1120                                                            05/05/2019 11:43:10 PAGE 2   
 
 
 C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

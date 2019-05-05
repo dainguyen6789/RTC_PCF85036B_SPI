@@ -10,6 +10,7 @@
       <TargetName>A25LC040_Test</TargetName>
       <ToolsetNumber>0x0</ToolsetNumber>
       <ToolsetName>MCS-51</ToolsetName>
+      <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STC15F2K60S2</Device>
@@ -30,6 +31,7 @@
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
           <SFDFile></SFDFile>
+          <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
           <IncludePath></IncludePath>
@@ -71,6 +73,8 @@
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
+            <nStopB1X>0</nStopB1X>
+            <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
@@ -79,6 +83,8 @@
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
+            <nStopA1X>0</nStopA1X>
+            <nStopA2X>0</nStopA2X>
           </AfterMake>
           <SelectedForBatchBuild>0</SelectedForBatchBuild>
           <SVCSIdString></SVCSIdString>
@@ -97,6 +103,7 @@
           <StopOnExitCode>3</StopOnExitCode>
           <CustomArgument></CustomArgument>
           <IncludeLibraryModules></IncludeLibraryModules>
+          <ComprImg>1</ComprImg>
           <BankNo>65535</BankNo>
         </CommonProperty>
         <DllOption>
@@ -127,6 +134,7 @@
             <RestoreFunctions>1</RestoreFunctions>
             <RestoreToolbox>1</RestoreToolbox>
             <LimitSpeedToRealTime>0</LimitSpeedToRealTime>
+            <RestoreSysVw>1</RestoreSysVw>
           </Simulator>
           <Target>
             <UseTarget>0</UseTarget>
@@ -138,6 +146,7 @@
             <RestoreFunctions>0</RestoreFunctions>
             <RestoreToolbox>1</RestoreToolbox>
             <RestoreTracepoints>0</RestoreTracepoints>
+            <RestoreSysVw>1</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
           <TargetSelection>-1</TargetSelection>
@@ -170,6 +179,10 @@
           <Flash2></Flash2>
           <Flash3></Flash3>
           <Flash4></Flash4>
+          <pFcarmOut></pFcarmOut>
+          <pFcarmGrp></pFcarmGrp>
+          <pFcArmRoot></pFcArmRoot>
+          <FcArmLst>0</FcArmLst>
         </Utilities>
         <Target51>
           <Target51Misc>
@@ -352,16 +365,6 @@
           <GroupName>Header</GroupName>
           <Files>
             <File>
-              <FileName>a25lc040.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Application\Header\a25lc040.h</FilePath>
-            </File>
-            <File>
-              <FileName>hc595.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Application\Header\hc595.h</FilePath>
-            </File>
-            <File>
               <FileName>STC15F2K60S2.H</FileName>
               <FileType>5</FileType>
               <FilePath>.\Application\Header\STC15F2K60S2.H</FilePath>
@@ -380,11 +383,6 @@
               <FileName>KeyPad.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Application\Header\KeyPad.h</FilePath>
-            </File>
-            <File>
-              <FileName>VCNL4035X01.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Application\Header\VCNL4035X01.h</FilePath>
             </File>
             <File>
               <FileName>Receiver_Position_Data.h</FileName>
@@ -411,6 +409,11 @@
               <FileType>5</FileType>
               <FilePath>.\Application\Header\AT25SF041.h</FilePath>
             </File>
+            <File>
+              <FileName>SI1120.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\SI1120.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -425,11 +428,6 @@
               <FileName>PCF85063BTL.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Application\Source\PCF85063BTL.c</FilePath>
-            </File>
-            <File>
-              <FileName>UART1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Application\Source\UART1.c</FilePath>
             </File>
             <File>
               <FileName>LCd_Driver_SPLC780D.c</FileName>
@@ -470,6 +468,11 @@
               <FileName>AT25SF041.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Application\Source\AT25SF041.c</FilePath>
+            </File>
+            <File>
+              <FileName>SI1120.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\SI1120.c</FilePath>
             </File>
           </Files>
         </Group>

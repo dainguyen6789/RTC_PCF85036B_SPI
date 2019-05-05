@@ -156,7 +156,7 @@ void Display_Pos(float sign_dat)
 	ten=(dat-thousand*1000-hundred*100)/10;
 	if (sign_dat>=0)
 	{
-		//WriteData(thousand|0x30);
+		WriteData(thousand|0x30);
 		WriteData(hundred|0x30);
 		WriteData(ten|0x30);
 		WriteData(unit|0x30);
@@ -170,6 +170,7 @@ void Display_Pos(float sign_dat)
 	{
 		
 		WriteData(0x2D);// "-"
+		WriteData(thousand|0x30);
 		WriteData(hundred|0x30);
 		WriteData(ten|0x30);
 		WriteData(unit|0x30);
