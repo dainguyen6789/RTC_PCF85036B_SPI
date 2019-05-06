@@ -1,10 +1,10 @@
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       05/06/2019 12:29:17 PAGE 1   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       05/06/2019 15:33:01 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE CALIBRATION
 OBJECT MODULE PLACED IN .\Obj\Calibration.obj
-COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE Calibration.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXTEND 
-                    -PRINT(.\Lis\Calibration.lst) TABS(2) OBJECT(.\Obj\Calibration.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Calibration.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXTE
+                    -ND PRINT(.\Lis\Calibration.lst) TABS(2) OBJECT(.\Obj\Calibration.obj)
 
 line level    source
 
@@ -52,189 +52,190 @@ line level    source
   40          {
   41   1          unsigned char ch=0;
   42   1          float calib_step_move=0.5;
-  43   1          unsigned int voltage_at_scanned_pos[81],max_location, avg_voltage=0;
-  44   1          int i,j;
-  45   1      //    float offset_error=0.8;
-  46   1          // move/scan +`
-  47   1          for(i=0;i<81;i++)// 81 values
-  48   1          {
-  49   2            voltage_at_scanned_pos[i]=0;
-  50   2          }
-  51   1          for(i=0;i<81;i++)
-  52   1          {
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       05/06/2019 12:29:17 PAGE 2   
+  43   1          //float offset_error=0.8;
+  44   1          unsigned int voltage_at_scanned_pos[81],max_location, avg_voltage=0;
+  45   1          int i,j;
+  46   1          //float offset_error=0.8;
+  47   1          // move/scan +`
+  48   1          for(i=0;i<81;i++)// 81 values
+  49   1          {
+  50   2            voltage_at_scanned_pos[i]=0;
+  51   2          }
+  52   1          for(i=0;i<81;i++)
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       05/06/2019 15:33:01 PAGE 2   
 
-  53   2              //if(ADC_GetResult(2)>=sunlight_ADC_Threshold)
-  54   2              {
-  55   3                //avg_voltage=0;
-  56   3                for(j=0;j<5;j++)
-  57   3                {
-  58   4                  if(j==0)
-  59   4                  {
-  60   5                    avg_voltage=0;
-  61   5                  }
-  62   4                  avg_voltage+=ADC_GetResult(ch);
-  63   4                  Wait_ms(2);
-  64   4      
-  65   4                }
-  66   3                voltage_at_scanned_pos[i]=avg_voltage/5;
-  67   3      
-  68   3                //  Because the uC Flash Memory is almost full, 
-  69   3                //  so I did not change/increase the size of "struct data_to_store"
-  70   3                //  STORE THE CALIB VOLTAGE IN THE SPI NOR FLASH after every calib, total 4*60=240 byte of data for e
+  53   1          {
+  54   2              //if(ADC_GetResult(2)>=sunlight_ADC_Threshold)
+  55   2              {
+  56   3                //avg_voltage=0;
+  57   3                for(j=0;j<5;j++)
+  58   3                {
+  59   4                  if(j==0)
+  60   4                  {
+  61   5                    avg_voltage=0;
+  62   5                  }
+  63   4                  avg_voltage+=ADC_GetResult(ch);
+  64   4                  Wait_ms(2);
+  65   4      
+  66   4                }
+  67   3                voltage_at_scanned_pos[i]=avg_voltage/5;
+  68   3      
+  69   3                //  Because the uC Flash Memory is almost full, 
+  70   3                //  so I did not change/increase the size of "struct data_to_store"
+  71   3                //  STORE THE CALIB VOLTAGE IN THE SPI NOR FLASH after every calib, total 4*60=240 byte of data for e
              -ach calib time
-  71   3                //if(i%2==0)
-  72   3                {
-  73   4                  AT25SF041_WriteEnable();
-  74   4                  //Wait_ms_SPINOR(50); 
-  75   4                  AT25SF041_Write(Byte_Page_Program, *address_to_write,pwm_time/4);                 // SUNLIGHT
-  76   4                  Wait_ms_SPINOR(50); 
-  77   4                  ++*address_to_write;
-  78   4                  
-  79   4                  AT25SF041_WriteEnable();
-  80   4                  //Wait_ms_SPINOR(50); 
-  81   4                  AT25SF041_Write(Byte_Page_Program, *address_to_write,voltage_at_scanned_pos[i]/4);// SOLAR CELL ADC 
+  72   3                //if(i%2==0)
+  73   3                {
+  74   4                  AT25SF041_WriteEnable();
+  75   4                  //Wait_ms_SPINOR(50); 
+  76   4                  AT25SF041_Write(Byte_Page_Program, *address_to_write,pwm_time/4);                 // SUNLIGHT
+  77   4                  Wait_ms_SPINOR(50); 
+  78   4                  ++*address_to_write;
+  79   4                  
+  80   4                  AT25SF041_WriteEnable();
+  81   4                  //Wait_ms_SPINOR(50); 
+  82   4                  AT25SF041_Write(Byte_Page_Program, *address_to_write,voltage_at_scanned_pos[i]/4);// SOLAR CELL ADC 
              -VOLTAGE  
-  82   4                  Wait_ms_SPINOR(50); 
-  83   4                  ++*address_to_write;
-  84   4                  
-  85   4                  AT25SF041_WriteEnable();
-  86   4                  //Wait_ms_SPINOR(50); 
-  87   4                  AT25SF041_Write(Byte_Page_Program, *address_to_write,*current_position);          // SOLAR CELL Instant P
+  83   4                  Wait_ms_SPINOR(50); 
+  84   4                  ++*address_to_write;
+  85   4                  
+  86   4                  AT25SF041_WriteEnable();
+  87   4                  //Wait_ms_SPINOR(50); 
+  88   4                  AT25SF041_Write(Byte_Page_Program, *address_to_write,*current_position);          // SOLAR CELL Instant P
              -osition when calib
-  88   4                  Wait_ms_SPINOR(50); 
-  89   4                  ++*address_to_write;  
-  90   4                  
-  91   4                  AT25SF041_WriteEnable();
-  92   4                  //Wait_ms_SPINOR(50); 
-  93   4                  AT25SF041_Write(Byte_Page_Program, *address_to_write,(*current_position-(char)*current_position)*100
+  89   4                  Wait_ms_SPINOR(50); 
+  90   4                  ++*address_to_write;  
+  91   4                  
+  92   4                  AT25SF041_WriteEnable();
+  93   4                  //Wait_ms_SPINOR(50); 
+  94   4                  AT25SF041_Write(Byte_Page_Program, *address_to_write,(*current_position-(char)*current_position)*100
              -);  // SOLAR CELL Instant Position when calib
-  94   4                  Wait_ms_SPINOR(50); 
-  95   4                  ++*address_to_write;
-  96   4        
-  97   4                }
-  98   3                
-  99   3              }
- 100   2              /*else
- 101   2              {
- 102   2                // go back to JP max position
- 103   2                if(i<=29)
- 104   2                  Move(calib_step_move*(29-(i-1)),1);//
- 105   2                  //*current_position=*current_position+calib_step_move*(29-i);
- 106   2                else
- 107   2                  Move(calib_step_move*(i-1-29),0);// 
- 108   2                
- 109   2                *current_position=*current_position+calib_step_move*(29-(i-1));
- 110   2                break;// break FOR LOOP
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       05/06/2019 12:29:17 PAGE 3   
+  95   4                  Wait_ms_SPINOR(50); 
+  96   4                  ++*address_to_write;
+  97   4        
+  98   4                }
+  99   3                
+ 100   3              }
+ 101   2              /*else
+ 102   2              {
+ 103   2                // go back to JP max position
+ 104   2                if(i<=29)
+ 105   2                  Move(calib_step_move*(29-(i-1)),1);//
+ 106   2                  //*current_position=*current_position+calib_step_move*(29-i);
+ 107   2                else
+ 108   2                  Move(calib_step_move*(i-1-29),0);// 
+ 109   2                
+ 110   2                *current_position=*current_position+calib_step_move*(29-(i-1));
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       05/06/2019 15:33:01 PAGE 3   
 
- 111   2              }*/
- 112   2              
- 113   2              //move cursor to line 1, pos 6
- 114   2              //Write_PI4IOE5V96248(&dat);
- 115   2              Command(0x08);
- 116   2              Command(0x05);
- 117   2              
- 118   2              WriteData(0x41);//display "A"
- 119   2              WriteData(0x44);//display "D"
- 120   2              WriteData(0x43);//display "C" 
- 121   2              WriteData(0x3A);//display ":" 
- 122   2              //LCD_clear();
- 123   2              //real_voltage=(float)voltage_at_scanned_pos[i]/1024*5;
- 124   2              Display_Pos((float)voltage_at_scanned_pos[i]/1024*5);
- 125   2              WriteData(0x56);//display "V" 
- 126   2              WriteData(0x10);//display " " 
- 127   2              Wait_ms(200);
- 128   2              
- 129   2              Move(calib_step_move,1);//1: positive direction
- 130   2              *current_position=*current_position+0.5;
- 131   2              Wait_ms(800);// delay to wait for the electronic load to be stable.
- 132   2      
- 133   2          }
- 134   1          Wait_ms(500);
- 135   1      
- 136   1          if(i==81)// make sure that all of the calibration value are scanned with GOOD SUN
- 137   1          {
- 138   2            max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,80]
- 139   2            *calib_max_ADC_Value=voltage_at_scanned_pos[max_location];
- 140   2      
- 141   2            *max_ADC_JP_value=voltage_at_scanned_pos[40];
- 142   2          
- 143   2            // move to the optimal position in the area of +/-10mm from JP max theorical pos
- 144   2            Move(calib_step_move*(81-(float)max_location),0);
- 145   2            *current_position=*current_position-(calib_step_move*(81-(float)max_location));
- 146   2            Wait_ms(500);
- 147   2          }
- 148   1      
- 149   1      }
- 150          
+ 111   2                break;// break FOR LOOP
+ 112   2              }*/
+ 113   2              
+ 114   2              //move cursor to line 1, pos 6
+ 115   2              //Write_PI4IOE5V96248(&dat);
+ 116   2              Command(0x08);
+ 117   2              Command(0x05);
+ 118   2              
+ 119   2              WriteData(0x41);//display "A"
+ 120   2              WriteData(0x44);//display "D"
+ 121   2              WriteData(0x43);//display "C" 
+ 122   2              WriteData(0x3A);//display ":" 
+ 123   2              //LCD_clear();
+ 124   2              //real_voltage=(float)voltage_at_scanned_pos[i]/1024*5;
+ 125   2              Display_Pos((float)voltage_at_scanned_pos[i]/1024*5);
+ 126   2              WriteData(0x56);//display "V" 
+ 127   2              WriteData(0x10);//display " " 
+ 128   2              Wait_ms(200);
+ 129   2              
+ 130   2              Move(calib_step_move,1);//1: positive direction
+ 131   2              *current_position=*current_position+0.5;
+ 132   2              Wait_ms(800);// delay to wait for the electronic load to be stable.
+ 133   2      
+ 134   2          }
+ 135   1          Wait_ms(500);
+ 136   1      
+ 137   1          if(i==81)// make sure that all of the calibration value are scanned with GOOD SUN
+ 138   1          {
+ 139   2            max_location=Max_Value(voltage_at_scanned_pos);//max_location in an array [0,...,80]
+ 140   2            *calib_max_ADC_Value=voltage_at_scanned_pos[max_location];
+ 141   2      
+ 142   2            *max_ADC_JP_value=voltage_at_scanned_pos[40];
+ 143   2          
+ 144   2            // move to the optimal position in the area of +/-10mm from JP max theorical pos
+ 145   2            Move(calib_step_move*(81-(float)max_location)+0.8,0);
+ 146   2            *current_position=*current_position-(calib_step_move*(81-(float)max_location)+0.8);
+ 147   2            Wait_ms(500);
+ 148   2          }
+ 149   1      
+ 150   1      }
  151          
- 152          unsigned int Max_Value(unsigned int *input)
- 153          {
- 154   1        unsigned int max=0,max_location=40,i;
- 155   1        //int i;
- 156   1        for(i=0;i<81;i++) //total 81 diff values
- 157   1        {
- 158   2          max=max>*(input+i)? max:*(input+i);
- 159   2          if (max==*(input+i)&& max!=0)
- 160   2            max_location=i;
- 161   2        }
- 162   1        return max_location;// pos in the array
- 163   1        
- 164   1      }
- 165          //input currnt_pos is the JP max theorical position
- 166          float calibration(    unsigned char mnths,unsigned char dys,
- 167                                unsigned char hurs,unsigned char mns,unsigned char sconds,
- 168                                float  *currnt_pos,unsigned int *calib_max_ADC_Val,float *theorical_max_pos,
- 169                                unsigned int *max_ADC_JP_value,unsigned long int *NOR_address_to_write)
- 170          {
- 171   1        float calib_value=0;
- 172   1        unsigned int temporary_calib_max_ADC=0,temp_max_ADC_JP_value=0;//
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       05/06/2019 12:29:17 PAGE 4   
+ 152          
+ 153          unsigned int Max_Value(unsigned int *input)
+ 154          {
+ 155   1        unsigned int max=0,max_location=40,i;
+ 156   1        //int i;
+ 157   1        for(i=0;i<81;i++) //total 81 diff values
+ 158   1        {
+ 159   2          max=max>*(input+i)? max:*(input+i);
+ 160   2          if (max==*(input+i)&& max!=0)
+ 161   2            max_location=i;
+ 162   2        }
+ 163   1        return max_location;// pos in the array
+ 164   1        
+ 165   1      }
+ 166          //input currnt_pos is the JP max theorical position
+ 167          float calibration(    unsigned char mnths,unsigned char dys,
+ 168                                unsigned char hurs,unsigned char mns,unsigned char sconds,
+ 169                                float  *currnt_pos,unsigned int *calib_max_ADC_Val,float *theorical_max_pos,
+ 170                                unsigned int *max_ADC_JP_value,unsigned long int *NOR_address_to_write)
+ 171          {
+ 172   1        float calib_value=0;
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       05/06/2019 15:33:01 PAGE 4   
 
- 173   1        unsigned long int temp_NOR_address_to_write=*NOR_address_to_write;
- 174   1        float JP_max_pos=*currnt_pos;
- 175   1        *calib_max_ADC_Val=0;
- 176   1        *max_ADC_JP_value=0;
- 177   1        *theorical_max_pos=0;
- 178   1        // if voltage is stable 
- 179   1        if(voltage_is_stable())
- 180   1        {
- 181   2          //  move to JP theorical max position-20
- 182   2          Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-20);// off set is Zero means we go to  (first, go
+ 173   1        unsigned int temporary_calib_max_ADC=0,temp_max_ADC_JP_value=0;//
+ 174   1        unsigned long int temp_NOR_address_to_write=*NOR_address_to_write;
+ 175   1        float JP_max_pos=*currnt_pos;
+ 176   1        *calib_max_ADC_Val=0;
+ 177   1        *max_ADC_JP_value=0;
+ 178   1        *theorical_max_pos=0;
+ 179   1        // if voltage is stable 
+ 180   1        if(voltage_is_stable())
+ 181   1        {
+ 182   2          //  move to JP theorical max position-20
+ 183   2          Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-20);// off set is Zero means we go to  (first, go
              - to JP max theorical position -20)
- 183   2          *theorical_max_pos=JP_max_pos+20;// compensate +20 because of previous line.
- 184   2          //  find the real max value in the area of JP +/- 15mm
- 185   2          Find_Real_Max(&JP_max_pos,&temporary_calib_max_ADC,&temp_max_ADC_JP_value,&temp_NOR_address_to_write); /
+ 184   2          *theorical_max_pos=JP_max_pos+20;// compensate +20 because of previous line.
+ 185   2          //  find the real max value in the area of JP +/- 15mm
+ 186   2          Find_Real_Max(&JP_max_pos,&temporary_calib_max_ADC,&temp_max_ADC_JP_value,&temp_NOR_address_to_write); /
              -/find real max and move to real max position
- 186   2          
- 187   2          *NOR_address_to_write=temp_NOR_address_to_write;
- 188   2          
- 189   2          *calib_max_ADC_Val=temporary_calib_max_ADC;
- 190   2          *max_ADC_JP_value=temp_max_ADC_JP_value;
- 191   2          calib_value=JP_max_pos-*theorical_max_pos;
- 192   2          *currnt_pos=JP_max_pos;
- 193   2          return calib_value;
- 194   2        }
- 195   1        else
- 196   1          return 0;
- 197   1      }
- 198          int FindClosestSamedayCalibTime(int *input_calibration_bool_array,int current_time_stamp_position)
- 199          {
- 200   1        int i;
- 201   1        for(i=current_time_stamp_position;i>=0;i--)
- 202   1        {
- 203   2          if(*(input_calibration_bool_array+i)==1)// find the closest calibrated time stamp
- 204   2            return i;// return the position in the array
- 205   2          else 
- 206   2            return 0;
- 207   2        }
- 208   1      }
-*** WARNING C291 IN LINE 208 OF Calibration.c: not every exit path returns a value
+ 187   2          
+ 188   2          *NOR_address_to_write=temp_NOR_address_to_write;
+ 189   2          
+ 190   2          *calib_max_ADC_Val=temporary_calib_max_ADC;
+ 191   2          *max_ADC_JP_value=temp_max_ADC_JP_value;
+ 192   2          calib_value=JP_max_pos-*theorical_max_pos;
+ 193   2          *currnt_pos=JP_max_pos;
+ 194   2          return calib_value;
+ 195   2        }
+ 196   1        else
+ 197   1          return 0;
+ 198   1      }
+ 199          int FindClosestSamedayCalibTime(int *input_calibration_bool_array,int current_time_stamp_position)
+ 200          {
+ 201   1        int i;
+ 202   1        for(i=current_time_stamp_position;i>=0;i--)
+ 203   1        {
+ 204   2          if(*(input_calibration_bool_array+i)==1)// find the closest calibrated time stamp
+ 205   2            return i;// return the position in the array
+ 206   2          else 
+ 207   2            return 0;
+ 208   2        }
+ 209   1      }
+*** WARNING C291 IN LINE 209 OF Calibration.c: not every exit path returns a value
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1920    ----
+   CODE SIZE        =   1942    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----     251
    PDATA SIZE       =   ----    ----

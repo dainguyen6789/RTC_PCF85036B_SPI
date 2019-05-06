@@ -333,6 +333,7 @@ void main(void)
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
 									if(pwm_time>=(549.71*cos(elevation)+55.581)) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
 
 									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
 									// GHI>=para
@@ -370,7 +371,7 @@ void main(void)
 									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
 									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
 									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
-									dat_to_store.light_ADC=pwm_time/4;//this is original value, real value should be  pwm_time*10us
+									dat_to_store.light_ADC=pwm_time/4;//
 									
 									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
 									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
