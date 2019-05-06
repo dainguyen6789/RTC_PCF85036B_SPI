@@ -235,7 +235,7 @@ void main(void)
 			WriteData(0x53);//display "S"	
 			WriteData(0x3A);//display ":"	
 			//LCD_clear();
-			Display_Pos(pwm_time);
+			Display_Pos(current_position);
 			WriteData(0x6D);//m
 			WriteData(0x6D);//m
 			//==============================================================
@@ -357,7 +357,7 @@ void main(void)
 											calib_bool[count]=0;
 
 											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
-											theorical_JP_max_pos=current_position;								
+											theorical_JP_max_pos=current_position-calib_value[count];								
 											max_ADC_Val = ADC_GetResult(0);// read from channel 0
 											max_ADC_Val_JP = max_ADC_Val;										
 									}
