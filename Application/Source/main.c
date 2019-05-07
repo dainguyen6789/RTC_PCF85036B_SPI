@@ -56,7 +56,7 @@ void I2C_Init();
 void Step_move(unsigned int step, bit dir);
 void Update_position(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,
-										 unsigned char sconds,float elevation,
+										 unsigned char sconds,
 										 float  *currnt_pos, float offset_calib);
 float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
@@ -367,7 +367,7 @@ void main(void)
 											calib_bool[count]=0;
 
 											
-											Update_position(months,days,hours,mins,seconds,elevation,&current_position,calib_value[count]);
+											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
 											theorical_JP_max_pos=current_position-calib_value[count];								
 											max_ADC_Val = ADC_GetResult(0);// read from channel 0
 											max_ADC_Val_JP = max_ADC_Val;										
@@ -406,7 +406,7 @@ void main(void)
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-										Update_position(months,days,hours,mins,seconds,elevation,&current_position,calib_value[count]);
+										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
 								}
 							
 					}
@@ -426,11 +426,11 @@ void main(void)
 										if(calib_bool[count]==1 && calib_bool[count+1]==1)
 										{
 											calib_point2.y=calib_value[count+1];// this is from previous day.
-											Update_position(months,days,hours,mins,seconds,elevation,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
+											Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
 										}
 										else // was not calib prev day at this time stamp=> use the latest calib value of the same day
 										{
-											Update_position(months,days,hours,mins,seconds,elevation,&current_position,calib_value[FindClosestSamedayCalibTime(calib_bool,count)]);
+											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[FindClosestSamedayCalibTime(calib_bool,count)]);
 										}
 										// in the UPDATE function, we only update the motor position when the distance >0.5mm
 
