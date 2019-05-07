@@ -132,7 +132,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 				Wait_ms(800);// delay to wait for the electronic load to be stable.
 
 		}
-		Wait_ms(500);
+		Wait_ms(1000);
 
 		if(i==81)// make sure that all of the calibration value are scanned with GOOD SUN
 		{
@@ -142,7 +142,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 			*max_ADC_JP_value=voltage_at_scanned_pos[40];
 		
 			// move to the optimal position in the area of +/-10mm from JP max theorical pos
-			Move(calib_step_move*(81-(float)max_location)+0.8,0);
+			Move(calib_step_move*(81-(float)max_location)+0.8,0);// 0.8 is the offset error
 			*current_position=*current_position-(calib_step_move*(81-(float)max_location)+0.8);
 			Wait_ms(500);
 		}

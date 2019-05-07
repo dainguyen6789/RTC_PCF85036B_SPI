@@ -227,11 +227,13 @@ void main(void)
 		{
 			//move cursor to line 1, pos 6
 			//Write_PI4IOE5V96248(&dat);
+			Display_Pos(pwm_time);
+
 			Command(0x08);
-			Command(0x05);
+			Command(0x06);
 			
 			WriteData(0x50);//display "P"
-			WriteData(0x4F);//display "O"
+			//WriteData(0x4F);//display ""
 			WriteData(0x53);//display "S"	
 			WriteData(0x3A);//display ":"	
 			//LCD_clear();
@@ -332,7 +334,7 @@ void main(void)
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
-									if(pwm_time>=(549.71*cos(elevation)+55.581)) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									if(pwm_time>=(563.91*cos(elevation)+33.99)) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
 
 									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
