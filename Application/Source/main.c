@@ -23,14 +23,14 @@
 
 #define FOSC 27000000L 	 
 #define T1MS (65536-FOSC/1000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
-#define T (55000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
+//#define T (55000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 
 //#define T1MS (65536-FOSC/10) //10uS T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 
-//#define PointThree_mm_steps 10
-#define PointOne_mm_steps 10
+////#define PointThree_mm_steps 10
+//#define PointOne_mm_steps 10
 
-#define PointTwo_mm_steps 21 //
+//#define PointTwo_mm_steps 21 //
 #define PointFour_mm_steps 42  //
 #define DATA_WITHOUT_RUNNING_CALIBRATION 0
 
@@ -55,7 +55,8 @@ unsigned char unit(unsigned char BCD);
 void I2C_Init();
 void Step_move(unsigned int step, bit dir);
 void Update_position(unsigned char mnths,unsigned char dys,
-										 unsigned char hurs,unsigned char mns,unsigned char sconds,
+										 unsigned char hurs,unsigned char mns,
+										 unsigned char sconds,float elevation,
 										 float  *currnt_pos, float offset_calib);
 float calibration(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds,
@@ -87,7 +88,7 @@ unsigned long int SPI_NOR_INTERNAL_FLASH_ADDR=0;
 unsigned int timer0_count=0;
 unsigned char start_timer0_count=0;
 // definition of pwm time 
-float pwm_time=0;
+float pwm_time=0,pwm_time_min=0,pwm_time_max=0;
 sbit INT0 = 0xB2;
 
 void tm0_isr() interrupt 1 using 1
@@ -196,10 +197,10 @@ void main(void)
 	ET1=1;
 	//========================================
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
-	SPI_WriteTime(0x12,Hours);		// data , register address
-	Delay_ms(500);
-	SPI_WriteTime(0x00,Minutes);
-	Delay_ms(500);
+	//SPI_WriteTime(0x12,Hours);		// data , register address
+	//Delay_ms(500);
+	//SPI_WriteTime(0x00,Minutes);
+	//Delay_ms(500);
 	//==============================================================
 	// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
 	//==============================================================
@@ -338,16 +339,22 @@ void main(void)
 									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
 
 									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
-									// GHI>=para
+									//GHI>=para
 									//GHI=pwm_time
 									{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										calib_bool[count]=1;
 										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
+										if(pwm_time_max<1.1*pwm_time_min)
+										{
+												calib_bool[count]=0;// bool cariable to identify  that we did not calib at this time stamp
+
+												calib_value[count]=0; // offset calibration is Zero if sun light is unstable.
+										}
 									}
 									//else // Store the data even in low light condition
 									{
-											// store  120 bytes of "0" value when calibration does not work  in order to syncronize the pattern.
+											// store  120 bytes of "0" value when calibration does not work  in order to synchronize the pattern.
 											for(count=0;count<=323;count++)
 											{
 												AT25SF041_WriteEnable();
@@ -359,7 +366,8 @@ void main(void)
 											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 											calib_bool[count]=0;
 
-											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
+											
+											Update_position(months,days,hours,mins,seconds,elevation,&current_position,calib_value[count]);
 											theorical_JP_max_pos=current_position-calib_value[count];								
 											max_ADC_Val = ADC_GetResult(0);// read from channel 0
 											max_ADC_Val_JP = max_ADC_Val;										
@@ -398,7 +406,7 @@ void main(void)
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
+										Update_position(months,days,hours,mins,seconds,elevation,&current_position,calib_value[count]);
 								}
 							
 					}
@@ -414,15 +422,15 @@ void main(void)
 
 										calib_point1.x=calib_time[count];
 										calib_point1.y=calib_value[count];
-										calib_point2.x=calib_time[count+1];// this is from previous day
+										calib_point2.x=calib_time[count+1];// this is from previous day.
 										if(calib_bool[count]==1 && calib_bool[count+1]==1)
 										{
-											calib_point2.y=calib_value[count+1];// this is from previous day
-											Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
+											calib_point2.y=calib_value[count+1];// this is from previous day.
+											Update_position(months,days,hours,mins,seconds,elevation,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
 										}
 										else // was not calib prev day at this time stamp=> use the latest calib value of the same day
 										{
-											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[FindClosestSamedayCalibTime(calib_bool,count)]);
+											Update_position(months,days,hours,mins,seconds,elevation,&current_position,calib_value[FindClosestSamedayCalibTime(calib_bool,count)]);
 										}
 										// in the UPDATE function, we only update the motor position when the distance >0.5mm
 

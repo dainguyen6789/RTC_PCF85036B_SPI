@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   ADC                                                               05/06/2019 17:17:23 PAGE 1   
+C51 COMPILER V9.52.0.0   ADC                                                               05/07/2019 16:37:20 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE ADC
@@ -11,8 +11,8 @@ line level    source
    1          
    2          #include "ADCh.h"
    3          #include "stc15f2k60s2.h"
-   4           #include <intrins.h>
-   5           void Wait_ms(int ms);
+   4          #include <intrins.h>
+   5          void Wait_ms(int ms);
    6          
    7          void ADC_Init(void)
    8          {
@@ -23,13 +23,13 @@ line level    source
   13   1        P1M1 |=( 1<<0);  
   14   1        P1M0 &=~( 1<<0); 
   15   1        CLK_DIV=0x00;//set ADRJ=0
-  16   1        P1ASF |=P1_0_ADC_FUNCTION|P1_2_ADC_FUNCTION;  
+  16   1        P1ASF |=P1_0_ADC_FUNCTION;//|P1_2_ADC_FUNCTION;  
   17   1      
   18   1        ADC_RES=0;
   19   1        ADC_RESL=0;
   20   1        ADC_CONTR=ADC_PWR | ADC_SPEEDLL;        
   21   1        //ADC_CONTR=ADC_PWR;  //enable ADC power  
-  22   1        Wait_ms(2);
+  22   1        //Wait_ms(2);
   23   1        
   24   1      }
   25          
@@ -40,8 +40,8 @@ line level    source
   30   1        ADC_CONTR =ADC_PWR | ADC_SPEEDLL | ch | ADC_START;  
   31   1        _nop_();                        
   32   1        _nop_();
-  33   1        _nop_();
-  34   1        _nop_();
+  33   1        //_nop_();
+  34   1        //_nop_();
   35   1        while (!(ADC_CONTR & ADC_FLAG));
   36   1        ADC_CONTR &= ~ADC_FLAG;         
   37   1        ADC_Value_H=ADC_RES;
@@ -53,7 +53,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     75    ----
+   CODE SIZE        =     68    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

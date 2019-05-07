@@ -21,10 +21,10 @@
 //Page 5/58 in the RTC's datasheet https://www.mouser.com/datasheet/2/302/PCF85063BTL-1127645.pdf
 
 
-#define		Control_1	0x00
-#define		Control_2	0x01
-#define		Offset		0x02
-#define		RAM_Byte	0x03
+//#define		Control_1	0x00
+//#define		Control_2	0x01
+//#define		Offset		0x02
+//#define		RAM_Byte	0x03
 #define		Seconds		0x04
 #define		Minutes		0x05
 #define		Hours			0x06
@@ -32,11 +32,11 @@
 #define		Weekdays	0x08
 #define		Months		0x09
 #define		Years			0x0A
-#define		Second_Alarms			0x0B
-#define		Minute_Alarms			0x0C
-#define		Hour_Alarms				0x0D
-#define		Day_Alarms				0x0E
-#define		Week_Alarms				0x0F
+//#define		Second_Alarms			0x0B
+//#define		Minute_Alarms			0x0C
+//#define		Hour_Alarms				0x0D
+//#define		Day_Alarms				0x0E
+//#define		Week_Alarms				0x0F
 #define		Timer_value				0x10
 #define		Timer_mode				0x11
 
@@ -66,8 +66,8 @@ sbit SPISS=P1^2;
 
 // SPI Status register possible value
 
-#define SPIF 0x80 // SPI transfer completion flag.
-#define WCOL 0x40 // SPI write collision flag.
+//#define SPIF 0x80 // SPI transfer completion flag.
+//#define WCOL 0x40 // SPI write collision flag.
 
 
 

@@ -65,7 +65,14 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 
 					}
 					voltage_at_scanned_pos[i]=avg_voltage/5;
-
+					if(pwm_time_min!=0)
+					{
+						pwm_time_min=pwm_time_min<pwm_time?pwm_time_min:pwm_time;
+					}
+					else
+						pwm_time_min=pwm_time;
+					
+					pwm_time_max=pwm_time_max>pwm_time?pwm_time_max:pwm_time;
 					// 	Because the uC Flash Memory is almost full, 
 					//	so I did not change/increase the size of "struct data_to_store"
 					// 	STORE THE CALIB VOLTAGE IN THE SPI NOR FLASH after every calib, total 4*60=240 byte of data for each calib time
@@ -176,6 +183,8 @@ float calibration(		unsigned char mnths,unsigned char dys,
 	*calib_max_ADC_Val=0;
 	*max_ADC_JP_value=0;
 	*theorical_max_pos=0;
+	pwm_time_min=0;
+	pwm_time_max=0;
 	// if voltage is stable 
 	if(voltage_is_stable())
 	{
