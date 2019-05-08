@@ -226,10 +226,9 @@ void main(void)
 		//count++;
 		//if (count==20)
 		{
-			//move cursor to line 1, pos 6
 			//Write_PI4IOE5V96248(&dat);
-			Display_Pos(pwm_time);
-
+			//Display_Pos(current_position);
+			//move cursor to line 1, pos 6
 			Command(0x08);
 			Command(0x06);
 			
@@ -238,7 +237,7 @@ void main(void)
 			WriteData(0x53);//display "S"	
 			WriteData(0x3A);//display ":"	
 			//LCD_clear();
-			Display_Pos(current_position);
+			Display_Pos(pwm_time);
 			WriteData(0x6D);//m
 			WriteData(0x6D);//m
 			//==============================================================
