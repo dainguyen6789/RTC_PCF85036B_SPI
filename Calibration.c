@@ -150,9 +150,19 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 		
 			// move to the optimal position in the area of +/-10mm from JP max theorical pos
 			Move(calib_step_move*(83-max_location),0);//83-81= 2 steps is the offset error
+//			Command(0x08);
+//			Command(0x06);
+//			
+//			WriteData(0x50);//display "P"
+//			//WriteData(0x4F);//display ""
+//			WriteData(0x53);//display "S"	
+//			WriteData(0x3A);//display ":"	
+//			//LCD_clear();
+//			Display_Pos(83-max_location);
 			*current_position=*current_position-(calib_step_move*(83-max_location));
 			Wait_ms(500);
 		}
+		return 0;
 
 }
 
