@@ -346,9 +346,9 @@ void main(void)
 										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
 										if(pwm_time_max<1.2*pwm_time_min)
 										{
-												calib_bool[count]=0;// bool cariable to identify  that we did not calib at this time stamp
+											//	calib_bool[count]=0;// bool cariable to identify  that we did not calib at this time stamp
 
-												calib_value[count]=0; // offset calibration is Zero if sun light is unstable.
+											//	calib_value[count]=0; // offset calibration is Zero if sun light is unstable.
 										}
 									}
 									//else // Store the data even in low light condition

@@ -162,7 +162,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 			*current_position=*current_position-(calib_step_move*(83-max_location));
 			Wait_ms(500);
 		}
-		return 0;
+		return ;
 
 }
 
