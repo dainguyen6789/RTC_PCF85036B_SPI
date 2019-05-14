@@ -36,7 +36,7 @@
 
 //void Delay_ms(unsigned int ms);
 //void SendString(char *s);
-//void SendUART1(unsigned char dat);
+void SendUART1(unsigned char dat);
 //void initUART1(void);
 //unsigned char BCDtoDec(unsigned char BCD);
 unsigned char ten(unsigned char BCD);
@@ -176,7 +176,7 @@ void main(void)
 	LCD_Init();
 	SPI_Init();
 	KeyPad_IO_Init();
-	//initUART1();
+	initUART1();
 	//I2C_Init();
 	ADC_Init();
 	//=========================================
@@ -220,262 +220,268 @@ void main(void)
 
 	while(1)                                      
 	{
-		Key_Process();
+		SendUART1(0x41);
+		Delay_ms(500);
 
-		//count++;
-		//if (count==20)
-		{
-			//move cursor to line 1, pos 6
-			//Write_PI4IOE5V96248(&dat);
-			Display_Pos(pwm_time);
+		SendUART1(0x49);
+		Delay_ms(500);
 
-			Command(0x08);
-			Command(0x06);
-			
-			WriteData(0x50);//display "P"
-			//WriteData(0x4F);//display ""
-			WriteData(0x53);//display "S"	
-			WriteData(0x3A);//display ":"	
-			//LCD_clear();
-			Display_Pos(current_position);
-			WriteData(0x6D);//m
-			WriteData(0x6D);//m
-			//==============================================================
-			Display_Line(2);
-			DisplayLCD(hours);
-			WriteData(0x3A);//display ":"
-			DisplayLCD(mins);
-			WriteData(0x3A);//display ":"
-			DisplayLCD(seconds&0x7f);
-			WriteData(0x3B);//display ";"
-			DisplayLCD(months);
-			//WriteData(0x2D);//display "-"
-			DisplayLCD(days);	
-			WriteData(0x3B);//display ";"
-			if(auto_mode)
-			{
-				WriteData(0x41);//display "A"
-			}
-			else if (!auto_mode)
-			{
-				WriteData(0x4D);//display "M"
-			}			
-			//count=0;
-			//prox_data=Read_VCNL4035(PS1_Data_L);
-			//Display_Prox(prox_data);// this is RAW data from the Prox Sensor
-			// 	y = 12.051x2 - 546.97x + 7153.8;   	 	x in [1015:2880] 	=> 	distance: 	10-20mm
-			// 	y = 2.4242x2 - 174.89x + 3545.5;			x in [473:941] 		=> 	distance:		20-30mm
-			// 	y = 0.5038x2 - 54.417x + 1651.1; 		  x in [277:455] 		=> 	distance:		30-40mm
-			//	y = 0.303x2 - 37.642x + 1302.4; 		  x in [177:269]	 	=> 	distance:		40-50mm
-		
-		
-			//Delay_ms(1);
-			//WriteData(Read_VCNL4035(PS3_Data_L));
-			if (move && !auto_mode)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
-			{
-				Step_move(PointFour_mm_steps, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
-				if (direction==1)
-				{
-					current_position=current_position+0.4;
-				}
-				else
-				{
-					current_position=current_position-0.4;
-				}
-				prox_flag=0;
-			}
-			if (small_move && !auto_mode)
-			{
-				
-				//auto_mode=0;
-				Step_move(PointFour_mm_steps, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
-				if (direction==1)
-				{
-					current_position=current_position+0.4;
-				}
-				else
-				{
-					current_position=current_position-0.4;
-				}
-				prox_flag=0;		
-				small_move=0;				
-			}
-			
-		if (P23 && prox_flag==0 && current_position<=0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
-			{
-				current_position=0;
-				prox_flag=1;
-				move=0;
-				small_move=0;
-				direction=1;
-			}			
-			LCD_return_home();
-			
-		}
-		//hours2=hours1;
-		//hours1=hours;
-		//mins2=mins1;
-		//mins1=mins;
-		Read_time(&months,&days,&hours,&mins,&seconds);
+//		Key_Process();
+
+//		//count++;
+//		//if (count==20)
+//		{
+//			//move cursor to line 1, pos 6
+//			//Write_PI4IOE5V96248(&dat);
+//			Display_Pos(pwm_time);
+
+//			Command(0x08);
+//			Command(0x06);
+//			
+//			WriteData(0x50);//display "P"
+//			//WriteData(0x4F);//display ""
+//			WriteData(0x53);//display "S"	
+//			WriteData(0x3A);//display ":"	
+//			//LCD_clear();
+//			Display_Pos(current_position);
+//			WriteData(0x6D);//m
+//			WriteData(0x6D);//m
+//			//==============================================================
+//			Display_Line(2);
+//			DisplayLCD(hours);
+//			WriteData(0x3A);//display ":"
+//			DisplayLCD(mins);
+//			WriteData(0x3A);//display ":"
+//			DisplayLCD(seconds&0x7f);
+//			WriteData(0x3B);//display ";"
+//			DisplayLCD(months);
+//			//WriteData(0x2D);//display "-"
+//			DisplayLCD(days);	
+//			WriteData(0x3B);//display ";"
+//			if(auto_mode)
+//			{
+//				WriteData(0x41);//display "A"
+//			}
+//			else if (!auto_mode)
+//			{
+//				WriteData(0x4D);//display "M"
+//			}			
+//			//count=0;
+//			//prox_data=Read_VCNL4035(PS1_Data_L);
+//			//Display_Prox(prox_data);// this is RAW data from the Prox Sensor
+//			// 	y = 12.051x2 - 546.97x + 7153.8;   	 	x in [1015:2880] 	=> 	distance: 	10-20mm
+//			// 	y = 2.4242x2 - 174.89x + 3545.5;			x in [473:941] 		=> 	distance:		20-30mm
+//			// 	y = 0.5038x2 - 54.417x + 1651.1; 		  x in [277:455] 		=> 	distance:		30-40mm
+//			//	y = 0.303x2 - 37.642x + 1302.4; 		  x in [177:269]	 	=> 	distance:		40-50mm
+//		
+//		
+//			//Delay_ms(1);
+//			//WriteData(Read_VCNL4035(PS3_Data_L));
+//			if (move && !auto_mode)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+//			{
+//				Step_move(PointFour_mm_steps, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
+//				if (direction==1)
+//				{
+//					current_position=current_position+0.4;
+//				}
+//				else
+//				{
+//					current_position=current_position-0.4;
+//				}
+//				prox_flag=0;
+//			}
+//			if (small_move && !auto_mode)
+//			{
+//				
+//				//auto_mode=0;
+//				Step_move(PointFour_mm_steps, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
+//				if (direction==1)
+//				{
+//					current_position=current_position+0.4;
+//				}
+//				else
+//				{
+//					current_position=current_position-0.4;
+//				}
+//				prox_flag=0;		
+//				small_move=0;				
+//			}
+//			
+//		if (P23 && prox_flag==0 && current_position<=0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
+//			{
+//				current_position=0;
+//				prox_flag=1;
+//				move=0;
+//				small_move=0;
+//				direction=1;
+//			}			
+//			LCD_return_home();
+//			
+//		}
+//		//hours2=hours1;
+//		//hours1=hours;
+//		//mins2=mins1;
+//		//mins1=mins;
+//		Read_time(&months,&days,&hours,&mins,&seconds);
 
 		//Read_time(&months,&days,&hours,&mins,&seconds);
 		//Read_time(&months,&days,&hours,&mins,&seconds);
-		if(auto_mode)
-		{
-			
-			//sunlight_ADC=ADC_GetResult(2);
-			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
-			{
-						if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
-						{
-								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
-								{
-									//calculate elevation to decide whether we will calibrate or not
-									elevation=elevation_calculation(months,days,hours,mins,seconds);
-									//10log10(photoR)=-0.4424*10log10(lux)+41.311
-									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
-									if(pwm_time>=(563.91*cos(elevation)+33.99)) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
-									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
+//		if(auto_mode)
+//		{
+//			
+//			//sunlight_ADC=ADC_GetResult(2);
+//			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
+//			{
+//						if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
+//						{
+//								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
+//								{
+//									//calculate elevation to decide whether we will calibrate or not
+//									elevation=elevation_calculation(months,days,hours,mins,seconds);
+//									//10log10(photoR)=-0.4424*10log10(lux)+41.311
+//									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
+//									if(pwm_time>=(563.91*cos(elevation)+33.99)) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+//									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
 
-									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
-									// GHI>=para
-									//GHI=pwm_time
-									{
-										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-										calib_bool[count]=1;
-										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
-									}
-									//else // Store the data even in low light condition
-									{
-											// store  120 bytes of "0" value when calibration does not work  in order to syncronize the pattern.
-											for(count=0;count<=323;count++)
-											{
-												AT25SF041_WriteEnable();
-												AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
-												Wait_ms_SPINOR(50);	
-												SPI_NOR_INTERNAL_FLASH_ADDR++;
-											}		
-											//use count variable to identify the position of calib_value[count]
-											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-											calib_bool[count]=0;
+//									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
+//									// GHI>=para
+//									//GHI=pwm_time
+//									{
+//										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+//										calib_bool[count]=1;
+//										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
+//									}
+//									//else // Store the data even in low light condition
+//									{
+//											// store  120 bytes of "0" value when calibration does not work  in order to syncronize the pattern.
+//											for(count=0;count<=323;count++)
+//											{
+//												AT25SF041_WriteEnable();
+//												AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
+//												Wait_ms_SPINOR(50);	
+//												SPI_NOR_INTERNAL_FLASH_ADDR++;
+//											}		
+//											//use count variable to identify the position of calib_value[count]
+//											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+//											calib_bool[count]=0;
 
-											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
-											theorical_JP_max_pos=current_position-calib_value[count];								
-											max_ADC_Val = ADC_GetResult(0);// read from channel 0
-											max_ADC_Val_JP = max_ADC_Val;										
-									}
+//											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
+//											theorical_JP_max_pos=current_position-calib_value[count];								
+//											max_ADC_Val = ADC_GetResult(0);// read from channel 0
+//											max_ADC_Val_JP = max_ADC_Val;										
+//									}
 
-									dat_to_store.month=months;
-									dat_to_store.date=days;
-									dat_to_store.hour=hours;
-									dat_to_store.min=mins;
-									
-									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
-									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
-									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
-									dat_to_store.light_ADC=pwm_time/4;//
-									
-									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
-									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
-									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;								
-									Wait_ms_SPINOR(50);
-									//TOTAL: 120bytes for calib + 11 Bytes for  dat_to_store= 131 BYTES
-									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
-					
+//									dat_to_store.month=months;
+//									dat_to_store.date=days;
+//									dat_to_store.hour=hours;
+//									dat_to_store.min=mins;
+//									
+//									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
+//									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
+//									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
+//									dat_to_store.light_ADC=pwm_time/4;//
+//									
+//									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
+//									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
+//									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;								
+//									Wait_ms_SPINOR(50);
+//									//TOTAL: 120bytes for calib + 11 Bytes for  dat_to_store= 131 BYTES
+//									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
+//					
 
-								}
-								
-								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
-								{
-									iUse_prevday_calib_value=1;
-									//count=0;
-								}
+//								}
+//								
+//								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
+//								{
+//									iUse_prevday_calib_value=1;
+//									//count=0;
+//								}
 
-											
-					}
-					if(iUse_prevday_calib_value==0)// FIRST day of calibration
-					{
-								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
-								{
-										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
-								}
-							
-					}
-					
-					// how to update for next day and use the calib value from the previous day???
-					else
-					{
-						
-							// calib every 30mins, from 7AM to 17PM
-								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)								
-								{
-										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+//											
+//					}
+//					if(iUse_prevday_calib_value==0)// FIRST day of calibration
+//					{
+//								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
+//								{
+//										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+//										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
+//								}
+//							
+//					}
+//					
+//					// how to update for next day and use the calib value from the previous day???
+//					else
+//					{
+//						
+//							// calib every 30mins, from 7AM to 17PM
+//								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)								
+//								{
+//										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 
-										calib_point1.x=calib_time[count];
-										calib_point1.y=calib_value[count];
-										calib_point2.x=calib_time[count+1];// this is from previous day
-										if(calib_bool[count]==1 && calib_bool[count+1]==1)
-										{
-											calib_point2.y=calib_value[count+1];// this is from previous day
-											Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
-										}
-										else // was not calib prev day at this time stamp=> use the latest calib value of the same day
-										{
-											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[FindClosestSamedayCalibTime(calib_bool,count)]);
-										}
-										// in the UPDATE function, we only update the motor position when the distance >0.5mm
+//										calib_point1.x=calib_time[count];
+//										calib_point1.y=calib_value[count];
+//										calib_point2.x=calib_time[count+1];// this is from previous day
+//										if(calib_bool[count]==1 && calib_bool[count+1]==1)
+//										{
+//											calib_point2.y=calib_value[count+1];// this is from previous day
+//											Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
+//										}
+//										else // was not calib prev day at this time stamp=> use the latest calib value of the same day
+//										{
+//											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[FindClosestSamedayCalibTime(calib_bool,count)]);
+//										}
+//										// in the UPDATE function, we only update the motor position when the distance >0.5mm
 
 
-								}
-							
-					}
-				}
+//								}
+//							
+//					}
+//				}
 
-		}	
+//		}	
 				
 		// Code for the PUMP, enable PUMP from 7AM tp 5PM
-		if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
-				P55=1;
-		else
-				P55=0;
+//		if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
+//				P55=1;
+//		else
+//				P55=0;
 		
 		// CLEAR SPI NOR by 99990 command from KEyPAd
-		if(SPI_NOR_ClearEnable==1)
-		{
-			LCD_clear();
-			Display_Line(1);
-			WriteData(0x43);//display "C"
-			WriteData(0x4C);//display "L"
-			WriteData(0x45);//display "E"	
-			WriteData(0x41);//display "A"	
-			WriteData(0x52);//display "R"	
-		//	WriteData(0x2E);//display "."	
-		//	WriteData(0x2E);//display "."	
-		//	WriteData(0x46);//display "F"	
-		//	WriteData(0x4C);//display "L"	
-		//	WriteData(0x41);//display "A"	
-		//	WriteData(0x53);//display "S"	
-		//	WriteData(0x48);//display "H"	
+//		if(SPI_NOR_ClearEnable==1)
+//		{
+//			LCD_clear();
+//			Display_Line(1);
+//			WriteData(0x43);//display "C"
+//			WriteData(0x4C);//display "L"
+//			WriteData(0x45);//display "E"	
+//			WriteData(0x41);//display "A"	
+//			WriteData(0x52);//display "R"	
+//		//	WriteData(0x2E);//display "."	
+//		//	WriteData(0x2E);//display "."	
+//		//	WriteData(0x46);//display "F"	
+//		//	WriteData(0x4C);//display "L"	
+//		//	WriteData(0x41);//display "A"	
+//		//	WriteData(0x53);//display "S"	
+//		//	WriteData(0x48);//display "H"	
 
-			//==================================
-			AT25SF041_WriteEnable();
-			//Wait_ms_SPINOR(50);
-			AT25SF041_ChipErase();
-			Wait_ms_SPINOR(5);
-			SPI_NOR_INTERNAL_FLASH_ADDR=0;
-			SPI_NOR_ClearEnable=0;
-			//===================================
-			LCD_clear();
-			//Command(0x08);
-			//Command(0x00);			
-			//WriteData(0x68);//display "h"
-			//WriteData(0x68);//display "h"
-			//WriteData(0x6D);//display "m"
-			//WriteData(0x6D);//display "m"
-			//WriteData(0x23);//display "#" SETTIME_KEY		
-			
-		}
+//			//==================================
+//			AT25SF041_WriteEnable();
+//			//Wait_ms_SPINOR(50);
+//			AT25SF041_ChipErase();
+//			Wait_ms_SPINOR(5);
+//			SPI_NOR_INTERNAL_FLASH_ADDR=0;
+//			SPI_NOR_ClearEnable=0;
+//			//===================================
+//			LCD_clear();
+//			//Command(0x08);
+//			//Command(0x00);			
+//			//WriteData(0x68);//display "h"
+//			//WriteData(0x68);//display "h"
+//			//WriteData(0x6D);//display "m"
+//			//WriteData(0x6D);//display "m"
+//			//WriteData(0x23);//display "#" SETTIME_KEY		
+//			
+//		}
 	}
 
 		
@@ -490,40 +496,18 @@ void main(void)
 
 
 
-/*void Uart() interrupt 4 using 1
+void Uart() interrupt 4 using 1
 {
 	if(RI) 
 	{
-		RX_Data_Uart_Cnt++;
 		RI=0;
-		if (RX_Data_Uart_Cnt<=2)
-		Rec_data_hour[RX_Data_Uart_Cnt-1]=SBUF;
-		else if (RX_Data_Uart_Cnt>=3)
-		{
-			//RI=0; //SW clear
-			//P0=Rec_data;
-			Rec_data_min[RX_Data_Uart_Cnt-3]=SBUF;
-			if (RX_Data_Uart_Cnt==4)
-			{
-				RX_Data_Uart_Cnt=0;
-				hour_count=ASCIItoBCD(Rec_data_hour);
-				min_count=ASCIItoBCD(Rec_data_min);
-				st_time=1;
-				//SendUART1(hour_count);
-				//SendUART1(min_count);
-				//SPI_WriteTime(hour_count,Hours);		// data , register address
-				//SPI_WriteTime(min_count,Minutes);
-			}
-		}
-
-		
 	}
 	if(TI)
 	{
 		TI=0;
 		busy=0;
 	}
-}*/
+}
 
 
 /*float calib_interpolate(float hours, float mins)
@@ -551,13 +535,13 @@ void main(void)
 }*/
 
 
-/*void SendUART1(unsigned char dat)
+void SendUART1(unsigned char dat)
 {
 	while(busy);
 	busy=1;
 	ACC=dat;
 	SBUF=ACC;
-}*/
+}
 
 
 
