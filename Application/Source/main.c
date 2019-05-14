@@ -501,6 +501,7 @@ void Uart() interrupt 4 using 1
 	if(RI) 
 	{
 		RI=0;
+		SendUART1(SBUF);
 	}
 	if(TI)
 	{
