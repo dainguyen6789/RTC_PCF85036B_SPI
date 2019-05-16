@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/09/2019 09:31:06 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/16/2019 09:41:48 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -25,7 +25,7 @@ line level    source
   15          //definition of location
   16          struct cLocation location;
   17          struct cSunCoordinates *sunCoord;
-  18          
+  18          unsigned char seconds,mins, hours,days,months;
   19          
   20          float elevation_calculation(unsigned char mnths,unsigned char dys,
   21                               unsigned char hurs,unsigned char mns,unsigned char sconds);
@@ -62,7 +62,7 @@ line level    source
   52   1        hi=bcd>>4;
   53   1        lo=bcd&0x0F;
   54   1        return hi*10+lo;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/09/2019 09:31:06 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/16/2019 09:41:48 PAGE 2   
 
   55   1      }
   56          // 
@@ -106,229 +106,235 @@ line level    source
   93   1            for(i=0;i<step;i++)
   94   1            {
   95   2                    vOneStepMove(dir);
-  96   2                    //Wait_ms(30);
-  97   2            }
-  98   1      
-  99   1      }
- 100          
- 101          void Move(float  distance, bit direction)
- 102          {
- 103   1          unsigned int step;
- 104   1          //step= (unsigned int)(distance*337.5/3.14159);//
- 105   1          step= (unsigned int)(distance*104);
- 106   1          Step_move(step,direction);
- 107   1      }
- 108          //=====================================================
- 109          //We need 4 points for cubic interpolation, p1[x],p1[y],..,p4[x],p4[y]
- 110          /* float  findDet3x3( 
- 111                      float  a11, float  a12, float  a13, 
- 112                      float  a21, float  a22, float  a23,
- 113                      float  a31, float  a32, float  a33 )
- 114          {
- 115              return( a11*a22*a33 + a12*a23*a31 + a13*a21*a32 -
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/09/2019 09:31:06 PAGE 3   
+  96   2                    Display_Line(2);
+  97   2                    DisplayLCD(hours);
+  98   2                    WriteData(0x3A);//display ":"
+  99   2                    DisplayLCD(mins);
+ 100   2                    WriteData(0x3A);//display ":"
+ 101   2                    DisplayLCD(seconds&0x7f);
+ 102   2                    //Wait_ms(30);
+ 103   2            }
+ 104   1      
+ 105   1      }
+ 106          
+ 107          void Move(float  distance, bit direction)
+ 108          {
+ 109   1          unsigned int step;
+ 110   1          //step= (unsigned int)(distance*337.5/3.14159);//
+ 111   1          step= (unsigned int)(distance*104);
+ 112   1          Step_move(step,direction);
+ 113   1      }
+ 114          //=====================================================
+ 115          //We need 4 points for cubic interpolation, p1[x],p1[y],..,p4[x],p4[y]
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/16/2019 09:41:48 PAGE 3   
 
- 116                      a13*a22*a31 - a12*a21*a33 - a11*a23*a32 );
- 117          }
- 118          float  findDet4x4 (float  a11, float  a12, float  a13, float  a14, 
- 119                      float  a21, float  a22, float  a23, float  a24,
- 120                      float  a31, float  a32, float  a33, float  a34,
- 121                      float  a41, float  a42, float  a43, float  a44 )
- 122          {
- 123            
- 124              //return a11*(float)findDet3x3(a22, a23, a24, a32, a33, a34, a42, a43, a44);
- 125              //return (float)findDet3x3(a21, a23, a24, a31, a33, a34, a41, a43, a44);
- 126              //return (float)findDet3x3(a21, a22, a24, a31, a32, a34, a41, a42, a44);
- 127              //return (float)findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43);
- 128            //  return a21;
- 129              return( a11*findDet3x3(a22, a23, a24, a32, a33, a34, a42, a43, a44) -
- 130                      a12*findDet3x3(a21, a23, a24, a31, a33, a34, a41, a43, a44) +
- 131                      a13*findDet3x3(a21, a22, a24, a31, a32, a34, a41, a42, a44) -
- 132                      a14*findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43));
- 133          }*/
- 134              
- 135          //===================================================== 
- 136          
- 137           
- 138          //===================================================== 
- 139          float  linear_interpolate(struct point p1,struct point p2, float  x)
- 140          {
- 141   1        float  fx;
- 142   1        
- 143   1        fx=-(p1.x-x)/(p1.x-p2.x)*(p1.y-p2.y)+p1.y;
- 144   1        
- 145   1        return fx;
- 146   1      }
- 147          //============================================================================
- 148          
- 149          float TheoricalJP_Position(float azimuth,float elevation)
- 150          {
- 151   1          double  pos_interpolate_azimuth[num_of_elevation_stamp];
- 152   1          float  JP_pos=0;
- 153   1          int i,yy;
- 154   1          struct point p1,p2;
- 155   1          for (i=0;i<num_of_azimuth_stamp;i++)
- 156   1          {
- 157   2            if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
- 158   2            {
- 159   3              for (yy=0;yy<num_of_elevation_stamp;yy++)
- 160   3              {
- 161   4                p1.x=date_azimuth_mapping[i];
- 162   4                p2.x=date_azimuth_mapping[i+1];
- 163   4                
- 164   4                p1.y=RX_pos[yy][i];
- 165   4                p2.y=RX_pos[yy][i+1];
- 166   4                
- 167   4                pos_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
- 168   4              }
- 169   3              //break;
- 170   3            }
- 171   2            
- 172   2            else if ((azimuth>=low_date_azimuth_mapping[i+1]) && (azimuth<=low_date_azimuth_mapping[i]))
- 173   2            {
- 174   3              for (yy=0;yy<num_of_elevation_stamp;yy++)
- 175   3              {
- 176   4                p1.x=low_date_azimuth_mapping[i];
- 177   4                p2.x=low_date_azimuth_mapping[i+1];
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/09/2019 09:31:06 PAGE 4   
+ 116          /* float  findDet3x3( 
+ 117                      float  a11, float  a12, float  a13, 
+ 118                      float  a21, float  a22, float  a23,
+ 119                      float  a31, float  a32, float  a33 )
+ 120          {
+ 121              return( a11*a22*a33 + a12*a23*a31 + a13*a21*a32 -
+ 122                      a13*a22*a31 - a12*a21*a33 - a11*a23*a32 );
+ 123          }
+ 124          float  findDet4x4 (float  a11, float  a12, float  a13, float  a14, 
+ 125                      float  a21, float  a22, float  a23, float  a24,
+ 126                      float  a31, float  a32, float  a33, float  a34,
+ 127                      float  a41, float  a42, float  a43, float  a44 )
+ 128          {
+ 129            
+ 130              //return a11*(float)findDet3x3(a22, a23, a24, a32, a33, a34, a42, a43, a44);
+ 131              //return (float)findDet3x3(a21, a23, a24, a31, a33, a34, a41, a43, a44);
+ 132              //return (float)findDet3x3(a21, a22, a24, a31, a32, a34, a41, a42, a44);
+ 133              //return (float)findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43);
+ 134            //  return a21;
+ 135              return( a11*findDet3x3(a22, a23, a24, a32, a33, a34, a42, a43, a44) -
+ 136                      a12*findDet3x3(a21, a23, a24, a31, a33, a34, a41, a43, a44) +
+ 137                      a13*findDet3x3(a21, a22, a24, a31, a32, a34, a41, a42, a44) -
+ 138                      a14*findDet3x3(a21, a22, a23, a31, a32, a33, a41, a42, a43));
+ 139          }*/
+ 140              
+ 141          //===================================================== 
+ 142          
+ 143           
+ 144          //===================================================== 
+ 145          float  linear_interpolate(struct point p1,struct point p2, float  x)
+ 146          {
+ 147   1        float  fx;
+ 148   1        
+ 149   1        fx=-(p1.x-x)/(p1.x-p2.x)*(p1.y-p2.y)+p1.y;
+ 150   1        
+ 151   1        return fx;
+ 152   1      }
+ 153          //============================================================================
+ 154          
+ 155          float TheoricalJP_Position(float azimuth,float elevation)
+ 156          {
+ 157   1          double  pos_interpolate_azimuth[num_of_elevation_stamp];
+ 158   1          float  JP_pos=0;
+ 159   1          int i,yy;
+ 160   1          struct point p1,p2;
+ 161   1          for (i=0;i<num_of_azimuth_stamp;i++)
+ 162   1          {
+ 163   2            if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
+ 164   2            {
+ 165   3              for (yy=0;yy<num_of_elevation_stamp;yy++)
+ 166   3              {
+ 167   4                p1.x=date_azimuth_mapping[i];
+ 168   4                p2.x=date_azimuth_mapping[i+1];
+ 169   4                
+ 170   4                p1.y=RX_pos[yy][i];
+ 171   4                p2.y=RX_pos[yy][i+1];
+ 172   4                
+ 173   4                pos_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
+ 174   4              }
+ 175   3              //break;
+ 176   3            }
+ 177   2            
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/16/2019 09:41:48 PAGE 4   
 
- 178   4                
- 179   4                p1.y=RX_pos[yy][i];
- 180   4                p2.y=RX_pos[yy][i+1];
- 181   4                
- 182   4                pos_interpolate_azimuth[yy]=linear_interpolate(p2,p1,azimuth);
- 183   4              }
- 184   3              //break;
- 185   3            }
- 186   2          }
- 187   1      
- 188   1          // interpolate for elevation
- 189   1          for(i=0;i<num_of_elevation_stamp;i++)
- 190   1          {
- 191   2            if((elevation>=elevation_stamp[i])&&(elevation<=elevation_stamp[i+1]))
- 192   2            {
- 193   3              p1.x=elevation_stamp[i];
- 194   3              p2.x=elevation_stamp[i+1];
- 195   3              
- 196   3              p1.y=pos_interpolate_azimuth[i];
- 197   3              p2.y=pos_interpolate_azimuth[i+1];
- 198   3              
- 199   3              JP_pos=linear_interpolate(p1,p2,elevation);
- 200   3              //break;
+ 178   2            else if ((azimuth>=low_date_azimuth_mapping[i+1]) && (azimuth<=low_date_azimuth_mapping[i]))
+ 179   2            {
+ 180   3              for (yy=0;yy<num_of_elevation_stamp;yy++)
+ 181   3              {
+ 182   4                p1.x=low_date_azimuth_mapping[i];
+ 183   4                p2.x=low_date_azimuth_mapping[i+1];
+ 184   4                
+ 185   4                p1.y=RX_pos[yy][i];
+ 186   4                p2.y=RX_pos[yy][i+1];
+ 187   4                
+ 188   4                pos_interpolate_azimuth[yy]=linear_interpolate(p2,p1,azimuth);
+ 189   4              }
+ 190   3              //break;
+ 191   3            }
+ 192   2          }
+ 193   1      
+ 194   1          // interpolate for elevation
+ 195   1          for(i=0;i<num_of_elevation_stamp;i++)
+ 196   1          {
+ 197   2            if((elevation>=elevation_stamp[i])&&(elevation<=elevation_stamp[i+1]))
+ 198   2            {
+ 199   3              p1.x=elevation_stamp[i];
+ 200   3              p2.x=elevation_stamp[i+1];
  201   3              
- 202   3            }
- 203   2            
- 204   2          }
- 205   1          return JP_pos;
- 206   1          
- 207   1        }
- 208            //============================================================================
- 209          
- 210          void Update_position(unsigned char mnths,unsigned char dys,
- 211                               unsigned char hurs,unsigned char mns,unsigned char sconds,
- 212                               float  *currnt_pos, float offset_calib)
- 213          {
- 214   1        unsigned int date,i=0,yy=0;
- 215   1        //char num_of_elevation_stamp=15;
- 216   1        float  desired_distance=0,distance=0,JP_pos=0,elevation;
- 217   1        double azimuth;//,time_offset,UTC_time=-5;
- 218   1        //hurs=hurs-1;// change to sun time
- 219   1        //dys=dys+4;
- 220   1        //location.dLongitude=-73.59;
- 221   1        //location.dLatitude=45.51;
- 222   1        
- 223   1        time.iYear=2019;
- 224   1        time.iMonth=BCDtoDec1(mnths);
- 225   1        time.iDay=BCDtoDec1(dys);
- 226   1        time.dHours=BCDtoDec1(hurs)+5;
- 227   1        time.dMinutes=BCDtoDec1(mns);
- 228   1        time.dSeconds=BCDtoDec1(sconds&0x7f);
- 229   1      
- 230   1        
- 231   1        desired_distance=*currnt_pos;
- 232   1        
- 233   1        //date=Day_Of_Year(mnths,dys)+4;
- 234   1        //date=237;
- 235   1        declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
-*** WARNING C182 IN LINE 235 OF BipolarMotor.c: pointer to different objects
- 236   1        time_offset=(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53
-             -*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180))/60;
- 237   1        current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//-1;//current time
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/09/2019 09:31:06 PAGE 5   
+ 202   3              p1.y=pos_interpolate_azimuth[i];
+ 203   3              p2.y=pos_interpolate_azimuth[i+1];
+ 204   3              
+ 205   3              JP_pos=linear_interpolate(p1,p2,elevation);
+ 206   3              //break;
+ 207   3              
+ 208   3            }
+ 209   2            
+ 210   2          }
+ 211   1          return JP_pos;
+ 212   1          
+ 213   1        }
+ 214            //============================================================================
+ 215          
+ 216          void Update_position(unsigned char mnths,unsigned char dys,
+ 217                               unsigned char hurs,unsigned char mns,unsigned char sconds,
+ 218                               float  *currnt_pos, float offset_calib)
+ 219          {
+ 220   1        unsigned int date,i=0,yy=0;
+ 221   1        //char num_of_elevation_stamp=15;
+ 222   1        float  desired_distance=0,distance=0,JP_pos=0,elevation;
+ 223   1        double azimuth;//,time_offset,UTC_time=-5;
+ 224   1        //hurs=hurs-1;// change to sun time
+ 225   1        //dys=dys+4;
+ 226   1        //location.dLongitude=-73.59;
+ 227   1        //location.dLatitude=45.51;
+ 228   1        
+ 229   1        time.iYear=2019;
+ 230   1        time.iMonth=BCDtoDec1(mnths);
+ 231   1        time.iDay=BCDtoDec1(dys);
+ 232   1        time.dHours=BCDtoDec1(hurs)+5;
+ 233   1        time.dMinutes=BCDtoDec1(mns);
+ 234   1        time.dSeconds=BCDtoDec1(sconds&0x7f);
+ 235   1      
+ 236   1        
+ 237   1        desired_distance=*currnt_pos;
+ 238   1        
+ 239   1        //date=Day_Of_Year(mnths,dys)+4;
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/16/2019 09:41:48 PAGE 5   
 
+ 240   1        //date=237;
+ 241   1        declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
+*** WARNING C182 IN LINE 241 OF BipolarMotor.c: pointer to different objects
+ 242   1        time_offset=(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53
+             -*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180))/60;
+ 243   1        current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//-1;//current time
              -=sun time= clock time -1
- 238   1        //=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/
+ 244   1        //=B10-1/60*(4*($B$7-15*$B$4)+9.87*SIN(2*(360*($B$8-81)/365)*3.1416/180)    -    7.53*COS((360*($B$8-81)/
              -365)*3.1416/180)    -   1.5*SIN((360*($B$8-81)/365)*3.1416/180))
- 239   1        
- 240   1        elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
- 241   1                  cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180) 
+ 245   1        
+ 246   1        elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
+ 247   1                  cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180) 
              -          );
- 242   1        
- 243   1        azimuth=180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin
+ 248   1        
+ 249   1        azimuth=180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin
              -((90-elevation)*pi/180)          );// JP calculation
- 244   1        //azimuth=(180/pi)*acos(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((
+ 250   1        //azimuth=(180/pi)*acos(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((
              -90-elevation)*pi/180)          );// JP calculation
- 245   1      
- 246   1        
- 247   1        //if (current_local_sun_time>12)
- 248   1        //  azimuth=360-azimuth;
- 249   1        
- 250   1        if(BCDtoDec1(sconds&0x7f)%2==0 && elevation >=2.2 && elevation <=68)
- 251   1        {
- 252   2          
- 253   2          JP_pos=TheoricalJP_Position(azimuth,elevation);
- 254   2          desired_distance=JP_pos+150+offset_calib;
- 255   2          //desired_distance=azimuth;
- 256   2          distance=desired_distance-*currnt_pos;
- 257   2          if(abs(distance)>=0.5&& desired_distance>=-15 &&desired_distance<=210 )// move if the change is more tha
+ 251   1      
+ 252   1        
+ 253   1        //if (current_local_sun_time>12)
+ 254   1        //  azimuth=360-azimuth;
+ 255   1        
+ 256   1        if(BCDtoDec1(sconds&0x7f)%2==0 && elevation >=2.2 && elevation <=68)
+ 257   1        {
+ 258   2          
+ 259   2          JP_pos=TheoricalJP_Position(azimuth,elevation);
+ 260   2          desired_distance=JP_pos+150+offset_calib;
+ 261   2          //desired_distance=azimuth;
+ 262   2          distance=desired_distance-*currnt_pos;
+ 263   2          if(abs(distance)>=0.5&& desired_distance>=-15 &&desired_distance<=210 )// move if the change is more tha
              -n 0.5mm
- 258   2          {
- 259   3            if(distance>0)
- 260   3              Move(distance,1);
- 261   3            else if (distance<0)
- 262   3              Move(-distance,0);
- 263   3            //previous_move_time=BCDtoDec1(sconds&0x7f);
- 264   3            *currnt_pos=desired_distance;
- 265   3          }
- 266   2        }
- 267   1        return;
- 268   1      
- 269   1      }
-*** WARNING C280 IN LINE 214 OF BipolarMotor.c: 'date': unreferenced local variable
- 270          // this value is in degree
- 271          float elevation_calculation(unsigned char mnths,unsigned char dys,
- 272                               unsigned char hurs,unsigned char mns,unsigned char sconds)
- 273          {
- 274   1        time.iYear=2019;
- 275   1        time.iMonth=BCDtoDec1(mnths);
- 276   1        time.iDay=BCDtoDec1(dys);
- 277   1        time.dHours=BCDtoDec1(hurs)+5;
- 278   1        time.dMinutes=BCDtoDec1(mns);
- 279   1        time.dSeconds=BCDtoDec1(sconds&0x7f);
- 280   1        //location.dLongitude=-73.59;
- 281   1        //location.dLatitude=45.51; 
- 282   1        
- 283   1        declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
-*** WARNING C182 IN LINE 283 OF BipolarMotor.c: pointer to different objects
- 284   1        time_offset=(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53
+ 264   2          {
+ 265   3            if(distance>0)
+ 266   3              Move(distance,1);
+ 267   3            else if (distance<0)
+ 268   3              Move(-distance,0);
+ 269   3            //previous_move_time=BCDtoDec1(sconds&0x7f);
+ 270   3            *currnt_pos=desired_distance;
+ 271   3          }
+ 272   2        }
+ 273   1        return;
+ 274   1      
+ 275   1      }
+*** WARNING C280 IN LINE 220 OF BipolarMotor.c: 'date': unreferenced local variable
+ 276          // this value is in degree
+ 277          float elevation_calculation(unsigned char mnths,unsigned char dys,
+ 278                               unsigned char hurs,unsigned char mns,unsigned char sconds)
+ 279          {
+ 280   1        time.iYear=2019;
+ 281   1        time.iMonth=BCDtoDec1(mnths);
+ 282   1        time.iDay=BCDtoDec1(dys);
+ 283   1        time.dHours=BCDtoDec1(hurs)+5;
+ 284   1        time.dMinutes=BCDtoDec1(mns);
+ 285   1        time.dSeconds=BCDtoDec1(sconds&0x7f);
+ 286   1        //location.dLongitude=-73.59;
+ 287   1        //location.dLatitude=45.51; 
+ 288   1        
+ 289   1        declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
+*** WARNING C182 IN LINE 289 OF BipolarMotor.c: pointer to different objects
+ 290   1        time_offset=(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53
              -*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180))/60;
- 285   1        current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//-1;//current time
-             -=sun time= clock time -1
- 286   1        
- 287   1        return asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
- 288   1                  cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180) 
-             -          );
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/09/2019 09:31:06 PAGE 6   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/16/2019 09:41:48 PAGE 6   
 
- 289   1      }
- 290          
- 291          
+ 291   1        current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//-1;//current time
+             -=sun time= clock time -1
+ 292   1        
+ 293   1        return asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
+ 294   1                  cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180) 
+             -          );
+ 295   1      }
+ 296          
+ 297          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   4188    ----
+   CODE SIZE        =   4231    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =    956     163
+   XDATA SIZE       =    961     163
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

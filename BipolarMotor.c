@@ -15,7 +15,7 @@ struct cTime time;
 //definition of location
 struct cLocation location;
 struct cSunCoordinates *sunCoord;
-
+unsigned char seconds,mins, hours,days,months;
 
 float elevation_calculation(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds);
@@ -93,6 +93,12 @@ void Step_move(unsigned int step, bit dir)
 			for(i=0;i<step;i++)
 			{
 							vOneStepMove(dir);
+							Display_Line(2);
+							DisplayLCD(hours);
+							WriteData(0x3A);//display ":"
+							DisplayLCD(mins);
+							WriteData(0x3A);//display ":"
+							DisplayLCD(seconds&0x7f);
 							//Wait_ms(30);
 			}
 
