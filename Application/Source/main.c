@@ -140,18 +140,19 @@ void main(void)
 	Delay_ms(500);
 
 	address=0;
-	while(address<20000)
+	while(1)
 	{
-		Wait_ms_SPINOR(5);
-		AT25SF041_CS_Set();
-		Wait_ms_SPINOR(5);
-		//AT25SF041_WriteEnable();
+		SendString("AT");
+//		Wait_ms_SPINOR(5);
+//		AT25SF041_CS_Set();
+//		Wait_ms_SPINOR(5);
+//		//AT25SF041_WriteEnable();
 
-		SPI_NOR_DATA=AT25SF041_Read(Read_Array,address);
-		//Wait_ms_SPINOR(500);
-		//WriteData(SPI_NOR_DATA);
-		SendSPIDataToUART(SPI_NOR_DATA,address);
-		address++;
+//		SPI_NOR_DATA=AT25SF041_Read(Read_Array,address);
+//		//Wait_ms_SPINOR(500);
+//		//WriteData(SPI_NOR_DATA);
+//		SendSPIDataToUART(SPI_NOR_DATA,address);
+//		address++;
 
 	}
 	//while(1);
@@ -169,6 +170,10 @@ void Uart() interrupt 4 using 1
 {
 	if(RI) 
 	{
+		RI=0;
+
+		SendUART1(SBUF);
+		//SendUART1(min_count);
 /*		RX_Data_Uart_Cnt++;
 		RI=0;
 		if (RX_Data_Uart_Cnt<=2)

@@ -85,6 +85,7 @@ void Move(float  distance, bit direction)
 		//step= (unsigned int)(distance*337.5/3.14159);//
 		step= (unsigned int)(distance*120);
 		Step_move(step,direction);
+	
 }
 //=====================================================
 //We need 4 points for cubic interpolation, p1[x],p1[y],..,p4[x],p4[y]
