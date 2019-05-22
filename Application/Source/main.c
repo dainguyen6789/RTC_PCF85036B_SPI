@@ -31,7 +31,7 @@
 //#define PointOne_mm_steps 10
 
 //#define PointTwo_mm_steps 21 //
-#define PointFour_mm_steps 42  //
+#define PointFour_mm_steps 27  //
 #define DATA_WITHOUT_RUNNING_CALIBRATION 0
 
 //void Delay_ms(unsigned int ms);
@@ -237,7 +237,7 @@ void main(void)
 			WriteData(0x53);//display "S"	
 			WriteData(0x3A);//display ":"	
 			//LCD_clear();
-			Display_Pos(pwm_time);
+			Display_Pos(current_position);
 			WriteData(0x6D);//m
 			WriteData(0x6D);//m
 			//==============================================================
@@ -334,7 +334,7 @@ void main(void)
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
-									if(pwm_time>=(563.91*cos(elevation)+33.99)) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									//if(pwm_time>=(563.91*cos(elevation)+33.99)) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
 
 									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
