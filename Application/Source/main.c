@@ -237,7 +237,9 @@ void main(void)
 			WriteData(0x53);//display "S"	
 			WriteData(0x3A);//display ":"	
 			//LCD_clear();
-			Display_Pos(pwm_time);
+			Display_Pos(current_position);
+			
+			//Display_Pos(pwm_time);
 			WriteData(0x6D);//m
 			WriteData(0x6D);//m
 			//==============================================================
@@ -337,6 +339,8 @@ void main(void)
 									//============IF SUN LIGHT IS GOOD
 									//if(pwm_time>=(563.91*cos(elevation)+33.99)) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 									//=======================================================
+									if(pwm_time>=5) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+
 									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
 									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
 									//GHI>=para
@@ -345,33 +349,37 @@ void main(void)
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										calib_bool[count]=1;
 										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
-										//if(pwm_time_max<1.2*pwm_time_min)
+										// if light is not stable
+										if(pwm_time_max>1.2*pwm_time_min)
 										{
-											//	calib_bool[count]=0;// bool cariable to identify  that we did not calib at this time stamp
+											// go back to JP pos if the sun light is unstable
+											//Update_position(months,days,hours,mins,seconds,&current_position,0);
+											calib_value[count]=0;
+											calib_bool[count]=0;
 
-											//	calib_value[count]=0; // offset calibration is Zero if sun light is unstable.
+
 										}
 									}
-//									//else // Store the data even in low light condition
-//									{
-//											// store  120 bytes of "0" value when calibration does not work  in order to synchronize the pattern.
-//											for(count=0;count<=323;count++)
-//											{
-//												AT25SF041_WriteEnable();
-//												AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
-//												Wait_ms_SPINOR(50);	
-//												SPI_NOR_INTERNAL_FLASH_ADDR++;
-//											}		
-//											//use count variable to identify the position of calib_value[count]
-//											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-//											calib_bool[count]=0;
+									else // Store the data even in low light condition
+									{
+											// store  120 bytes of "0" value when calibration does not work  in order to synchronize the pattern.
+											for(count=0;count<=323;count++)
+											{
+												AT25SF041_WriteEnable();
+												AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
+												Wait_ms_SPINOR(50);	
+												SPI_NOR_INTERNAL_FLASH_ADDR++;
+											}		
+											//use count variable to identify the position of calib_value[count]
+											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+											calib_bool[count]=0;
 
-//											
-//											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
-//											theorical_JP_max_pos=current_position-calib_value[count];								
-//											max_ADC_Val = ADC_GetResult(0);// read from channel 0
-//											max_ADC_Val_JP = max_ADC_Val;										
-//									}
+											
+											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
+											theorical_JP_max_pos=current_position-calib_value[count];								
+											max_ADC_Val = ADC_GetResult(0);// read from channel 0
+											max_ADC_Val_JP = max_ADC_Val;										
+									}
 
 									dat_to_store.month=months;
 									dat_to_store.date=days;
@@ -401,7 +409,7 @@ void main(void)
 
 											
 					}
-					if(iUse_prevday_calib_value==0)// FIRST day of calibration
+					if(iUse_prevday_calib_value==0)// FIRST day of calibration, update position not at the calibration time stamp
 					{
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{

@@ -45,6 +45,8 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 		int i,j;
 		//float offset_error=0.8;
 		// move/scan +`
+		pwm_time_min=0;
+		pwm_time_max=0;
 		for(i=0;i<81;i++)// 81 values
 		{
 			voltage_at_scanned_pos[i]=0;
