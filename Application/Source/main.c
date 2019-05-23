@@ -344,7 +344,7 @@ void main(void)
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										calib_bool[count]=1;
 										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
-										if(pwm_time_max<1.2*pwm_time_min)
+										//if(pwm_time_max<1.2*pwm_time_min)
 										{
 											//	calib_bool[count]=0;// bool cariable to identify  that we did not calib at this time stamp
 
