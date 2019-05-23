@@ -127,7 +127,7 @@ void exint0() interrupt 0
 		
 			pwm_time=(TH0);//micro second 10^6 divide FOSC
 			pwm_time=(pwm_time*pow(2,8)+TL0-T1MS)/27;
-			pwm_time=pwm_time+timer0_count*1000;//usesond unit
+			pwm_time=pwm_time+timer0_count*1000;//microsesond unit
 			timer0_count=0;
 			//TL0=T1MS;
 			//TH0=T1MS>>8;
@@ -237,7 +237,7 @@ void main(void)
 			WriteData(0x53);//display "S"	
 			WriteData(0x3A);//display ":"	
 			//LCD_clear();
-			Display_Pos(current_position);
+			Display_Pos(pwm_time);
 			WriteData(0x6D);//m
 			WriteData(0x6D);//m
 			//==============================================================
@@ -334,9 +334,10 @@ void main(void)
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
+									//============IF SUN LIGHT IS GOOD
 									//if(pwm_time>=(563.91*cos(elevation)+33.99)) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									//=======================================================
 									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
-
 									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
 									//GHI>=para
 									//GHI=pwm_time
@@ -351,26 +352,26 @@ void main(void)
 											//	calib_value[count]=0; // offset calibration is Zero if sun light is unstable.
 										}
 									}
-									//else // Store the data even in low light condition
-									{
-											// store  120 bytes of "0" value when calibration does not work  in order to synchronize the pattern.
-											for(count=0;count<=323;count++)
-											{
-												AT25SF041_WriteEnable();
-												AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
-												Wait_ms_SPINOR(50);	
-												SPI_NOR_INTERNAL_FLASH_ADDR++;
-											}		
-											//use count variable to identify the position of calib_value[count]
-											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-											calib_bool[count]=0;
+//									//else // Store the data even in low light condition
+//									{
+//											// store  120 bytes of "0" value when calibration does not work  in order to synchronize the pattern.
+//											for(count=0;count<=323;count++)
+//											{
+//												AT25SF041_WriteEnable();
+//												AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
+//												Wait_ms_SPINOR(50);	
+//												SPI_NOR_INTERNAL_FLASH_ADDR++;
+//											}		
+//											//use count variable to identify the position of calib_value[count]
+//											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+//											calib_bool[count]=0;
 
-											
-											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
-											theorical_JP_max_pos=current_position-calib_value[count];								
-											max_ADC_Val = ADC_GetResult(0);// read from channel 0
-											max_ADC_Val_JP = max_ADC_Val;										
-									}
+//											
+//											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
+//											theorical_JP_max_pos=current_position-calib_value[count];								
+//											max_ADC_Val = ADC_GetResult(0);// read from channel 0
+//											max_ADC_Val_JP = max_ADC_Val;										
+//									}
 
 									dat_to_store.month=months;
 									dat_to_store.date=days;
