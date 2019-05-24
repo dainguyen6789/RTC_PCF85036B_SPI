@@ -197,10 +197,10 @@ void main(void)
 	ET1=1;
 	//========================================
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
-	//SPI_WriteTime(0x12,Hours);		// data , register address
-	//Delay_ms(500);
-	//SPI_WriteTime(0x00,Minutes);
-	//Delay_ms(500);
+	SPI_WriteTime(0x12,Hours);		// data , register address
+	Delay_ms(100);
+	SPI_WriteTime(0x00,Minutes);
+	Delay_ms(100);
 	//==============================================================
 	// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
 	//==============================================================
@@ -336,8 +336,8 @@ void main(void)
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
-									//============IF SUN LIGHT IS GOOD
-									if(pwm_time>=(563.91*cos(elevation)+33.99)) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									//============IF SUN LIGHT IS GOOD=======================
+									if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 									//=======================================================
 									//if(pwm_time>=5) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 
@@ -353,7 +353,7 @@ void main(void)
 										if(pwm_time_max>1.2*pwm_time_min)
 										{
 											// go back to JP pos if the sun light is unstable
-											//Update_position(months,days,hours,mins,seconds,&current_position,0);
+											Update_position(months,days,hours,mins,seconds,&current_position,0);
 											calib_value[count]=0;
 											calib_bool[count]=0;
 
