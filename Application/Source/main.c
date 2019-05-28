@@ -37,7 +37,7 @@
 //void Delay_ms(unsigned int ms);
 //void SendString(char *s);
 //void SendUART1(unsigned char dat);
-//void initUART1(void);
+void initUART1(void);
 //unsigned char BCDtoDec(unsigned char BCD);
 unsigned char ten(unsigned char BCD);
 unsigned char unit(unsigned char BCD);
@@ -68,6 +68,9 @@ float calib_interpolate(float hours, float mins);
 float  linear_interpolate(struct point p1,struct point p2, float  x);
 float elevation_calculation(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds);
+void uart1_InitTCPConn();
+
+void uart1_SendToTCPServer(char *str);
 										 
 bit busy;
 //unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -217,12 +220,13 @@ void main(void)
 		calib_value[calib_count]=0;
 		calib_time[calib_count]=7+(float)calib_count/2;
 	}
-	
+	// Connect to the TCP Server (IP,Port)
+	//uart1_InitTCPConn();
 
 	while(1)                                      
 	{
 		Key_Process();
-
+		uart1_SendToTCPServer("123");
 		//count++;
 		//if (count==20)
 		{
@@ -506,32 +510,12 @@ void main(void)
 
 
 
-/*void Uart() interrupt 4 using 1
+void Uart() interrupt 4 using 1
 {
 	if(RI) 
 	{
-		RX_Data_Uart_Cnt++;
-		RI=0;
-		if (RX_Data_Uart_Cnt<=2)
-		Rec_data_hour[RX_Data_Uart_Cnt-1]=SBUF;
-		else if (RX_Data_Uart_Cnt>=3)
-		{
-			//RI=0; //SW clear
-			//P0=Rec_data;
-			Rec_data_min[RX_Data_Uart_Cnt-3]=SBUF;
-			if (RX_Data_Uart_Cnt==4)
-			{
-				RX_Data_Uart_Cnt=0;
-				hour_count=ASCIItoBCD(Rec_data_hour);
-				min_count=ASCIItoBCD(Rec_data_min);
-				st_time=1;
-				//SendUART1(hour_count);
-				//SendUART1(min_count);
-				//SPI_WriteTime(hour_count,Hours);		// data , register address
-				//SPI_WriteTime(min_count,Minutes);
-			}
-		}
 
+		RI=0;
 		
 	}
 	if(TI)
@@ -539,7 +523,7 @@ void main(void)
 		TI=0;
 		busy=0;
 	}
-}*/
+}
 
 
 /*float calib_interpolate(float hours, float mins)

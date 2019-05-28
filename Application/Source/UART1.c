@@ -2,6 +2,7 @@
 #include "PCF85063BTL.h"
 #include <stdlib.h>
 //#include "UART1.h"
+#include <string.h>
 #define TBAUD (65536-FOSC/4/BAUD)
 #define FOSC 18432000L
 #define BAUD 115200
@@ -14,7 +15,9 @@ void SPI_WriteTime(unsigned char val,unsigned char addr);
 unsigned char ASCIItoBCD(unsigned char ascii[2]); // time format hh:mm:ss
 void SendUART1(unsigned char dat);
 
+void uart1_InitTCPConn();
 
+void uart1_SendToTCPServer(char *str);
 
 
 
@@ -71,6 +74,22 @@ unsigned char ASCIItoBCD(unsigned char ascii[2]) // time format hh:mm:ss
 	unit=dec_val%10;
 	return ten<<4|unit;
 	
+}
+
+void uart1_InitTCPConn()
+{
+	//SendString("AT\r\n");
+	//while(RI==0);
+	//RI=0;
+	SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");
+	
+}
+
+void uart1_SendToTCPServer(char *str)
+{
+	SendString("AT+CIPSEND=3\r\n");
+	SendString(str);
+	SendString("\r\n");
 }
 
 
