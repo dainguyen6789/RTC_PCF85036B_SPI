@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   UART1                                                             05/28/2019 15:04:08 PAGE 1   
+C51 COMPILER V9.52.0.0   UART1                                                             05/28/2019 15:42:13 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE UART1
@@ -40,95 +40,76 @@ line level    source
   30   1        ES=1;           // enable uart1 interrupt
   31   1        EA=1;           // each interrupt source will be enable or disable by setting its interrupt bit
   32   1        //PS=0;           // Serial Port 1 interrupt priority control bit, DS page 561
-  33   1      }
-  34          
-  35          void SendUART1(unsigned char dat)
-  36          {
-  37   1        while(busy);
-  38   1        busy=1;
-  39   1        ACC=dat;
-  40   1        SBUF=ACC;
-  41   1      }
-  42          
-  43          
-  44           void SendString(char *s)
-  45          {
-  46   1        while(*s)
-  47   1        {
-  48   2          SendUART1(*s++);
-  49   2        }
+  33   1        TR2=1;
+*** ERROR C202 IN LINE 33 OF Application\Source\UART1.c: 'TR2': undefined identifier
+  34   1      }
+  35          
+  36          
+  37          
+  38          
+  39           void SendString(char *s)
+  40          {
+  41   1        while(*s)
+  42   1        {
+  43   2          SendUART1(*s++);
+  44   2        }
+  45   1      }
+  46          
+  47          unsigned char ten(unsigned char BCD)
+  48          {
+  49   1        return (BCD)>>4;
   50   1      }
-  51          
-  52          unsigned char ten(unsigned char BCD)
-  53          {
-  54   1        return (BCD)>>4;
-C51 COMPILER V9.52.0.0   UART1                                                             05/28/2019 15:04:08 PAGE 2   
+  51          unsigned char unit(unsigned char BCD)
+  52          {
+  53   1      
+C51 COMPILER V9.52.0.0   UART1                                                             05/28/2019 15:42:13 PAGE 2   
 
-  55   1      }
-  56          unsigned char unit(unsigned char BCD)
-  57          {
-  58   1      
-  59   1        //unit=BCD&0x0f;
-  60   1        //dec=ten*10+unit;
-  61   1        return BCD&0x0f;
+  54   1        //unit=BCD&0x0f;
+  55   1        //dec=ten*10+unit;
+  56   1        return BCD&0x0f;
+  57   1      }
+  58          unsigned char DectoBCD(unsigned char dec)
+  59          {
+  60   1        
+  61   1        return dec;
   62   1      }
-  63          unsigned char DectoBCD(unsigned char dec)
-  64          {
-  65   1        
-  66   1        return dec;
-  67   1      }
-  68          //if dat=1, we need to use ASCII value to display "1" on UART1
-  69          unsigned char ASCII_Letter(unsigned char dat)
-  70          {
-  71   1        
-  72   1        return dat+48;
-  73   1      }
-  74          
-  75          unsigned char ASCIItoBCD(unsigned char ascii[2]) // time format hh:mm:ss
-  76          {
-  77   1        unsigned char dec_val,ten, unit;
-  78   1        dec_val=atoi(ascii);
-  79   1        ten=dec_val/10;
-  80   1        unit=dec_val%10;
-  81   1        return ten<<4|unit;
-  82   1        
-  83   1      }
-  84          
-  85          void uart1_InitTCPConn()
-  86          {
-  87   1        //SendString("AT\r\n");
-  88   1        //while(RI==0);
-  89   1        //RI=0;
-  90   1        SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");
-  91   1        
-  92   1      }
-  93          
-  94          void uart1_SendToTCPServer(char *str)
-  95          {
-  96   1        SendString("AT+CIPSEND=3\r\n");
-  97   1        Delay_ms(1000);
-  98   1        SendString("123");
-  99   1        SendString("\r\n");
- 100   1        Delay_ms(1000);
- 101   1      
- 102   1      }
-*** WARNING C280 IN LINE 94 OF Application\Source\UART1.c: 'str': unreferenced local variable
- 103          
- 104          
- 105           
+  63          //if dat=1, we need to use ASCII value to display "1" on UART1
+  64          unsigned char ASCII_Letter(unsigned char dat)
+  65          {
+  66   1        
+  67   1        return dat+48;
+  68   1      }
+  69          
+  70          unsigned char ASCIItoBCD(unsigned char ascii[2]) // time format hh:mm:ss
+  71          {
+  72   1        unsigned char dec_val,ten, unit;
+  73   1        dec_val=atoi(ascii);
+  74   1        ten=dec_val/10;
+  75   1        unit=dec_val%10;
+  76   1        return ten<<4|unit;
+  77   1        
+  78   1      }
+  79          
+  80          void uart1_InitTCPConn()
+  81          {
+  82   1        //SendString("AT\r\n");
+  83   1        //while(RI==0);
+  84   1        //RI=0;
+  85   1        SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");
+  86   1        
+  87   1      }
+  88          
+  89          void uart1_SendToTCPServer(char *str)
+  90          {
+  91   1        SendString("AT+CIPSEND=3\r\n");
+  92   1        Delay_ms(1000);
+  93   1        SendString("123");
+  94   1        SendString("\r\n");
+  95   1        Delay_ms(1000);
+  96   1      
+  97   1      }
+  98          
+  99          
+ 100           
 
-
-MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    178    ----
-   CONSTANT SIZE    =     64    ----
-   XDATA SIZE       =   ----       6
-   PDATA SIZE       =   ----    ----
-   DATA SIZE        =   ----    ----
-   IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----    ----
-C51 COMPILER V9.52.0.0   UART1                                                             05/28/2019 15:04:08 PAGE 3   
-
-END OF MODULE INFORMATION.
-
-
-C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)

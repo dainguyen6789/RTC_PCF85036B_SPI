@@ -8,7 +8,7 @@
 //#include "UART1.h"
 #include "KeyPad.h"
 #include <REG51F.H>
-#include "UART1.H"
+#include "UART1.h"
 
 #include "LCD_Driver_SPLC780D.h"
 //#include "Receiver_Position_Data.h"
@@ -68,10 +68,10 @@ float calib_interpolate(float hours, float mins);
 float  linear_interpolate(struct point p1,struct point p2, float  x);
 float elevation_calculation(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds);
-void uart1_InitTCPConn();
+//void uart1_InitTCPConn();
 
-void uart1_SendToTCPServer(char *str);
-void SendString(char *s);
+//void uart1_SendToTCPServer(char *str);
+//void SendString(char *s);
 								 
 bit busy;
 //unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
@@ -229,9 +229,9 @@ void main(void)
 	while(1)                                      
 	{
 		Key_Process();
-		uart1_SendToTCPServer("123");
-		SendString("123\r\n");
-
+		//uart1_SendToTCPServer("123");
+		//SendString("123\r\n");
+		SendUART1(0x41);
 		//count++;
 		//if (count==20)
 		{
@@ -529,7 +529,13 @@ void Uart() interrupt 4 using 1
 	}
 }
 
-
+void SendUART1(unsigned char dat)
+{
+	while(busy);
+	busy=1;
+	ACC=dat;
+	SBUF=ACC;
+}
 /*float calib_interpolate(float hours, float mins)
 {
 	struct point p_calib1,p_calib2;
