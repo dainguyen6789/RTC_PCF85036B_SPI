@@ -71,7 +71,8 @@ float elevation_calculation(unsigned char mnths,unsigned char dys,
 void uart1_InitTCPConn();
 
 void uart1_SendToTCPServer(char *str);
-										 
+void SendString(char *s);
+								 
 bit busy;
 //unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
 //int RX_Data_Uart_Cnt=0;
@@ -180,7 +181,7 @@ void main(void)
 	LCD_Init();
 	SPI_Init();
 	KeyPad_IO_Init();
-	//initUART1();
+	initUART1();
 	//I2C_Init();
 	ADC_Init();
 	//=========================================
@@ -221,12 +222,12 @@ void main(void)
 		calib_time[calib_count]=7+(float)calib_count/2;
 	}
 	// Connect to the TCP Server (IP,Port)
-	//uart1_InitTCPConn();
-
+	uart1_InitTCPConn();
+	//SendString("12");
 	while(1)                                      
 	{
 		Key_Process();
-		uart1_SendToTCPServer("123");
+		//uart1_SendToTCPServer("123");
 		//count++;
 		//if (count==20)
 		{
@@ -514,7 +515,6 @@ void Uart() interrupt 4 using 1
 {
 	if(RI) 
 	{
-
 		RI=0;
 		
 	}
