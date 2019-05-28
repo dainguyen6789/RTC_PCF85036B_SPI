@@ -8,7 +8,7 @@
 //#include "UART1.h"
 #include "KeyPad.h"
 #include <REG51F.H>
-//#include "REG51.H"
+#include "UART1.H"
 
 #include "LCD_Driver_SPLC780D.h"
 //#include "Receiver_Position_Data.h"
@@ -21,7 +21,7 @@
 #include "SI1120.h"
 //#include "Receiver_Position_Data.h"
 
-#define FOSC 27000000L 	 
+#define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 //#define T (55000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 
@@ -149,7 +149,7 @@ void main(void)
 	static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";	
 	char prox_flag=1;
 	int iUse_prevday_calib_value=0;
-	
+	//char s="1234";
 	unsigned int max_ADC_Val_JP=0,max_ADC_Val=0;
 	struct point calib_point1,calib_point2;
 	struct data_to_store dat_to_store;
@@ -221,13 +221,17 @@ void main(void)
 		calib_value[calib_count]=0;
 		calib_time[calib_count]=7+(float)calib_count/2;
 	}
+	Delay_ms(15000);
+
 	// Connect to the TCP Server (IP,Port)
 	uart1_InitTCPConn();
-	//SendString("12");
+	SendString("123\r\n");
 	while(1)                                      
 	{
 		Key_Process();
-		//uart1_SendToTCPServer("123");
+		uart1_SendToTCPServer("123");
+		SendString("123\r\n");
+
 		//count++;
 		//if (count==20)
 		{
@@ -551,13 +555,7 @@ void Uart() interrupt 4 using 1
 }*/
 
 
-/*void SendUART1(unsigned char dat)
-{
-	while(busy);
-	busy=1;
-	ACC=dat;
-	SBUF=ACC;
-}*/
+
 
 
 

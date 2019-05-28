@@ -1,7 +1,7 @@
 #include "stc15f2k60s2.h"
 #include "PCF85063BTL.h"
 #include <stdlib.h>
-//#include "UART1.h"
+#include "UART1.h"
 #include <string.h>
 #define TBAUD (65536-FOSC/4/BAUD)
 #define FOSC 18432000L
@@ -18,7 +18,7 @@ void SendUART1(unsigned char dat);
 void uart1_InitTCPConn();
 
 void uart1_SendToTCPServer(char *str);
-
+void Delay_ms(unsigned int ms);
 
 
 void initUART1(void)
@@ -32,7 +32,13 @@ void initUART1(void)
 	//PS=0; 					// Serial Port 1 interrupt priority control bit, DS page 561
 }
 
-
+void SendUART1(unsigned char dat)
+{
+	while(busy);
+	busy=1;
+	ACC=dat;
+	SBUF=ACC;
+}
 
 
  void SendString(char *s)
@@ -81,15 +87,18 @@ void uart1_InitTCPConn()
 	//SendString("AT\r\n");
 	//while(RI==0);
 	//RI=0;
-	SendString("AT+CIPSTART");//=\"TCP\",\"192.168.11.203\",8080\r\n");
+	SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");
 	
 }
 
 void uart1_SendToTCPServer(char *str)
 {
 	SendString("AT+CIPSEND=3\r\n");
+	Delay_ms(1000);
 	SendString("123");
 	SendString("\r\n");
+	Delay_ms(1000);
+
 }
 
 
