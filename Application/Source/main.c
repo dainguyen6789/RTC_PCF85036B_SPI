@@ -39,23 +39,39 @@ void main(void)
 	SPI_WriteTime(0x12,Hours);		// data , register address
 	Delay_ms(500);
 	SPI_WriteTime(0x12,Minutes);
-	Delay_ms(500);
+	Delay_ms(15000);
+	SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");
+	Delay_ms(1200);
 
 	while(1)
+
 	{
-		if(st_time)
-		{
-			SPI_WriteTime(hour_count,Hours);		// data , register address
-			SPI_WriteTime(min_count,Minutes);
-			st_time=0;
-			SendUART1(hour_count);
-			SendUART1(min_count);
-		}	
-		else
-		{
-			Display_time();
-			Delay_ms(1200);
-		}
+			SendString("AT+CIPSEND=3\r\n");
+			Delay_ms(2200);
+
+			SendString("123\r\n");
+			Delay_ms(2200);
+			SendString("AT+CIPSEND=3\r\n");
+			Delay_ms(2200);		
+			SendString("50\r\n");
+			Delay_ms(2200);
+			SendString("AT+CIPSEND=3\r\n");
+			Delay_ms(2200);		
+			SendString("200\r\n");
+			Delay_ms(2200);
+//		if(st_time)
+//		{
+//			SPI_WriteTime(hour_count,Hours);		// data , register address
+//			SPI_WriteTime(min_count,Minutes);
+//			st_time=0;
+//			SendUART1(hour_count);
+//			SendUART1(min_count);
+//		}	
+//		else
+//		{
+//			Display_time();
+//			Delay_ms(1200);
+//		}
 	}
 	
 } 
