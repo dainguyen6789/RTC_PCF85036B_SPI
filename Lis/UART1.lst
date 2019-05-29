@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   UART1                                                             05/28/2019 15:42:13 PAGE 1   
+C51 COMPILER V9.52.0.0   UART1                                                             05/29/2019 11:10:32 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE UART1
@@ -40,8 +40,7 @@ line level    source
   30   1        ES=1;           // enable uart1 interrupt
   31   1        EA=1;           // each interrupt source will be enable or disable by setting its interrupt bit
   32   1        //PS=0;           // Serial Port 1 interrupt priority control bit, DS page 561
-  33   1        TR2=1;
-*** ERROR C202 IN LINE 33 OF Application\Source\UART1.c: 'TR2': undefined identifier
+  33   1      //  TR2=1;
   34   1      }
   35          
   36          
@@ -62,9 +61,9 @@ line level    source
   51          unsigned char unit(unsigned char BCD)
   52          {
   53   1      
-C51 COMPILER V9.52.0.0   UART1                                                             05/28/2019 15:42:13 PAGE 2   
-
   54   1        //unit=BCD&0x0f;
+C51 COMPILER V9.52.0.0   UART1                                                             05/29/2019 11:10:32 PAGE 2   
+
   55   1        //dec=ten*10+unit;
   56   1        return BCD&0x0f;
   57   1      }
@@ -103,13 +102,26 @@ line level    source
   90          {
   91   1        SendString("AT+CIPSEND=3\r\n");
   92   1        Delay_ms(1000);
-  93   1        SendString("123");
-  94   1        SendString("\r\n");
-  95   1        Delay_ms(1000);
+  93   1        SendString("456\r\n");
+  94   1        //SendString("\r\n");
+  95   1        //Delay_ms(1000);
   96   1      
   97   1      }
+*** WARNING C280 IN LINE 89 OF Application\Source\UART1.c: 'str': unreferenced local variable
   98          
   99          
  100           
 
-C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    153    ----
+   CONSTANT SIZE    =     63    ----
+   XDATA SIZE       =   ----       6
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

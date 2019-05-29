@@ -225,13 +225,13 @@ void main(void)
 
 	// Connect to the TCP Server (IP,Port)
 	uart1_InitTCPConn();
-	SendString("123\r\n");
+	//SendString("123\r\n");
 	while(1)                                      
 	{
 		Key_Process();
-		//uart1_SendToTCPServer("123");
+		uart1_SendToTCPServer("123");
 		//SendString("123\r\n");
-		SendUART1(0x41);
+		//SendUART1(0x41);
 		//count++;
 		//if (count==20)
 		{
