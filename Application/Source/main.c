@@ -177,11 +177,10 @@ void main(void)
 	//=======================================
 	//P3M1&=~(0xF8);
 	//P3M0|=0xF8;
-	P3=0x4C;
+	//P3=0x4C;
 	LCD_Init();
 	SPI_Init();
 	KeyPad_IO_Init();
-	initUART1();
 	//I2C_Init();
 	ADC_Init();
 	//=========================================
@@ -221,6 +220,8 @@ void main(void)
 		calib_value[calib_count]=0;
 		calib_time[calib_count]=7+(float)calib_count/2;
 	}
+	initUART1();
+
 	Delay_ms(5000);
 
 	// Connect to the TCP Server (IP,Port)

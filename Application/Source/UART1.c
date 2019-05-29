@@ -30,10 +30,7 @@ void initUART1(void)
 	ES=1; 					// enable uart1 interrupt
 	EA=1;						// each interrupt source will be enable or disable by setting its interrupt bit
 	//PS=0; 					// Serial Port 1 interrupt priority control bit, DS page 561
-//	TR2=1;
 }
-
-
 
 
  void SendString(char *s)
