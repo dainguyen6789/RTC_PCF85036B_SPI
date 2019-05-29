@@ -175,8 +175,8 @@ void main(void)
 	float dd=138;*/
 //	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
 	//=======================================
-	P3M1=0x00;
-	P3M0=0xFF;
+	//P3M1&=~(0xF8);
+	//P3M0|=0xF8;
 	P3=0x4C;
 	LCD_Init();
 	SPI_Init();
@@ -224,14 +224,17 @@ void main(void)
 	Delay_ms(5000);
 
 	// Connect to the TCP Server (IP,Port)
-	uart1_InitTCPConn();
+	SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");
 	Delay_ms(2000);
 
 	//SendString("123\r\n");
 	while(1)                                      
 	{
 		Key_Process();
-		uart1_SendToTCPServer("123");
+		//uart1_SendToTCPServer("123");
+		SendString("AT+CIPSEND=3\r\n");
+		Delay_ms(1000);
+		SendString("456\r\n");
 		Delay_ms(1000);
 
 		//SendString("123\r\n");
