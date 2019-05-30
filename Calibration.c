@@ -5,6 +5,8 @@
 #include "ADCh.h"
 #include "AT25SF041.h"
 #include "SI1120.h"
+#include "UART1.h"
+
 #define  offset_error 0.8
 
 void Wait_ms(int ms);
@@ -40,6 +42,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 {
 		unsigned char ch=0;
 		float calib_step_move=0.5;
+		char sTemp[6];
 		//float offset_error=0.8;
 		int voltage_at_scanned_pos[81],max_location, avg_voltage=0;
 		int i,j;
@@ -67,6 +70,17 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 
 					}
 					voltage_at_scanned_pos[i]=avg_voltage/5;
+					// Voltage from current sensor is used to calaculate POWER.
+					sprintf(sTemp, "%.1f", voltage_at_scanned_pos[i]);
+					//		itoa((int)current_position,sCurrent_position,10);
+					SendString("AT+CIPSEND=6\r\n");
+					Wait_ms(200);
+					SendString(sTemp);
+					SendString("W\r\n");
+					Wait_ms(800);
+				
+
+					//Delay_ms(10);
 					if(pwm_time_min!=0)
 					{
 						pwm_time_min=pwm_time_min<pwm_time?pwm_time_min:pwm_time;
@@ -80,29 +94,29 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					// 	STORE THE CALIB VOLTAGE IN THE SPI NOR FLASH after every calib, total 4*60=240 byte of data for each calib time
 					//if(i%2==0)
 					{
-						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, *address_to_write,pwm_time/4);									// SUNLIGHT
-						Wait_ms_SPINOR(50);	
-						++*address_to_write;
-						
-						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, *address_to_write,voltage_at_scanned_pos[i]/4);// SOLAR CELL ADC VOLTAGE	
-						Wait_ms_SPINOR(50);	
-						++*address_to_write;
-						
-						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, *address_to_write,*current_position);					// SOLAR CELL Instant Position when calib
-						Wait_ms_SPINOR(50);	
-						++*address_to_write;	
-						
-						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, *address_to_write,(*current_position-(char)*current_position)*100);	// SOLAR CELL Instant Position when calib
-						Wait_ms_SPINOR(50);	
-						++*address_to_write;
+//						AT25SF041_WriteEnable();
+//						//Wait_ms_SPINOR(50);	
+//						AT25SF041_Write(Byte_Page_Program, *address_to_write,pwm_time/4);									// SUNLIGHT					
+//						Wait_ms_SPINOR(50);	
+//						++*address_to_write;
+//						
+//						AT25SF041_WriteEnable();
+//						//Wait_ms_SPINOR(50);	
+//						AT25SF041_Write(Byte_Page_Program, *address_to_write,voltage_at_scanned_pos[i]/4);// SOLAR CELL ADC VOLTAGE	
+//						Wait_ms_SPINOR(50);	
+//						++*address_to_write;
+//						
+//						AT25SF041_WriteEnable();
+//						//Wait_ms_SPINOR(50);	
+//						AT25SF041_Write(Byte_Page_Program, *address_to_write,*current_position);					// SOLAR CELL Instant Position when calib
+//						Wait_ms_SPINOR(50);	
+//						++*address_to_write;	
+//						
+//						AT25SF041_WriteEnable();
+//						//Wait_ms_SPINOR(50);	
+//						AT25SF041_Write(Byte_Page_Program, *address_to_write,(*current_position-(char)*current_position)*100);	// SOLAR CELL Instant Position when calib
+//						Wait_ms_SPINOR(50);	
+//						++*address_to_write;
 	
 					}
 					
@@ -136,9 +150,26 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 				WriteData(0x10);//display " "	
 				Wait_ms(200);
 				
+				sprintf(sTemp, "%.1f", *current_position);
+		//		itoa((int)current_position,sCurrent_position,10);
+				SendString("AT+CIPSEND=6\r\n");
+					Wait_ms(200);
+				SendString(sTemp);
+				SendString("M\r\n");
+				
+					Wait_ms(200);
+				
+				sprintf(sTemp, "%.1f", pwm_time/4);
+		//		itoa((int)current_position,sCurrent_position,10);
+				SendString("AT+CIPSEND=6\r\n");
+					Wait_ms(200);
+				SendString(sTemp);
+				SendString("L\r\n");				
 				Move(calib_step_move,1);//1: positive direction
 				*current_position=*current_position+0.5;
-				Wait_ms(800);// delay to wait for the electronic load to be stable.
+
+		//Delay_ms(10);				
+				Wait_ms(500);// delay to wait for the electronic load to be stable.
 
 		}
 		Wait_ms(1000);
@@ -162,6 +193,12 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 //			//LCD_clear();
 //			Display_Pos(83-max_location);
 			*current_position=*current_position-(calib_step_move*(83-max_location));
+			sprintf(sTemp, "%.1f", *current_position);
+		//		itoa((int)current_position,sCurrent_position,10);
+				SendString("AT+CIPSEND=6\r\n");
+					Wait_ms(200);
+				SendString(sTemp);
+				SendString("M\r\n");
 			Wait_ms(500);
 		}
 		return ;

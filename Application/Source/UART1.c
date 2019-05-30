@@ -79,15 +79,14 @@ void uart1_InitTCPConn()
 	//SendString("AT\r\n");
 	//while(RI==0);
 	//RI=0;
-	SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");
-	
+	SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");	
 }
 
 void uart1_SendToTCPServer(char *str)
 {
-	SendString("AT+CIPSEND=3\r\n");
+	SendString("AT+CIPSEND=16\r\n");
 	Delay_ms(1000);
-	SendString("456\r\n");
+	SendString("Hello from ESP\r\n");
 	//SendString("\r\n");
 	//Delay_ms(1000);
 

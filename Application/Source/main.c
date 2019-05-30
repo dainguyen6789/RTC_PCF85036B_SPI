@@ -3,6 +3,7 @@
 #include "a25lc040.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
  //#include "hc595.h"
 #include "PCF85063BTL.h"
 //#include "UART1.h"
@@ -84,6 +85,7 @@ float calib_value[21],calib_time[21];// 600/calib_stamp+1
 int calib_bool[21];
 unsigned char seconds,mins, hours,days,months;//,mins1, hours1,mins2, hours2;
 float current_position=0;
+char sTempString[6];
 //int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);
@@ -200,7 +202,7 @@ void main(void)
 	ET1=1;
 	//========================================
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
-	SPI_WriteTime(0x12,Hours);		// data , register address
+	SPI_WriteTime(0x09,Hours);		// data , register address
 	Delay_ms(100);
 	SPI_WriteTime(0x00,Minutes);
 	Delay_ms(100);
@@ -225,18 +227,19 @@ void main(void)
 	Delay_ms(5000);
 
 	// Connect to the TCP Server (IP,Port)
-	SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");
-	Delay_ms(2000);
+	uart1_InitTCPConn();
+	//SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");
+	Delay_ms(500);
+	uart1_SendToTCPServer("123");
 
 	//SendString("123\r\n");
 	while(1)                                      
 	{
 		Key_Process();
 		//uart1_SendToTCPServer("123");
-		SendString("AT+CIPSEND=3\r\n");
-		Delay_ms(1000);
-		SendString("456\r\n");
-		Delay_ms(1000);
+		//Delay_ms(10);
+		//char * itoa(int n, char * buffer, int radix);
+
 
 		//SendString("123\r\n");
 		//SendUART1(0x41);
@@ -337,66 +340,76 @@ void main(void)
 		//mins1=mins;
 		Read_time(&months,&days,&hours,&mins,&seconds);
 
+
 		//Read_time(&months,&days,&hours,&mins,&seconds);
 		//Read_time(&months,&days,&hours,&mins,&seconds);
-//		if(auto_mode)
-//		{
-//			
-//			//sunlight_ADC=ADC_GetResult(2);
-//			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
-//			{
-//						if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
-//						{
-//								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
-//								{
-//									//calculate elevation to decide whether we will calibrate or not
-//									elevation=elevation_calculation(months,days,hours,mins,seconds);
-//									//10log10(photoR)=-0.4424*10log10(lux)+41.311
-//									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
-//									//============IF SUN LIGHT IS GOOD=======================
-//									if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
-//									//=======================================================
-//									//if(pwm_time>=5) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+		if(auto_mode)
+		{
+			
+			//sunlight_ADC=ADC_GetResult(2);
+			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
+			{
+						if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
+						{
+								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
+								{
+									//calculate elevation to decide whether we will calibrate or not
+									elevation=elevation_calculation(months,days,hours,mins,seconds);
+									//10log10(photoR)=-0.4424*10log10(lux)+41.311
+									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
+									//============IF SUN LIGHT IS GOOD=======================
+									//if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									//=======================================================
+									//if(pwm_time>=5) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 
-//									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
-//									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
-//									//GHI>=para
-//									//GHI=pwm_time
-//									{
-//										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-//										calib_bool[count]=1;
-//										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
-//										// if light is not stable
-//										if(pwm_time_max>1.2*pwm_time_min)
-//										{
-//											// go back to JP pos if the sun light is unstable
-//											Update_position(months,days,hours,mins,seconds,&current_position,0);
-//											calib_value[count]=0;
-//											calib_bool[count]=0;
+									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
+									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
+									//GHI>=para
+									//GHI=pwm_time
+									{
+										sprintf(sTempString, "%.1f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60);
+										SendString("AT+CIPSEND=6\r\n");
+										Delay_ms(10);
+										SendString(sTempString);
+										SendString("T\r\n");
+										Delay_ms(10);
+										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+										calib_bool[count]=1;
+										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
+										
+
+										
+										// if light is not stable
+										if(pwm_time_max>1.2*pwm_time_min)
+										{
+											// go back to JP pos if the sun light is unstable
+											Update_position(months,days,hours,mins,seconds,&current_position,0);
+											calib_value[count]=0;
+											calib_bool[count]=0;
 
 
-//										}
-//									}
+										}
+									}
 //									else // Store the data even in low light condition
-//									{
-//											// store  120 bytes of "0" value when calibration does not work  in order to synchronize the pattern.
-//											for(count=0;count<=323;count++)
-//											{
-//												AT25SF041_WriteEnable();
-//												AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
-//												Wait_ms_SPINOR(50);	
-//												SPI_NOR_INTERNAL_FLASH_ADDR++;
-//											}		
-//											//use count variable to identify the position of calib_value[count]
-//											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-//											calib_bool[count]=0;
+									{
+											// store  120 bytes of "0" value when calibration does not work  in order to synchronize the pattern.
+											for(count=0;count<=323;count++)
+											{
+												AT25SF041_WriteEnable();
+												AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
+												Wait_ms_SPINOR(50);	
+												SPI_NOR_INTERNAL_FLASH_ADDR++;
+											}		
+											//use count variable to identify the position of calib_value[count]
+											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+											calib_bool[count]=0;
 
-//											
-//											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
-//											theorical_JP_max_pos=current_position-calib_value[count];								
-//											max_ADC_Val = ADC_GetResult(0);// read from channel 0
-//											max_ADC_Val_JP = max_ADC_Val;										
-//									}
+											
+											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
+											theorical_JP_max_pos=current_position-calib_value[count];								
+											max_ADC_Val = ADC_GetResult(0);// read from channel 0
+											max_ADC_Val_JP = max_ADC_Val;										
+									}
 
 //									dat_to_store.month=months;
 //									dat_to_store.date=days;
@@ -414,58 +427,58 @@ void main(void)
 //									Wait_ms_SPINOR(50);
 //									//TOTAL: 120bytes for calib + 11 Bytes for  dat_to_store= 131 BYTES
 //									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
-//					
+					
 
-//								}
-//								
-//								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
-//								{
-//									iUse_prevday_calib_value=1;
-//									//count=0;
-//								}
+								}
+								
+								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
+								{
+									iUse_prevday_calib_value=1;
+									//count=0;
+								}
 
-//											
-//					}
-//					if(iUse_prevday_calib_value==0)// FIRST day of calibration, update position not at the calibration time stamp
-//					{
-//								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
-//								{
-//										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-//										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
-//								}
-//							
-//					}
-//					
-//					// how to update for next day and use the calib value from the previous day???
-//					else
-//					{
-//						
-//							// calib every 30mins, from 7AM to 17PM
-//								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)								
-//								{
-//										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+											
+					}
+					if(iUse_prevday_calib_value==0)// FIRST day of calibration, update position not at the calibration time stamp
+					{
+								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
+								{
+										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
+								}
+							
+					}
+					
+					// how to update for next day and use the calib value from the previous day???
+					else
+					{
+						
+							// calib every 30mins, from 7AM to 17PM
+								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)								
+								{
+										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 
-//										calib_point1.x=calib_time[count];
-//										calib_point1.y=calib_value[count];
-//										calib_point2.x=calib_time[count+1];// this is from previous day.
-//										if(calib_bool[count]==1 && calib_bool[count+1]==1)
-//										{
-//											calib_point2.y=calib_value[count+1];// this is from previous day.
-//											Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
-//										}
-//										else // was not calib prev day at this time stamp=> use the latest calib value of the same day
-//										{
-//											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[FindClosestSamedayCalibTime(calib_bool,count)]);
-//										}
-//										// in the UPDATE function, we only update the motor position when the distance >0.5mm
+										calib_point1.x=calib_time[count];
+										calib_point1.y=calib_value[count];
+										calib_point2.x=calib_time[count+1];// this is from previous day.
+										if(calib_bool[count]==1 && calib_bool[count+1]==1)
+										{
+											calib_point2.y=calib_value[count+1];// this is from previous day.
+											Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
+										}
+										else // was not calib prev day at this time stamp=> use the latest calib value of the same day
+										{
+											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[FindClosestSamedayCalibTime(calib_bool,count)]);
+										}
+										// in the UPDATE function, we only update the motor position when the distance >0.5mm
 
 
-//								}
-//							
-//					}
-//				}
+								}
+							
+					}
+				}
 
-//		}	
+		}	
 				
 		// Code for the PUMP, enable PUMP from 7AM tp 5PM
 		if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
