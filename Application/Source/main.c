@@ -22,7 +22,7 @@
 #include "SI1120.h"
 //#include "Receiver_Position_Data.h"
 
-#define FOSC 27000000L 	 
+#define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 //#define T (55000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 
@@ -202,9 +202,9 @@ void main(void)
 	ET1=1;
 	//========================================
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
-	SPI_WriteTime(0x09,Hours);		// data , register address
+	SPI_WriteTime(0x08,Hours);		// data , register address
 	Delay_ms(200);
-	SPI_WriteTime(0x00,Minutes);
+	SPI_WriteTime(0x59,Minutes);
 	Delay_ms(200);
 	//==============================================================
 	// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
@@ -340,7 +340,12 @@ void main(void)
 		//mins1=mins;
 		Read_time(&months,&days,&hours,&mins,&seconds);
 
-
+		if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
+		{
+				uart1_InitTCPConn();
+				Delay_ms(500);
+				uart1_SendToTCPServer("Hello from ESP\r\n");
+		}
 		//Read_time(&months,&days,&hours,&mins,&seconds);
 		//Read_time(&months,&days,&hours,&mins,&seconds);
 		if(auto_mode)
@@ -351,6 +356,9 @@ void main(void)
 			{
 						if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
 						{
+								uart1_InitTCPConn();
+								Delay_ms(500);
+								uart1_SendToTCPServer("Hello from ESP\r\n");
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
 								{
 									//calculate elevation to decide whether we will calibrate or not
