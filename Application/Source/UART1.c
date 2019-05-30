@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include "UART1.h"
 #include <string.h>
-#define TBAUD (65536-FOSC/4/BAUD)
-#define FOSC 18432000L
-#define BAUD 115200
+#define TBAUD (65536-FOSC/(BAUD/4))
+#define FOSC 27000000L
+#define BAUD 19200
 
 
 

@@ -22,7 +22,7 @@
 #include "SI1120.h"
 //#include "Receiver_Position_Data.h"
 
-#define FOSC 18432000L 	 
+#define FOSC 27000000L 	 
 #define T1MS (65536-FOSC/1000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 //#define T (55000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 
@@ -203,9 +203,9 @@ void main(void)
 	//========================================
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
 	SPI_WriteTime(0x09,Hours);		// data , register address
-	Delay_ms(100);
+	Delay_ms(200);
 	SPI_WriteTime(0x00,Minutes);
-	Delay_ms(100);
+	Delay_ms(200);
 	//==============================================================
 	// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
 	//==============================================================
