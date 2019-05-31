@@ -223,8 +223,8 @@ void main(void)
 		calib_time[calib_count]=7+(float)calib_count/2;
 	}
 	initUART1();
-	IP|=0x10;
-	IP&=~(0x09);// UART1 lowest priority
+	//IP|=0x10;
+	//IP&=~(0x09);// UART1 lowest priority
 	Delay_ms(8000);
 
 	// Connect to the TCP Server (IP,Port)
