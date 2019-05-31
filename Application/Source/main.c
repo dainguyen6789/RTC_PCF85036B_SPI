@@ -132,7 +132,7 @@ void exint0() interrupt 0
 			TR0=0;// stop timer 0
 		
 			pwm_time=(TH0);//micro second 10^6 divide FOSC
-			pwm_time=(pwm_time*pow(2,8)+TL0-T1MS)/27;
+			pwm_time=(pwm_time*pow(2,8)+TL0-T1MS)/18.432;
 			pwm_time=pwm_time+timer0_count*1000;//microsesond unit
 			timer0_count=0;
 			//TL0=T1MS;
@@ -223,7 +223,8 @@ void main(void)
 		calib_time[calib_count]=7+(float)calib_count/2;
 	}
 	initUART1();
-
+	IP|=0x10;
+	IP&=~(0x09);// UART1 lowest priority
 	Delay_ms(8000);
 
 	// Connect to the TCP Server (IP,Port)
