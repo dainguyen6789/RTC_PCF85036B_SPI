@@ -224,7 +224,7 @@ void main(void)
 	}
 	initUART1();
 
-	Delay_ms(5000);
+	Delay_ms(8000);
 
 	// Connect to the TCP Server (IP,Port)
 	uart1_InitTCPConn();
@@ -257,7 +257,7 @@ void main(void)
 			WriteData(0x53);//display "S"	
 			WriteData(0x3A);//display ":"	
 			//LCD_clear();
-			Display_Pos(current_position);
+			Display_Pos(pwm_time);
 			
 			//Display_Pos(pwm_time);
 			WriteData(0x6D);//m
@@ -339,7 +339,14 @@ void main(void)
 		//mins2=mins1;
 		//mins1=mins;
 		Read_time(&months,&days,&hours,&mins,&seconds);
-
+//	if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
+//	{		
+//		//uart1_InitTCPConn();
+//		//SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");
+//		//Delay_ms(500);
+//		//uart1_SendToTCPServer("123");
+//		
+//	}
 
 		//Read_time(&months,&days,&hours,&mins,&seconds);
 		//Read_time(&months,&days,&hours,&mins,&seconds);

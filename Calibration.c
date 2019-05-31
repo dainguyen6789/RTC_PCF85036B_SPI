@@ -71,13 +71,13 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					}
 					voltage_at_scanned_pos[i]=avg_voltage/5;
 					// Voltage from current sensor is used to calaculate POWER.
-					sprintf(sTemp, "%.1f", voltage_at_scanned_pos[i]);
+					sprintf(sTemp, "%.1f", (float)voltage_at_scanned_pos[i]/1024*5);
 					//		itoa((int)current_position,sCurrent_position,10);
 					SendString("AT+CIPSEND=6\r\n");
 					Wait_ms(200);
 					SendString(sTemp);
 					SendString("W\r\n");
-					Wait_ms(800);
+					Wait_ms(200);
 				
 
 					//Delay_ms(10);
@@ -151,24 +151,25 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 				Wait_ms(200);
 				
 				sprintf(sTemp, "%.1f", *current_position);
-		//		itoa((int)current_position,sCurrent_position,10);
+				//		itoa((int)current_position,sCurrent_position,10);
 				SendString("AT+CIPSEND=6\r\n");
-					Wait_ms(200);
+				Wait_ms(200);
 				SendString(sTemp);
 				SendString("M\r\n");
-				
-					Wait_ms(200);
-				
-				sprintf(sTemp, "%.1f", pwm_time/4);
-		//		itoa((int)current_position,sCurrent_position,10);
+
+				Wait_ms(200);
+
+				sprintf(sTemp, "%.1f", pwm_time);
+				//		itoa((int)current_position,sCurrent_position,10);
 				SendString("AT+CIPSEND=6\r\n");
-					Wait_ms(200);
+				Wait_ms(200);
 				SendString(sTemp);
-				SendString("L\r\n");				
+				SendString("L\r\n");
+				Wait_ms(200);
 				Move(calib_step_move,1);//1: positive direction
 				*current_position=*current_position+0.5;
 
-		//Delay_ms(10);				
+				//Delay_ms(10);				
 				Wait_ms(500);// delay to wait for the electronic load to be stable.
 
 		}
@@ -194,11 +195,11 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 //			Display_Pos(83-max_location);
 			*current_position=*current_position-(calib_step_move*(83-max_location));
 			sprintf(sTemp, "%.1f", *current_position);
-		//		itoa((int)current_position,sCurrent_position,10);
-				SendString("AT+CIPSEND=6\r\n");
-					Wait_ms(200);
-				SendString(sTemp);
-				SendString("M\r\n");
+			//		itoa((int)current_position,sCurrent_position,10);
+			SendString("AT+CIPSEND=6\r\n");
+			Wait_ms(200);
+			SendString(sTemp);
+			SendString("M\r\n");
 			Wait_ms(500);
 		}
 		return ;
