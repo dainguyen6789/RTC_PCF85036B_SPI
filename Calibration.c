@@ -41,7 +41,7 @@ int voltage_is_stable(void)
 void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,unsigned int *max_ADC_JP_value, unsigned long int *address_to_write)
 {
 		unsigned char ch=0;
-		float calib_step_move=0.5;
+		float calib_step_move=0.5,JPPos;
 		char sTemp[6];
 		//float offset_error=0.8;
 		int voltage_at_scanned_pos[81],max_location, avg_voltage=0;
@@ -50,6 +50,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 		// move/scan +`
 		pwm_time_min=0;
 		pwm_time_max=0;
+		JPPos=*current_position+20;
 		for(i=0;i<81;i++)// 81 values
 		{
 			voltage_at_scanned_pos[i]=0;
@@ -71,6 +72,15 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					}
 					voltage_at_scanned_pos[i]=avg_voltage/5;
 					// Voltage from current sensor is used to calaculate POWER.
+//====================================================					
+					sprintf(sTemp, "%.1f", JPPos);
+					//		itoa((int)current_position,sCurrent_position,10);
+					SendString("AT+CIPSEND=6\r\n");
+					Wait_ms(200);
+					SendString(sTemp);
+					SendString("J\r\n");
+					Wait_ms(400);	
+//====================================================					
 					sprintf(sTemp, "%.1f", (float)voltage_at_scanned_pos[i]/1024*5);
 					//		itoa((int)current_position,sCurrent_position,10);
 					SendString("AT+CIPSEND=6\r\n");
@@ -193,6 +203,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 //			WriteData(0x3A);//display ":"	
 //			//LCD_clear();
 //			Display_Pos(83-max_location);
+
 			*current_position=*current_position-(calib_step_move*(83-max_location));
 			sprintf(sTemp, "%.1f", *current_position);
 			//		itoa((int)current_position,sCurrent_position,10);
@@ -230,6 +241,7 @@ float calibration(		unsigned char mnths,unsigned char dys,
 	unsigned int temporary_calib_max_ADC=0,temp_max_ADC_JP_value=0;//
 	unsigned long int temp_NOR_address_to_write=*NOR_address_to_write;
 	float JP_max_pos=*currnt_pos;
+	//char sTemp[6];
 	*calib_max_ADC_Val=0;
 	*max_ADC_JP_value=0;
 	*theorical_max_pos=0;
@@ -241,6 +253,9 @@ float calibration(		unsigned char mnths,unsigned char dys,
 		// 	move to JP theorical max position-20
 		Update_position(mnths,dys,hurs,mns,sconds,&JP_max_pos,-20);// off set is Zero means we go to  (first, go to JP max theorical position -20)
 		*theorical_max_pos=JP_max_pos+20;// compensate +20 because of previous line.
+		//============================================================================
+
+		//=============================================================================
 		// 	find the real max value in the area of JP +/- 15mm
 		Find_Real_Max(&JP_max_pos,&temporary_calib_max_ADC,&temp_max_ADC_JP_value,&temp_NOR_address_to_write); //find real max and move to real max position
 		
