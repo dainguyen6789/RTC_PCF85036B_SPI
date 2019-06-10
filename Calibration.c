@@ -42,7 +42,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 {
 		unsigned char ch=0;
 		float calib_step_move=0.5,JPPos;
-		char sTemp[6];
+		char sTemp[7];
 		//float offset_error=0.8;
 		int voltage_at_scanned_pos[81],max_location, avg_voltage=0;
 		int i,j;
@@ -73,17 +73,17 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					voltage_at_scanned_pos[i]=avg_voltage/5;
 					// Voltage from current sensor is used to calaculate POWER.
 //====================================================					
-					sprintf(sTemp, "%.1f", JPPos);
+					sprintf(sTemp, "%.01f", JPPos);
 					//		itoa((int)current_position,sCurrent_position,10);
-					SendString("AT+CIPSEND=6\r\n");
+					SendString("AT+CIPSEND=7\r\n");
 					Wait_ms(200);
 					SendString(sTemp);
 					SendString("J\r\n");
 					Wait_ms(400);	
 //====================================================					
-					sprintf(sTemp, "%.1f", (float)voltage_at_scanned_pos[i]/1024*5);
+					sprintf(sTemp, "%.01f", (float)voltage_at_scanned_pos[i]/1024*5);
 					//		itoa((int)current_position,sCurrent_position,10);
-					SendString("AT+CIPSEND=6\r\n");
+					SendString("AT+CIPSEND=7\r\n");
 					Wait_ms(200);
 					SendString(sTemp);
 					SendString("W\r\n");
@@ -160,7 +160,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 				WriteData(0x10);//display " "	
 				Wait_ms(200);
 				
-				sprintf(sTemp, "%.1f", *current_position);
+				sprintf(sTemp, "%.01f", *current_position);
 				//		itoa((int)current_position,sCurrent_position,10);
 				SendString("AT+CIPSEND=6\r\n");
 				Wait_ms(200);
@@ -169,7 +169,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 
 				Wait_ms(200);
 
-				sprintf(sTemp, "%.1f", pwm_time);
+				sprintf(sTemp, "%.01f", pwm_time);
 				//		itoa((int)current_position,sCurrent_position,10);
 				SendString("AT+CIPSEND=6\r\n");
 				Wait_ms(200);
@@ -205,7 +205,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 //			Display_Pos(83-max_location);
 
 			*current_position=*current_position-(calib_step_move*(83-max_location));
-			sprintf(sTemp, "%.1f", *current_position);
+			sprintf(sTemp, "%.01f", *current_position);
 			//		itoa((int)current_position,sCurrent_position,10);
 			SendString("AT+CIPSEND=6\r\n");
 			Wait_ms(200);

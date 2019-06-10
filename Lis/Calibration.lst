@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       06/03/2019 14:17:21 PAGE 1   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       06/10/2019 12:50:34 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE CALIBRATION
@@ -54,7 +54,7 @@ line level    source
   42          {
   43   1          unsigned char ch=0;
   44   1          float calib_step_move=0.5,JPPos;
-  45   1          char sTemp[6];
+  45   1          char sTemp[7];
   46   1          //float offset_error=0.8;
   47   1          int voltage_at_scanned_pos[81],max_location, avg_voltage=0;
   48   1          int i,j;
@@ -62,7 +62,7 @@ line level    source
   50   1          // move/scan +`
   51   1          pwm_time_min=0;
   52   1          pwm_time_max=0;
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       06/03/2019 14:17:21 PAGE 2   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       06/10/2019 12:50:34 PAGE 2   
 
   53   1          JPPos=*current_position+20;
   54   1          for(i=0;i<81;i++)// 81 values
@@ -87,17 +87,17 @@ line level    source
   73   3                voltage_at_scanned_pos[i]=avg_voltage/5;
   74   3                // Voltage from current sensor is used to calaculate POWER.
   75   3      //====================================================          
-  76   3                sprintf(sTemp, "%.1f", JPPos);
+  76   3                sprintf(sTemp, "%.01f", JPPos);
   77   3                //    itoa((int)current_position,sCurrent_position,10);
-  78   3                SendString("AT+CIPSEND=6\r\n");
+  78   3                SendString("AT+CIPSEND=7\r\n");
   79   3                Wait_ms(200);
   80   3                SendString(sTemp);
   81   3                SendString("J\r\n");
   82   3                Wait_ms(400); 
   83   3      //====================================================          
-  84   3                sprintf(sTemp, "%.1f", (float)voltage_at_scanned_pos[i]/1024*5);
+  84   3                sprintf(sTemp, "%.01f", (float)voltage_at_scanned_pos[i]/1024*5);
   85   3                //    itoa((int)current_position,sCurrent_position,10);
-  86   3                SendString("AT+CIPSEND=6\r\n");
+  86   3                SendString("AT+CIPSEND=7\r\n");
   87   3                Wait_ms(200);
   88   3                SendString(sTemp);
   89   3                SendString("W\r\n");
@@ -126,7 +126,7 @@ line level    source
  111   4      //            ++*address_to_write;
  112   4      //            
  113   4      //            AT25SF041_WriteEnable();
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       06/03/2019 14:17:21 PAGE 3   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       06/10/2019 12:50:34 PAGE 3   
 
  114   4      //            //Wait_ms_SPINOR(50); 
  115   4      //            AT25SF041_Write(Byte_Page_Program, *address_to_write,voltage_at_scanned_pos[i]/4);// SOLAR CELL AD
@@ -180,7 +180,7 @@ line level    source
  160   2              WriteData(0x10);//display " " 
  161   2              Wait_ms(200);
  162   2              
- 163   2              sprintf(sTemp, "%.1f", *current_position);
+ 163   2              sprintf(sTemp, "%.01f", *current_position);
  164   2              //    itoa((int)current_position,sCurrent_position,10);
  165   2              SendString("AT+CIPSEND=6\r\n");
  166   2              Wait_ms(200);
@@ -189,8 +189,8 @@ line level    source
  169   2      
  170   2              Wait_ms(200);
  171   2      
- 172   2              sprintf(sTemp, "%.1f", pwm_time);
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       06/03/2019 14:17:21 PAGE 4   
+ 172   2              sprintf(sTemp, "%.01f", pwm_time);
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       06/10/2019 12:50:34 PAGE 4   
 
  173   2              //    itoa((int)current_position,sCurrent_position,10);
  174   2              SendString("AT+CIPSEND=6\r\n");
@@ -228,7 +228,7 @@ line level    source
  205   2      //      Display_Pos(83-max_location);
  206   2      
  207   2            *current_position=*current_position-(calib_step_move*(83-max_location));
- 208   2            sprintf(sTemp, "%.1f", *current_position);
+ 208   2            sprintf(sTemp, "%.01f", *current_position);
  209   2            //    itoa((int)current_position,sCurrent_position,10);
  210   2            SendString("AT+CIPSEND=6\r\n");
  211   2            Wait_ms(200);
@@ -254,7 +254,7 @@ line level    source
  230   2        }
  231   1        return max_location;// pos in the array
  232   1        
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       06/03/2019 14:17:21 PAGE 5   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       06/10/2019 12:50:34 PAGE 5   
 
  233   1      }
  234          //input currnt_pos is the JP max theorical position
@@ -314,11 +314,11 @@ line level    source
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =   2153    ----
-   CONSTANT SIZE    =     36    ----
-   XDATA SIZE       =   ----     261
+   CONSTANT SIZE    =     52    ----
+   XDATA SIZE       =   ----     262
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       06/03/2019 14:17:21 PAGE 6   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       06/10/2019 12:50:34 PAGE 6   
 
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----

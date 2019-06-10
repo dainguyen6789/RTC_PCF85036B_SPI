@@ -254,7 +254,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 		desired_distance=JP_pos+150+offset_calib;
 		//desired_distance=(563.91*cos(elevation*pi/180)+33.99);
 		distance=desired_distance-*currnt_pos;
-		if(abs(distance)>=0.5&& desired_distance>=-15 &&desired_distance<=210 )// move if the change is more than 0.5mm
+		if(fabs(distance)>=0.5&& desired_distance>=-15 &&desired_distance<=210 )// move if the change is more than 0.5mm
 		{
 			if(distance>0)
 				Move(distance,1);

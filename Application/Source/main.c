@@ -85,7 +85,7 @@ float calib_value[21],calib_time[21];// 600/calib_stamp+1
 int calib_bool[21];
 unsigned char seconds,mins, hours,days,months;//,mins1, hours1,mins2, hours2;
 float current_position=0;
-char sTempString[6];
+char sTempString[7];
 //int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);
@@ -258,8 +258,8 @@ void main(void)
 			WriteData(0x53);//display "S"	
 			WriteData(0x3A);//display ":"	
 			//LCD_clear();
-			Display_Pos(pwm_time);
-			
+			//Display_Pos(pwm_time);
+			Display_Pos(current_position);
 			//Display_Pos(pwm_time);
 			WriteData(0x6D);//m
 			WriteData(0x6D);//m
@@ -340,14 +340,15 @@ void main(void)
 		//mins2=mins1;
 		//mins1=mins;
 		Read_time(&months,&days,&hours,&mins,&seconds);
-//	if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
-//	{		
-//		//uart1_InitTCPConn();
-//		//SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");
-//		//Delay_ms(500);
-//		//uart1_SendToTCPServer("123");
-//		
-//	}
+		if(BCDtoDec1(mins)%50==0 &&  BCDtoDec1(seconds&0x7f)==0 )
+		{		
+			//uart1_inittcpconn();
+			SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");	
+			Delay_ms(300);
+			uart1_SendToTCPServer("123");
+			Delay_ms(300);
+
+		}
 
 		//Read_time(&months,&days,&hours,&mins,&seconds);
 		//Read_time(&months,&days,&hours,&mins,&seconds);
@@ -363,10 +364,16 @@ void main(void)
 								{
 									//calculate elevation to decide whether we will calibrate or not
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
+									sprintf(sTempString, "%.01f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60);
+									SendString("AT+CIPSEND=7\r\n");
+									Delay_ms(10);
+									SendString(sTempString);
+									SendString("T\r\n");
+									Delay_ms(10);									
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
 									//============IF SUN LIGHT IS GOOD=======================
-									//if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 									//=======================================================
 									//if(pwm_time>=5) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 
@@ -375,12 +382,7 @@ void main(void)
 									//GHI>=para
 									//GHI=pwm_time
 									{
-										sprintf(sTempString, "%.1f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60);
-										SendString("AT+CIPSEND=6\r\n");
-										Delay_ms(10);
-										SendString(sTempString);
-										SendString("T\r\n");
-										Delay_ms(10);
+
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										calib_bool[count]=1;
 										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
@@ -398,7 +400,7 @@ void main(void)
 
 										}
 									}
-//									else // Store the data even in low light condition
+							else // Store the data even in low light condition
 									{
 											// store  120 bytes of "0" value when calibration does not work  in order to synchronize the pattern.
 											for(count=0;count<=323;count++)
@@ -435,8 +437,38 @@ void main(void)
 //									Wait_ms_SPINOR(50);
 //									//TOTAL: 120bytes for calib + 11 Bytes for  dat_to_store= 131 BYTES
 //									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
-					
+										// Voltage from current sensor is used to calaculate POWER.
+										//====================================================					
+										sprintf(sTempString, "%.01f", theorical_JP_max_pos);
+										//		itoa((int)current_position,sCurrent_position,10);
+										SendString("AT+CIPSEND=7\r\n");
+										Wait_ms(200);
+										SendString(sTempString);
+										SendString("J\r\n");
+										Wait_ms(400);	
+										//====================================================					
+										sprintf(sTempString, "%.01f", (float)max_ADC_Val/1024*5);
+										//		itoa((int)current_position,sCurrent_position,10);
+										SendString("AT+CIPSEND=7\r\n");
+										Wait_ms(200);
+										SendString(sTempString);
+										SendString("W\r\n");
+										Wait_ms(400);
+										
+										sprintf(sTempString, "%.01f", current_position);
+										//		itoa((int)current_position,sCurrent_position,10);
+										SendString("AT+CIPSEND=7\r\n");
+										Wait_ms(200);
+										SendString(sTempString);
+										SendString("M\r\n");
+										Wait_ms(400);
 
+										sprintf(sTempString, "%.01f", pwm_time);
+										//		itoa((int)current_position,sCurrent_position,10);
+										SendString("AT+CIPSEND=7\r\n");
+										Wait_ms(200);
+										SendString(sTempString);
+										SendString("L\r\n");
 								}
 								
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
