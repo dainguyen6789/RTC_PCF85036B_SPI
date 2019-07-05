@@ -83,9 +83,9 @@ static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 float calib_value[21],calib_time[21];// 600/calib_stamp+1
 int calib_bool[21];
-unsigned char seconds,mins, hours,days,months;//,mins1, hours1,mins2, hours2;
+unsigned char old_mins,seconds,mins, hours,days,months;//,mins1, hours1,mins2, hours2;
 float current_position=0;
-char sTempString[7];
+char sTempString[9];
 //int lcd=0;
 //calib_value=malloc(24);
 //calib_time=malloc(24);
@@ -339,6 +339,7 @@ void main(void)
 		//hours1=hours;
 		//mins2=mins1;
 		//mins1=mins;
+		old_mins=mins;
 		Read_time(&months,&days,&hours,&mins,&seconds);
 		if(BCDtoDec1(mins)%50==0 &&  BCDtoDec1(seconds&0x7f)==0 )
 		{		
@@ -364,8 +365,8 @@ void main(void)
 								{
 									//calculate elevation to decide whether we will calibrate or not
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
-									sprintf(sTempString, "%.01f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60);
-									SendString("AT+CIPSEND=7\r\n");
+									sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60);
+									SendString("AT+CIPSEND=9\r\n");
 									Delay_ms(10);
 									SendString(sTempString);
 									SendString("T\r\n");
@@ -421,51 +422,51 @@ void main(void)
 											max_ADC_Val_JP = max_ADC_Val;										
 									}
 
-//									dat_to_store.month=months;
-//									dat_to_store.date=days;
-//									dat_to_store.hour=hours;
-//									dat_to_store.min=mins;
-//									
-//									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
-//									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
-//									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
-//									dat_to_store.light_ADC=(unsigned char)(pwm_time/4);//
-//									
-//									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
-//									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
-//									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;								
-//									Wait_ms_SPINOR(50);
-//									//TOTAL: 120bytes for calib + 11 Bytes for  dat_to_store= 131 BYTES
-//									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
+									dat_to_store.month=months;
+									dat_to_store.date=days;
+									dat_to_store.hour=hours;
+									dat_to_store.min=mins;
+									
+									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
+									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
+									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after .
+									dat_to_store.light_ADC=(unsigned char)(pwm_time/4);//
+									
+									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
+									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
+									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;								
+									Wait_ms_SPINOR(50);
+									//TOTAL: 120bytes for calib + 11 Bytes for  dat_to_store= 131 BYTES
+									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
 										// Voltage from current sensor is used to calaculate POWER.
 										//====================================================					
-										sprintf(sTempString, "%.01f", theorical_JP_max_pos);
+										sprintf(sTempString, "%.4f", theorical_JP_max_pos);
 										//		itoa((int)current_position,sCurrent_position,10);
-										SendString("AT+CIPSEND=7\r\n");
+										SendString("AT+CIPSEND=9\r\n");
 										Wait_ms(200);
 										SendString(sTempString);
 										SendString("J\r\n");
 										Wait_ms(400);	
 										//====================================================					
-										sprintf(sTempString, "%.01f", (float)max_ADC_Val/1024*5);
+										sprintf(sTempString, "%.4f", (float)max_ADC_Val/1024*5);
 										//		itoa((int)current_position,sCurrent_position,10);
-										SendString("AT+CIPSEND=7\r\n");
+										SendString("AT+CIPSEND=9\r\n");
 										Wait_ms(200);
 										SendString(sTempString);
 										SendString("W\r\n");
 										Wait_ms(400);
 										
-										sprintf(sTempString, "%.01f", current_position);
+										sprintf(sTempString, "%.4f", current_position);
 										//		itoa((int)current_position,sCurrent_position,10);
-										SendString("AT+CIPSEND=7\r\n");
+										SendString("AT+CIPSEND=9\r\n");
 										Wait_ms(200);
 										SendString(sTempString);
 										SendString("M\r\n");
 										Wait_ms(400);
 
-										sprintf(sTempString, "%.01f", pwm_time);
+										sprintf(sTempString, "%.4f", pwm_time);
 										//		itoa((int)current_position,sCurrent_position,10);
-										SendString("AT+CIPSEND=7\r\n");
+										SendString("AT+CIPSEND=9\r\n");
 										Wait_ms(200);
 										SendString(sTempString);
 										SendString("L\r\n");
@@ -479,12 +480,53 @@ void main(void)
 
 											
 					}
-					if(iUse_prevday_calib_value==0)// FIRST day of calibration, update position not at the calibration time stamp
+					//===== Update when not at Calibration time stamp =====
+					if(iUse_prevday_calib_value==0 && BCDtoDec1(mins)%calib_stamp!=0)// FIRST day of calibration, update position not at the calibration time stamp
 					{
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
+									
+										//=====================================================================================
+										if(old_mins!=mins)
+										{
+											sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60+(float)BCDtoDec1(seconds&0x7F)/3600);
+											SendString("AT+CIPSEND=9\r\n");
+											Delay_ms(200);
+											SendString(sTempString);
+											SendString("T\r\n");									
+											Wait_ms(200);
+											//=====================================================================================
+										
+											sprintf(sTempString, "%.4f", current_position);
+											//		itoa((int)current_position,sCurrent_position,10);
+											SendString("AT+CIPSEND=9\r\n");
+											Wait_ms(200);
+											SendString(sTempString);
+											SendString("M\r\n");
+										
+											//=====================================================================================
+										
+											Wait_ms(200);
+
+											sprintf(sTempString, "%.4f", pwm_time);
+											//		itoa((int)current_position,sCurrent_position,10);
+											SendString("AT+CIPSEND=9\r\n");
+											Wait_ms(200);
+											SendString(sTempString);
+											SendString("L\r\n");
+											Wait_ms(200);
+
+											//====================================================					
+											sprintf(sTempString, "%.4f", (float)ADC_GetResult(0)/1024*5);
+											//		itoa((int)current_position,sCurrent_position,10);
+											SendString("AT+CIPSEND=9\r\n");
+											Wait_ms(200);
+											SendString(sTempString);
+											SendString("W\r\n");
+											Wait_ms(200);			
+										}										
 								}
 							
 					}

@@ -6,9 +6,10 @@
 #include "AT25SF041.h"
 #include "SI1120.h"
 #include "UART1.h"
+#include "PCF85063BTL.h"
 
 #define  offset_error 0.8
-
+unsigned char BCDtoDec1(unsigned char bcd);
 void Wait_ms(int ms);
 unsigned int ADC_GetResult(unsigned char ch);
 void Move(float  distance, bit direction);
@@ -40,9 +41,11 @@ int voltage_is_stable(void)
 }
 void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,unsigned int *max_ADC_JP_value, unsigned long int *address_to_write)
 {
+		unsigned char seconds,mins, hours,days,months;
+
 		unsigned char ch=0;
 		float calib_step_move=0.5,JPPos;
-		char sTemp[7];
+		char sTemp[9];
 		//float offset_error=0.8;
 		int voltage_at_scanned_pos[81],max_location, avg_voltage=0;
 		int i,j;
@@ -73,17 +76,17 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 					voltage_at_scanned_pos[i]=avg_voltage/5;
 					// Voltage from current sensor is used to calaculate POWER.
 //====================================================					
-					sprintf(sTemp, "%.01f", JPPos);
+					sprintf(sTemp, "%.4f", JPPos);
 					//		itoa((int)current_position,sCurrent_position,10);
-					SendString("AT+CIPSEND=7\r\n");
+					SendString("AT+CIPSEND=9\r\n");
 					Wait_ms(200);
 					SendString(sTemp);
 					SendString("J\r\n");
 					Wait_ms(400);	
 //====================================================					
-					sprintf(sTemp, "%.01f", (float)voltage_at_scanned_pos[i]/1024*5);
+					sprintf(sTemp, "%.4f", (float)voltage_at_scanned_pos[i]/1024*5);
 					//		itoa((int)current_position,sCurrent_position,10);
-					SendString("AT+CIPSEND=7\r\n");
+					SendString("AT+CIPSEND=9\r\n");
 					Wait_ms(200);
 					SendString(sTemp);
 					SendString("W\r\n");
@@ -160,18 +163,18 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 				WriteData(0x10);//display " "	
 				Wait_ms(200);
 				
-				sprintf(sTemp, "%.01f", *current_position);
+				sprintf(sTemp, "%.4f", *current_position);
 				//		itoa((int)current_position,sCurrent_position,10);
-				SendString("AT+CIPSEND=6\r\n");
+				SendString("AT+CIPSEND=9\r\n");
 				Wait_ms(200);
 				SendString(sTemp);
 				SendString("M\r\n");
 
 				Wait_ms(200);
 
-				sprintf(sTemp, "%.01f", pwm_time);
+				sprintf(sTemp, "%.4f", pwm_time);
 				//		itoa((int)current_position,sCurrent_position,10);
-				SendString("AT+CIPSEND=6\r\n");
+				SendString("AT+CIPSEND=9\r\n");
 				Wait_ms(200);
 				SendString(sTemp);
 				SendString("L\r\n");
@@ -180,7 +183,15 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 				*current_position=*current_position+0.5;
 
 				//Delay_ms(10);				
-				Wait_ms(500);// delay to wait for the electronic load to be stable.
+				Wait_ms(200);// delay to wait for the electronic load to be stable.
+				Read_time(&months,&days,&hours,&mins,&seconds);
+				
+				sprintf(sTemp, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60+(float)BCDtoDec1(seconds&0x7F)/3600);
+				SendString("AT+CIPSEND=9\r\n");
+				Wait_ms(200);
+				SendString(sTemp);
+				SendString("T\r\n");									
+				Wait_ms(200);
 
 		}
 		Wait_ms(1000);
@@ -205,13 +216,21 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 //			Display_Pos(83-max_location);
 
 			*current_position=*current_position-(calib_step_move*(83-max_location));
-			sprintf(sTemp, "%.01f", *current_position);
+			sprintf(sTemp, "%.4f", *current_position);
 			//		itoa((int)current_position,sCurrent_position,10);
-			SendString("AT+CIPSEND=6\r\n");
+			SendString("AT+CIPSEND=9\r\n");
 			Wait_ms(200);
 			SendString(sTemp);
 			SendString("M\r\n");
-			Wait_ms(500);
+			Wait_ms(200);
+			
+			Read_time(&months,&days,&hours,&mins,&seconds);
+			sprintf(sTemp, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60+(float)BCDtoDec1(seconds&0x7F)/3600);
+			SendString("AT+CIPSEND=9\r\n");
+			Wait_ms(200);
+			SendString(sTemp);
+			SendString("T\r\n");									
+			Wait_ms(200);			
 		}
 		return ;
 
@@ -241,7 +260,7 @@ float calibration(		unsigned char mnths,unsigned char dys,
 	unsigned int temporary_calib_max_ADC=0,temp_max_ADC_JP_value=0;//
 	unsigned long int temp_NOR_address_to_write=*NOR_address_to_write;
 	float JP_max_pos=*currnt_pos;
-	//char sTemp[6];
+	//char sTemp[8];
 	*calib_max_ADC_Val=0;
 	*max_ADC_JP_value=0;
 	*theorical_max_pos=0;
