@@ -24,6 +24,9 @@
 
 #define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
+sbit Connect_Electronics_Load = P1^7; 
+//sbit Connect_IV_Load = P1^2; 
+
 //#define T (55000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 
 //#define T1MS (65536-FOSC/10) //10uS T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
@@ -32,7 +35,9 @@
 //#define PointOne_mm_steps 10
 
 //#define PointTwo_mm_steps 21 //
-#define PointFour_mm_steps 28  //
+//#define PointFour_mm_steps 28  //
+#define PointFour_mm_steps 42  //
+
 #define DATA_WITHOUT_RUNNING_CALIBRATION 0
 
 //void Delay_ms(unsigned int ms);
@@ -163,7 +168,11 @@ void main(void)
 //	float current_position=0;
 	//calib_mode=1;
 	//auto_mode=0;
-
+	
+	// select ADC0 port 0
+//	P46       =   0;
+//	P45        =   0;
+//	P27        =   0;	
 	direction=1;
 	move=0;
 	small_move=0;
@@ -383,9 +392,12 @@ void main(void)
 									//GHI>=para
 									//GHI=pwm_time
 									{
-
+										
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										calib_bool[count]=1;
+										Connect_Electronics_Load=1;
+										P12=0;
+
 										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
 										
 
@@ -415,7 +427,8 @@ void main(void)
 											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 											calib_bool[count]=0;
 
-											
+											Connect_Electronics_Load=0;
+											P12=1;
 											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
 											theorical_JP_max_pos=current_position-calib_value[count];								
 											max_ADC_Val = ADC_GetResult(0);// read from channel 0
@@ -440,36 +453,36 @@ void main(void)
 									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
 										// Voltage from current sensor is used to calaculate POWER.
 										//====================================================					
-										sprintf(sTempString, "%.4f", theorical_JP_max_pos);
-										//		itoa((int)current_position,sCurrent_position,10);
-										SendString("AT+CIPSEND=9\r\n");
-										Wait_ms(200);
-										SendString(sTempString);
-										SendString("J\r\n");
-										Wait_ms(400);	
-										//====================================================					
-										sprintf(sTempString, "%.4f", (float)max_ADC_Val/1024*5);
-										//		itoa((int)current_position,sCurrent_position,10);
-										SendString("AT+CIPSEND=9\r\n");
-										Wait_ms(200);
-										SendString(sTempString);
-										SendString("W\r\n");
-										Wait_ms(400);
-										
-										sprintf(sTempString, "%.4f", current_position);
-										//		itoa((int)current_position,sCurrent_position,10);
-										SendString("AT+CIPSEND=9\r\n");
-										Wait_ms(200);
-										SendString(sTempString);
-										SendString("M\r\n");
-										Wait_ms(400);
+									sprintf(sTempString, "%.4f", theorical_JP_max_pos);
+									//		itoa((int)current_position,sCurrent_position,10);
+									SendString("AT+CIPSEND=9\r\n");
+									Wait_ms(200);
+									SendString(sTempString);
+									SendString("J\r\n");
+									Wait_ms(400);	
+									//====================================================					
+									sprintf(sTempString, "%.4f", (float)max_ADC_Val/1024*5);
+									//		itoa((int)current_position,sCurrent_position,10);
+									SendString("AT+CIPSEND=9\r\n");
+									Wait_ms(200);
+									SendString(sTempString);
+									SendString("W\r\n");
+									Wait_ms(400);
+									
+									sprintf(sTempString, "%.4f", current_position);
+									//		itoa((int)current_position,sCurrent_position,10);
+									SendString("AT+CIPSEND=9\r\n");
+									Wait_ms(200);
+									SendString(sTempString);
+									SendString("M\r\n");
+									Wait_ms(400);
 
-										sprintf(sTempString, "%.4f", pwm_time);
-										//		itoa((int)current_position,sCurrent_position,10);
-										SendString("AT+CIPSEND=9\r\n");
-										Wait_ms(200);
-										SendString(sTempString);
-										SendString("L\r\n");
+									sprintf(sTempString, "%.4f", pwm_time);
+									//		itoa((int)current_position,sCurrent_position,10);
+									SendString("AT+CIPSEND=9\r\n");
+									Wait_ms(200);
+									SendString(sTempString);
+									SendString("L\r\n");
 								}
 								
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
@@ -486,6 +499,9 @@ void main(void)
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
+										Connect_Electronics_Load=0;
+										P12=1;
+									
 										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
 									
 										//=====================================================================================
@@ -543,6 +559,8 @@ void main(void)
 										calib_point1.x=calib_time[count];
 										calib_point1.y=calib_value[count];
 										calib_point2.x=calib_time[count+1];// this is from previous day.
+										Connect_Electronics_Load=0;
+
 										if(calib_bool[count]==1 && calib_bool[count+1]==1)
 										{
 											calib_point2.y=calib_value[count+1];// this is from previous day.
@@ -562,12 +580,17 @@ void main(void)
 
 		}	
 				
-		// Code for the PUMP, enable PUMP from 7AM tp 5PM
+		// Code for the PUMP, enable PUMP from 7AM to 5PM
 		if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
+		{		
 				P55=1;
+				//Connect_Electronics_Load=1;
+		}
 		else
+		{
 				P55=0;
-		
+				//Connect_Electronics_Load=0;
+		}
 		// CLEAR SPI NOR by 99990 command from KEyPAd
 		if(SPI_NOR_ClearEnable==1)
 		{
