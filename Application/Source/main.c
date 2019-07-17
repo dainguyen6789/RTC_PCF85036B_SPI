@@ -25,7 +25,7 @@
 #define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 sbit Connect_Electronics_Load = P1^7; 
-//sbit Connect_IV_Load = P1^2; 
+sbit Connect_IV_Load = P1^2; 
 
 //#define T (55000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 
@@ -383,9 +383,9 @@ void main(void)
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
 									//============IF SUN LIGHT IS GOOD=======================
-									if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									//if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 									//=======================================================
-									//if(pwm_time>=5) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									if(pwm_time>=5) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 
 									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
 									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
@@ -396,7 +396,7 @@ void main(void)
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										calib_bool[count]=1;
 										Connect_Electronics_Load=1;
-										P12=0;
+										Connect_IV_Load=0;
 
 										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
 										
@@ -413,7 +413,7 @@ void main(void)
 
 										}
 									}
-							else // Store the data even in low light condition
+									else // Store the data even in low light condition
 									{
 											// store  120 bytes of "0" value when calibration does not work  in order to synchronize the pattern.
 											for(count=0;count<=323;count++)
@@ -428,7 +428,7 @@ void main(void)
 											calib_bool[count]=0;
 
 											Connect_Electronics_Load=0;
-											P12=1;
+											Connect_IV_Load=1;
 											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
 											theorical_JP_max_pos=current_position-calib_value[count];								
 											max_ADC_Val = ADC_GetResult(0);// read from channel 0
@@ -500,7 +500,7 @@ void main(void)
 								{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										Connect_Electronics_Load=0;
-										P12=1;
+										Connect_IV_Load=1;
 									
 										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
 									
