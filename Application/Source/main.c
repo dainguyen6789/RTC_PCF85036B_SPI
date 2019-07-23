@@ -35,8 +35,8 @@ sbit Connect_IV_Load = P1^2;
 //#define PointOne_mm_steps 10
 
 //#define PointTwo_mm_steps 21 //
-//#define PointFour_mm_steps 28  //
-#define PointFour_mm_steps 42  //
+#define PointFour_mm_steps 28  //
+//#define PointFour_mm_steps 42  //
 
 #define DATA_WITHOUT_RUNNING_CALIBRATION 0
 
@@ -160,19 +160,19 @@ void main(void)
 	unsigned int max_ADC_Val_JP=0,max_ADC_Val=0;
 	struct point calib_point1,calib_point2;
 	struct data_to_store dat_to_store;
-//	unsigned char KeyNum;
+	//	unsigned char KeyNum;
 	int calib_day=0, calib_count;
 	float theorical_JP_max_pos=0,elevation;
-//	char numStr[5];
+	//	char numStr[5];
 	
-//	float current_position=0;
+	//	float current_position=0;
 	//calib_mode=1;
 	//auto_mode=0;
 	
 	// select ADC0 port 0
-//	P46       =   0;
-//	P45        =   0;
-//	P27        =   0;	
+	//	P46       =   0;
+	//	P45        =   0;
+	//	P27        =   0;	
 	direction=1;
 	move=0;
 	small_move=0;
@@ -184,7 +184,7 @@ void main(void)
 	float c=2.1989;
 	float d=-2.0858e2;
 	float dd=138;*/
-//	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
+	//	float rx_pos_12h=a*pow(dd,3)+b*pow(dd,2)+c*dd+d;// pow (base, power)
 	//=======================================
 	//P3M1&=~(0xF8);
 	//P3M0|=0xF8;
@@ -199,7 +199,7 @@ void main(void)
 	SI1120_CONFIG_MODE_VIRH();
 	Enable_EXTINT0();
 	//=========================================
-	vSetLocation();// set location longtitude an
+	vSetLocation();// set location longtitude and lattitude
 	//Timer0===================================
 	AUXR|=0x80;
 	TL0=T1MS;
@@ -383,9 +383,9 @@ void main(void)
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
 									//============IF SUN LIGHT IS GOOD=======================
-									//if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 									//=======================================================
-									if(pwm_time>=5) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									//if(pwm_time>=5) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 
 									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
 									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
@@ -451,7 +451,7 @@ void main(void)
 									Wait_ms_SPINOR(50);
 									//TOTAL: 120bytes for calib + 11 Bytes for  dat_to_store= 131 BYTES
 									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
-										// Voltage from current sensor is used to calaculate POWER.
+									// Voltage from current sensor is used to calaculate POWER.
 										//====================================================					
 									sprintf(sTempString, "%.4f", theorical_JP_max_pos);
 									//		itoa((int)current_position,sCurrent_position,10);
@@ -551,7 +551,7 @@ void main(void)
 					else
 					{
 						
-							// calib every 30mins, from 7AM to 17PM
+								// calib every 30mins, from 7AM to 17PM
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)								
 								{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
