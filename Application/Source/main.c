@@ -482,7 +482,10 @@ void main(void)
 									SendString("AT+CIPSEND=9\r\n");
 									Wait_ms(200);
 									SendString(sTempString);
+									Wait_ms(200);
 									SendString("L\r\n");
+									Wait_ms(200);
+
 								}
 								
 								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
@@ -531,6 +534,7 @@ void main(void)
 											SendString("AT+CIPSEND=9\r\n");
 											Wait_ms(200);
 											SendString(sTempString);
+											Wait_ms(200);
 											SendString("L\r\n");
 											Wait_ms(200);
 
@@ -548,7 +552,7 @@ void main(void)
 					}
 					
 					// how to update for next day and use the calib value from the previous day???
-					else
+					else if(iUse_prevday_calib_value==1 && BCDtoDec1(mins)%calib_stamp!=0)
 					{
 						
 								// calib every 30mins, from 7AM to 17PM
@@ -560,6 +564,7 @@ void main(void)
 										calib_point1.y=calib_value[count];
 										calib_point2.x=calib_time[count+1];// this is from previous day.
 										Connect_Electronics_Load=0;
+										Connect_IV_Load=1;
 
 										if(calib_bool[count]==1 && calib_bool[count+1]==1)
 										{
@@ -570,8 +575,48 @@ void main(void)
 										{
 											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[FindClosestSamedayCalibTime(calib_bool,count)]);
 										}
+										
 										// in the UPDATE function, we only update the motor position when the distance >0.5mm
+										if(old_mins!=mins)
+										{
+											sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60+(float)BCDtoDec1(seconds&0x7F)/3600);
+											SendString("AT+CIPSEND=9\r\n");
+											Delay_ms(200);
+											SendString(sTempString);
+											SendString("T\r\n");									
+											Wait_ms(200);
+											//=====================================================================================
+										
+											sprintf(sTempString, "%.4f", current_position);
+											//		itoa((int)current_position,sCurrent_position,10);
+											SendString("AT+CIPSEND=9\r\n");
+											Wait_ms(200);
+											SendString(sTempString);
+											SendString("M\r\n");
+										
+											//=====================================================================================
+										
+											Wait_ms(200);
 
+											sprintf(sTempString, "%.4f", pwm_time);
+											//		itoa((int)current_position,sCurrent_position,10);
+											SendString("AT+CIPSEND=9\r\n");
+											Wait_ms(200);
+											SendString(sTempString);
+											Wait_ms(200);
+
+											SendString("L\r\n");
+											Wait_ms(200);
+
+											//====================================================					
+											sprintf(sTempString, "%.4f", (float)ADC_GetResult(0)/1024*5);
+											//		itoa((int)current_position,sCurrent_position,10);
+											SendString("AT+CIPSEND=9\r\n");
+											Wait_ms(200);
+											SendString(sTempString);
+											SendString("W\r\n");
+											Wait_ms(200);			
+										}
 
 								}
 							
