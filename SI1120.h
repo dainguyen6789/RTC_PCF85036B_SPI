@@ -1,5 +1,5 @@
-	//#define  
-	#include "stc15f2k60s2.h"
+//#define  
+#include "stc15f2k60s2.h"
 
 sbit 			SI1120_SC	=	P1^6;	
 sbit 			SI1120_MD	=	P1^4;	

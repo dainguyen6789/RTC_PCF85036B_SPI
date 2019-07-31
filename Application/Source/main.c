@@ -35,8 +35,8 @@ sbit Connect_IV_Load = P1^2;
 //#define PointOne_mm_steps 10
 
 //#define PointTwo_mm_steps 21 //
-#define PointFour_mm_steps 28  //
-//#define PointFour_mm_steps 42  //
+//#define PointFour_mm_steps 28  //
+#define PointFour_mm_steps 42  //
 
 #define DATA_WITHOUT_RUNNING_CALIBRATION 0
 
@@ -366,6 +366,9 @@ void main(void)
 		{
 			
 			//sunlight_ADC=ADC_GetResult(2);
+				Display_Line(1);	
+				Display_Pos(pwm_time);
+
 			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
 			{
 						if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
@@ -383,9 +386,9 @@ void main(void)
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
 									//============IF SUN LIGHT IS GOOD=======================
-									if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									//if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 									//=======================================================
-									//if(pwm_time>=5) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									if(1) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 
 									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
 									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
