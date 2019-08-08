@@ -693,9 +693,9 @@ void main(void)
 					calib_point1.x=i;
 					
 					if(AT25SF041_Read(Byte_Page_Program,2*i)==0)
-						calib_point1.y=(-1)*AT25SF041_Read(Byte_Page_Program,2*i+1)+ AT25SF041_Read(Byte_Page_Program,2*i+2);
+						calib_point1.y=-(AT25SF041_Read(Byte_Page_Program,2*i+1)+ AT25SF041_Read(Byte_Page_Program,2*i+2)/100);
 					else
-						calib_point1.y=AT25SF041_Read(Byte_Page_Program,2*i+1)+ AT25SF041_Read(Byte_Page_Program,2*i+2);
+						calib_point1.y=AT25SF041_Read(Byte_Page_Program,2*i+1)+ AT25SF041_Read(Byte_Page_Program,2*i+2)/100;
 
 					i_point1=i;
 					i_point2=i_point1;
@@ -716,7 +716,7 @@ void main(void)
 								Wait_ms_SPINOR(50);	
 								AT25SF041_WriteEnable();
 								//Wait_ms_SPINOR(50);	
-								if(calib_value>=0)
+								if(calib_value[ii]>=0)
 									AT25SF041_Write(Byte_Page_Program, 2*ii,1);// positive value	
 								else
 									AT25SF041_Write(Byte_Page_Program, 2*ii,0);// negative value	
@@ -726,15 +726,14 @@ void main(void)
 								Wait_ms_SPINOR(50);	
 								AT25SF041_WriteEnable();
 								//Wait_ms_SPINOR(50);	
-								AT25SF041_Write(Byte_Page_Program, 2*ii+1,(unsigned char)fabs(calib_value));	
+								AT25SF041_Write(Byte_Page_Program, 2*ii+1,(unsigned char)(calib_value[ii]));	
 								Wait_ms_SPINOR(50);	
 								
 								Wait_ms_SPINOR(50);	
 								AT25SF041_WriteEnable();
 								//Wait_ms_SPINOR(50);	
-								AT25SF041_Write(Byte_Page_Program, 2*ii+2,(fabs(calib_value)-(unsigned char)fabs(calib_value))*100;);	
+								AT25SF041_Write(Byte_Page_Program, 2*ii+2,(calib_value[ii]-(unsigned char)calib_value[ii])    *100);	
 								Wait_ms_SPINOR(50);								
-							}
 					}
 				}
 				
@@ -743,7 +742,7 @@ void main(void)
 					calib_point2.x=i;
 					
 					if(AT25SF041_Read(Byte_Page_Program,2*i)==0)
-							calib_point2.y=(-1)*(AT25SF041_Read(Byte_Page_Program,2*i+1)+ AT25SF041_Read(Byte_Page_Program,2*i+2));	
+							calib_point2.y=-(AT25SF041_Read(Byte_Page_Program,2*i+1)+ AT25SF041_Read(Byte_Page_Program,2*i+2));	
 					else
 							calib_point2.y=AT25SF041_Read(Byte_Page_Program,2*i+1)+ AT25SF041_Read(Byte_Page_Program,2*i+2);	
 
@@ -755,7 +754,7 @@ void main(void)
 				// update new calibration value from interpolation.
 				if(found_1st_point==1)
 				{
-					for(j=i_point1;j<=i_poin2;i++)
+					for(j=i_point1;j<=i_point2;j++)
 					{
 						calib_value[j]=linear_interpolate(calib_point1,calib_point2,calib_time[j]);
 						// Save new calib value in the flash memory
@@ -788,11 +787,12 @@ void main(void)
 				}
 
 			}
+			}
 			if(calib_bool[20]==0)
 			{
-				for(j=i_point2+1;j<=20;j++)
+				for(j=i_point2;j<=20;j++)
 				{
-					calib_value[j]=calib[i_point2];
+					calib_value[j]=calib_value[i_point2];
 					{
 					Wait_ms_SPINOR(50);	
 					AT25SF041_WriteEnable();
@@ -806,18 +806,19 @@ void main(void)
 					Wait_ms_SPINOR(50);	
 					AT25SF041_WriteEnable();
 					//Wait_ms_SPINOR(50);	
-					AT25SF041_Write(Byte_Page_Program, 2*j+1,(unsigned char)calib_value[j]);	
+					AT25SF041_Write(Byte_Page_Program, 2*j+1,fabs(calib_value[j]));	
 					Wait_ms_SPINOR(50);	
 						
 					Wait_ms_SPINOR(50);	
 					AT25SF041_WriteEnable();
 					//Wait_ms_SPINOR(50);	
-					AT25SF041_Write(Byte_Page_Program, 2*j+2,(calib_value[j]-(unsigned char)calib_value[j])*100);	
+					AT25SF041_Write(Byte_Page_Program, 2*j+2,(calib_value[j]-(unsigned char)  calib_value[j]   )   *100);	
 					Wait_ms_SPINOR(50);		
 					}					
 				}
 			}
 		}
+		
 		else
 		{
 				P55=0;
