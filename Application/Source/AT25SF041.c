@@ -375,3 +375,4 @@ void SPI_NOR_Write_Data(struct data_to_store dat,unsigned long int *addr)
 
 
 }
+
