@@ -446,7 +446,7 @@ void main(void)
 											AT25SF041_WriteEnable();
 											//Wait_ms_SPINOR(50);	
 											//AT25SF041_Write(Byte_Page_Program, 3*count+1,(unsigned char)fabs(calib_value[count]));	
-											AT25SF041_Write(Byte_Page_Program, 3*count+1,(unsigned char)(calib_value[count]));	
+											AT25SF041_Write(Byte_Page_Program, 3*count+1,abs(calib_value[count]));	
 
 											Wait_ms_SPINOR(50);	
 
@@ -454,7 +454,7 @@ void main(void)
 											AT25SF041_WriteEnable();
 											//Wait_ms_SPINOR(50);	
 											//AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-(unsigned char)fabs(calib_value[count]))*100);	
-											AT25SF041_Write(Byte_Page_Program, 3*count+2,((calib_value[count])-(unsigned char)(calib_value[count]))*100);	
+											AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-abs(calib_value[count]))*100);	
 
 											Wait_ms_SPINOR(50);	
 										}
