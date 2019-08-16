@@ -747,6 +747,8 @@ void main(void)
 								AT25SF041_Write(Byte_Page_Program, 3*ii+2,(fabs(calib_value[ii])-abs(calib_value[ii]))    *100);	
 								Wait_ms_SPINOR(50);								
 							}
+						}
+						break;
 				}
 				
 				else if(calib_bool[i]==1 && found_1st_point==1)
@@ -798,7 +800,7 @@ void main(void)
 					i_point1=i_point2;// update the position in the array, total 21 points from 7Am to 17PM
 				}
 
-			}
+			
 			}
 			if(calib_bool[20]==0)
 			{
