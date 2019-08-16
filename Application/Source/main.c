@@ -231,6 +231,7 @@ void main(void)
 	{
 		calib_value[calib_count]=0;
 		calib_time[calib_count]=7+(float)calib_count/2;
+		calib_bool[calib_count]=0;
 	}
 	initUART1();
 	//IP|=0x10;
