@@ -699,7 +699,56 @@ void main(void)
 			// interpolate and justify calibration value
 			for(i=0;i<=20;i++)
 			{
-				if(calib_bool[i]==1 && found_1st_point==0)
+								//===========================================				
+				// update new calibration value from interpolation.
+				if(found_1st_point==1)
+				{
+					for(j=i_point1+1;j<i_point2;j++)
+					{
+						calib_value[j]=linear_interpolate(calib_point1,calib_point2,calib_time[j]);
+						// Save new calib value in the flash memory
+						Wait_ms_SPINOR(50);	
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
+						if(calib_value[j]>0)
+							AT25SF041_Write(Byte_Page_Program, 3*j,1);	
+						else
+							AT25SF041_Write(Byte_Page_Program, 3*j,0);	
+							
+						Wait_ms_SPINOR(50);						
+						Wait_ms_SPINOR(50);	
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
+						AT25SF041_Write(Byte_Page_Program, 3*j+1,abs(calib_value[j]));	
+						Wait_ms_SPINOR(50);	
+							
+						Wait_ms_SPINOR(50);	
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
+						AT25SF041_Write(Byte_Page_Program, 3*j+2,(fabs(calib_value[j])-abs(calib_value[j]))*100);	
+						Wait_ms_SPINOR(50);					
+					}
+				
+					// now point 2 will be the 1st point for next interpolation
+					calib_point1.x=calib_point2.x;
+					calib_point1.y=calib_point2.y;
+					i_point1=i_point2;// update the position in the array, total 21 points from 7Am to 17PM
+				}
+				
+				if(calib_bool[i]==1 && found_1st_point==1)
+				{
+					calib_point2.x=i;
+					
+					if(AT25SF041_Read(Byte_Page_Program,3*i)==0)
+							calib_point2.y=-(AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2));	
+					else
+							calib_point2.y=AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2);	
+
+					i_point2=i;
+				}
+		
+				//===========================================
+				else if(calib_bool[i]==1 && found_1st_point==0)
 				{
 					
 					calib_point1.x=i;
@@ -748,57 +797,8 @@ void main(void)
 								Wait_ms_SPINOR(50);								
 							}
 						}
-						break;
 				}
-				
-				else if(calib_bool[i]==1 && found_1st_point==1)
-				{
-					calib_point2.x=i;
-					
-					if(AT25SF041_Read(Byte_Page_Program,3*i)==0)
-							calib_point2.y=-(AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2));	
-					else
-							calib_point2.y=AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2);	
 
-					i_point2=i;
-				}
-		
-				//===========================================
-				//===========================================				
-				// update new calibration value from interpolation.
-				if(found_1st_point==1)
-				{
-					for(j=i_point1+1;j<i_point2;j++)
-					{
-						calib_value[j]=linear_interpolate(calib_point1,calib_point2,calib_time[j]);
-						// Save new calib value in the flash memory
-						Wait_ms_SPINOR(50);	
-						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						if(calib_value[j]>0)
-							AT25SF041_Write(Byte_Page_Program, 3*j,1);	
-						else
-							AT25SF041_Write(Byte_Page_Program, 3*j,0);	
-							
-						Wait_ms_SPINOR(50);						
-						Wait_ms_SPINOR(50);	
-						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, 3*j+1,abs(calib_value[j]));	
-						Wait_ms_SPINOR(50);	
-							
-						Wait_ms_SPINOR(50);	
-						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, 3*j+2,(fabs(calib_value[j])-abs(calib_value[j]))*100);	
-						Wait_ms_SPINOR(50);					
-					}
-				
-					// now point 2 will be the 1st point for next interpolation
-					calib_point1.x=calib_point2.x;
-					calib_point1.y=calib_point2.y;
-					i_point1=i_point2;// update the position in the array, total 21 points from 7Am to 17PM
-				}
 
 			
 			}
