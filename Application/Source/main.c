@@ -705,7 +705,7 @@ void main(void)
 				{
 					for(j=i_point1+1;j<i_point2;j++)
 					{
-						calib_value[j]=linear_interpolate(calib_point1,calib_point2,j);
+						calib_value[j]=linear_interpolate(calib_point1,calib_point2,calib_time[j]);
 						// Save new calib value in the flash memory
 						Wait_ms_SPINOR(50);	
 						AT25SF041_WriteEnable();
@@ -737,7 +737,7 @@ void main(void)
 				
 				if(calib_bool[i]==1 && found_1st_point==1)
 				{
-					calib_point2.x=i;
+					calib_point2.x=calib_time[i];
 					
 					if(AT25SF041_Read(Byte_Page_Program,3*i)==0)
 							calib_point2.y=-(AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2));	
@@ -751,7 +751,7 @@ void main(void)
 				else if(calib_bool[i]==1 && found_1st_point==0)
 				{
 					
-					calib_point1.x=i;
+					calib_point1.x=calib_time[i];
 					
 					if(AT25SF041_Read(Byte_Page_Program,3*i)==0)
 						calib_point1.y=-(AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100);
