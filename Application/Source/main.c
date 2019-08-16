@@ -611,9 +611,9 @@ void main(void)
 											//calib_point1.y=calib_value[count];
 											//read from Adesto SPI NOR AT25SF041
 											if(AT25SF041_Read(Byte_Page_Program,3*(count))==1)
-												calib_point1.y=AT25SF041_Read(Byte_Page_Program,3*count+1)+ AT25SF041_Read(Byte_Page_Program,3*count+2);
+												calib_point1.y=AT25SF041_Read(Byte_Page_Program,3*count+1)+ AT25SF041_Read(Byte_Page_Program,3*count+2)/100;
 											else if(AT25SF041_Read(Byte_Page_Program,3*(count))==0)
-												calib_point2.y=-AT25SF041_Read(Byte_Page_Program,3*count+1)+ AT25SF041_Read(Byte_Page_Program,3*count+2);			
+												calib_point2.y=-AT25SF041_Read(Byte_Page_Program,3*count+1)+ AT25SF041_Read(Byte_Page_Program,3*count+2)/100;			
 											Connect_Electronics_Load=0;
 											Connect_IV_Load=1;
 
@@ -621,9 +621,9 @@ void main(void)
 											{
 												//calib_point2.y=calib_value[count+1];// this is from previous day.
 												if(AT25SF041_Read(Byte_Page_Program,3*(count+1))==1)
-													calib_point2.y=AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)+ AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)+diff_of_offset;
+													calib_point2.y=AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)+ AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)/100+diff_of_offset;
 												else if(AT25SF041_Read(Byte_Page_Program,3*(count+1))==0)
-													calib_point2.y=-AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)+ AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)+diff_of_offset;
+													calib_point2.y=-AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)+ AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)/100+diff_of_offset;
 											
 												//calib_point2.y=calib_value[count+1];// this is from previous day.
 												Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
@@ -740,9 +740,12 @@ void main(void)
 					calib_point2.x=calib_time[i];
 					
 					if(AT25SF041_Read(Byte_Page_Program,3*i)==0)
-							calib_point2.y=-(AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2));	
+							//calib_point2.y=-(AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100);	
+							calib_point2.y=calib_value[i];
 					else
-							calib_point2.y=AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2);	
+							//calib_point2.y=AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100;
+							calib_point2.y=calib_value[i];
+
 
 					i_point2=i;
 				}
@@ -754,9 +757,11 @@ void main(void)
 					calib_point1.x=calib_time[i];
 					
 					if(AT25SF041_Read(Byte_Page_Program,3*i)==0)
-						calib_point1.y=-(AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100);
+						calib_point1.y=calib_value[i];
+						//calib_point1.y=-(AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100);
 					else
-						calib_point1.y=AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100;
+						calib_point1.y=calib_value[i];
+						//calib_point1.y=AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100;
 
 					i_point1=i;
 					i_point2=i_point1;
