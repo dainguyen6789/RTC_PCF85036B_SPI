@@ -689,8 +689,8 @@ void main(void)
 			//Connect_Electronics_Load=1;
 
 		}
-		
-		else
+		// after 17PM, the interpolation will be implemented.
+		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==0 && BCDtoDec1(seconds&0x7f)==0 )
 		{
 				P55=0;
 				//Connect_Electronics_Load=0;
@@ -737,13 +737,13 @@ void main(void)
 								Wait_ms_SPINOR(50);	
 								AT25SF041_WriteEnable();
 								//Wait_ms_SPINOR(50);	
-								AT25SF041_Write(Byte_Page_Program, 3*ii+1,(unsigned char)fabs(calib_value[ii]));	
+								AT25SF041_Write(Byte_Page_Program, 3*ii+1,abs(calib_value[ii]));	
 								Wait_ms_SPINOR(50);	
 								
 								Wait_ms_SPINOR(50);	
 								AT25SF041_WriteEnable();
 								//Wait_ms_SPINOR(50);	
-								AT25SF041_Write(Byte_Page_Program, 3*ii+2,(calib_value[ii]-(unsigned char)fabs(calib_value[ii]))    *100);	
+								AT25SF041_Write(Byte_Page_Program, 3*ii+2,(fabs(calib_value[ii])-abs(calib_value[ii]))    *100);	
 								Wait_ms_SPINOR(50);								
 					}
 				}
@@ -781,13 +781,13 @@ void main(void)
 						Wait_ms_SPINOR(50);	
 						AT25SF041_WriteEnable();
 						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, 3*j+1,(unsigned char)fabs(calib_value[j]));	
+						AT25SF041_Write(Byte_Page_Program, 3*j+1,abs(calib_value[j]));	
 						Wait_ms_SPINOR(50);	
 							
 						Wait_ms_SPINOR(50);	
 						AT25SF041_WriteEnable();
 						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, 3*j+2,(calib_value[j]-(unsigned char)fabs(calib_value[j]))*100);	
+						AT25SF041_Write(Byte_Page_Program, 3*j+2,(fabs(calib_value[j])-abs(calib_value[j]))*100);	
 						Wait_ms_SPINOR(50);					
 					}
 				
@@ -817,13 +817,13 @@ void main(void)
 					Wait_ms_SPINOR(50);	
 					AT25SF041_WriteEnable();
 					//Wait_ms_SPINOR(50);	
-					AT25SF041_Write(Byte_Page_Program, 3*j+1,fabs(calib_value[j]));	
+					AT25SF041_Write(Byte_Page_Program, 3*j+1,abs(calib_value[j]));	
 					Wait_ms_SPINOR(50);	
 						
 					Wait_ms_SPINOR(50);	
 					AT25SF041_WriteEnable();
 					//Wait_ms_SPINOR(50);	
-					AT25SF041_Write(Byte_Page_Program, 3*j+2,(fabs(calib_value[j])-(unsigned char)  calib_value[j]   )   *100);	
+					AT25SF041_Write(Byte_Page_Program, 3*j+2,(fabs(calib_value[j])-abs(calib_value[j]   ))   *100);	
 					Wait_ms_SPINOR(50);		
 					}					
 				}
