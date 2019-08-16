@@ -705,7 +705,7 @@ void main(void)
 				{
 					for(j=i_point1+1;j<i_point2;j++)
 					{
-						calib_value[j]=linear_interpolate(calib_point1,calib_point2,calib_time[j]);
+						calib_value[j]=linear_interpolate(calib_point1,calib_point2,j);
 						// Save new calib value in the flash memory
 						Wait_ms_SPINOR(50);	
 						AT25SF041_WriteEnable();
