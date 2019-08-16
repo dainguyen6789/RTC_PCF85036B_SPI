@@ -693,8 +693,8 @@ void main(void)
 		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==0 && BCDtoDec1(seconds&0x7f)==0 )
 		{
 				P55=0;
-				//Connect_Electronics_Load=0;
-							//===========================================
+			//Connect_Electronics_Load=0;
+			//===========================================
 			// interpolate and justify calibration value
 			for(i=0;i<=20;i++)
 			{
@@ -745,7 +745,7 @@ void main(void)
 								//Wait_ms_SPINOR(50);	
 								AT25SF041_Write(Byte_Page_Program, 3*ii+2,(fabs(calib_value[ii])-abs(calib_value[ii]))    *100);	
 								Wait_ms_SPINOR(50);								
-					}
+							}
 				}
 				
 				else if(calib_bool[i]==1 && found_1st_point==1)
@@ -765,7 +765,7 @@ void main(void)
 				// update new calibration value from interpolation.
 				if(found_1st_point==1)
 				{
-					for(j=i_point1;j<=i_point2;j++)
+					for(j=i_point1+1;j<i_point2;j++)
 					{
 						calib_value[j]=linear_interpolate(calib_point1,calib_point2,calib_time[j]);
 						// Save new calib value in the flash memory
