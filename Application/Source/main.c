@@ -21,7 +21,7 @@
 #include "AT25SF041.h"
 #include "SI1120.h"
 //#include "Receiver_Position_Data.h"
-
+#define Block2_MEM_ADDR 100
 #define FOSC 18432000L 	 
 #define T1MS (65536-FOSC/1000) //1ms=1000us T0 overflow = (SYSclk)/(65536-[RL_TH0, RL_TL0])
 sbit Connect_Electronics_Load = P1^7; 
@@ -438,16 +438,16 @@ void main(void)
 											AT25SF041_WriteEnable();
 											//Wait_ms_SPINOR(50);	
 											if(calib_value[count]>0)
-												AT25SF041_Write(Byte_Page_Program, 3*count,1);	
+												AT25SF041_Write(Byte_Page_Program, 3*count+iUse_prevday_calib_value*Block2_MEM_ADDR,1);	
 											else
-												AT25SF041_Write(Byte_Page_Program, 3*count,0);	
+												AT25SF041_Write(Byte_Page_Program, 3*count+iUse_prevday_calib_value*Block2_MEM_ADDR,0);	
 
 											Wait_ms_SPINOR(50);						
 											Wait_ms_SPINOR(50);	
 											AT25SF041_WriteEnable();
 											//Wait_ms_SPINOR(50);	
 											//AT25SF041_Write(Byte_Page_Program, 3*count+1,(unsigned char)fabs(calib_value[count]));	
-											AT25SF041_Write(Byte_Page_Program, 3*count+1,abs(calib_value[count]));	
+											AT25SF041_Write(Byte_Page_Program, 3*count+1+iUse_prevday_calib_value*Block2_MEM_ADDR,abs(calib_value[count]));	
 
 											Wait_ms_SPINOR(50);	
 
@@ -455,7 +455,7 @@ void main(void)
 											AT25SF041_WriteEnable();
 											//Wait_ms_SPINOR(50);	
 											//AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-(unsigned char)fabs(calib_value[count]))*100);	
-											AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-abs(calib_value[count]))*100);	
+											AT25SF041_Write(Byte_Page_Program, 3*count+2+iUse_prevday_calib_value*Block2_MEM_ADDR,(fabs(calib_value[count])-abs(calib_value[count]))*100);	
 
 											Wait_ms_SPINOR(50);	
 										}
@@ -611,9 +611,9 @@ void main(void)
 											//calib_point1.y=calib_value[count];
 											//read from Adesto SPI NOR AT25SF041
 											if(AT25SF041_Read(Byte_Page_Program,3*(count))==1)
-												calib_point1.y=(float)AT25SF041_Read(Byte_Page_Program,3*count+1)+ (float)AT25SF041_Read(Byte_Page_Program,3*count+2)/100;
+												calib_point1.y=(float)AT25SF041_Read(Byte_Page_Program,3*count+1+Block2_MEM_ADDR)+ (float)AT25SF041_Read(Byte_Page_Program,3*count+2+Block2_MEM_ADDR)/100;
 											else if(AT25SF041_Read(Byte_Page_Program,3*(count))==0)
-												calib_point2.y=-(float)AT25SF041_Read(Byte_Page_Program,3*count+1)-(float)AT25SF041_Read(Byte_Page_Program,3*count+2)/100;			
+												calib_point2.y=-(float)AT25SF041_Read(Byte_Page_Program,3*count+1+Block2_MEM_ADDR)-(float)AT25SF041_Read(Byte_Page_Program,3*count+2+Block2_MEM_ADDR)/100;			
 											Connect_Electronics_Load=0;
 											Connect_IV_Load=1;
 
@@ -621,9 +621,9 @@ void main(void)
 											{
 												//calib_point2.y=calib_value[count+1];// this is from previous day.
 												if(AT25SF041_Read(Byte_Page_Program,3*(count+1))==1)
-													calib_point2.y=(float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)+ (float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)/100+diff_of_offset; // diff_of_offset is the difference between the calibration value of this day and the day before
+													calib_point2.y=(float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+1+Block2_MEM_ADDR)+ (float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+2+Block2_MEM_ADDR)/100+diff_of_offset; // diff_of_offset is the difference between the calibration value of this day and the day before
 												else if(AT25SF041_Read(Byte_Page_Program,3*(count+1))==0)
-													calib_point2.y=-(float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)-(float) AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)/100+diff_of_offset;
+													calib_point2.y=-(float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+1+Block2_MEM_ADDR)-(float) AT25SF041_Read(Byte_Page_Program,3*(count+1)+2+Block2_MEM_ADDR)/100+diff_of_offset;
 											
 												//calib_point2.y=calib_value[count+1];// this is from previous day.
 												Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
@@ -691,15 +691,61 @@ void main(void)
 
 		}
 		// after 17PM, the interpolation will be implemented.
-		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==0 && BCDtoDec1(seconds&0x7f)==0 )
+		else if (BCDtoDec1(hours)==16  && BCDtoDec1(mins)==58 && BCDtoDec1(seconds&0x7f)==0 )
 		{
 				P55=0;
 			//Connect_Electronics_Load=0;
+			if(iUse_prevday_calib_value==1)// 2nd day
+			{
+				// clear SPI NOR FLASH
+				AT25SF041_WriteEnable();
+				//Wait_ms_SPINOR(50);
+				AT25SF041_ChipErase();
+				Wait_ms_SPINOR(5);				
+				// Write calib value of this/2nd day to Memory Block 1 (addr from 0 to 100)
+				for(ii=0;ii<=20;ii++)
+				{
+					if(calib_bool[ii]==1)
+					{
+						Wait_ms_SPINOR(50);	
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
+						// calib bool array is stored from addr 63 
+						AT25SF041_Write(Byte_Page_Program, ii+63,calib_bool[ii]);
+						Wait_ms_SPINOR(50);	
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
+						if(calib_value[ii]>0)
+							AT25SF041_Write(Byte_Page_Program, 3*ii,1);	
+						else
+							AT25SF041_Write(Byte_Page_Program, 3*ii,0);	
+
+						Wait_ms_SPINOR(50);						
+						Wait_ms_SPINOR(50);	
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
+						//AT25SF041_Write(Byte_Page_Program, 3*count+1,(unsigned char)fabs(calib_value[count]));	
+						AT25SF041_Write(Byte_Page_Program, 3*ii+1,abs(calib_value[ii]));	
+
+						Wait_ms_SPINOR(50);	
+
+						Wait_ms_SPINOR(50);	
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
+						//AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-(unsigned char)fabs(calib_value[count]))*100);	
+						AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[ii])-abs(calib_value[ii]))*100);	
+
+						Wait_ms_SPINOR(50);	
+					}						
+				}				
+				
+			}
+
 			//===========================================
 			// interpolate and justify calibration value
 			for(i=0;i<=20;i++)
 			{
-								//===========================================				
+				//===========================================				
 				// update new calibration value from interpolation.
 				if(found_1st_point==1)
 				{
@@ -726,7 +772,13 @@ void main(void)
 						AT25SF041_WriteEnable();
 						//Wait_ms_SPINOR(50);	
 						AT25SF041_Write(Byte_Page_Program, 3*j+2,(fabs(calib_value[j])-abs(calib_value[j]))*100);	
-						Wait_ms_SPINOR(50);					
+						Wait_ms_SPINOR(50);		
+
+						Wait_ms_SPINOR(50);	
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
+						AT25SF041_Write(Byte_Page_Program, j+63,1);	
+						Wait_ms_SPINOR(50);							
 					}
 				
 					// now point 2 will be the 1st point for next interpolation
@@ -832,7 +884,13 @@ void main(void)
 					AT25SF041_WriteEnable();
 					//Wait_ms_SPINOR(50);	
 					AT25SF041_Write(Byte_Page_Program, 3*j+2,(fabs(calib_value[j])-abs(calib_value[j]   ))   *100);	
-					Wait_ms_SPINOR(50);		
+					Wait_ms_SPINOR(50);	
+					
+					Wait_ms_SPINOR(50);	
+					AT25SF041_WriteEnable();
+					//Wait_ms_SPINOR(50);	
+					AT25SF041_Write(Byte_Page_Program, j+63,1);	
+					Wait_ms_SPINOR(50);	
 					}					
 				}
 			}
@@ -860,7 +918,7 @@ void main(void)
 			//Wait_ms_SPINOR(50);
 			AT25SF041_ChipErase();
 			Wait_ms_SPINOR(5);
-			SPI_NOR_INTERNAL_FLASH_ADDR=100;
+			SPI_NOR_INTERNAL_FLASH_ADDR=200;
 			SPI_NOR_ClearEnable=0;
 			//===================================
 			LCD_clear();
