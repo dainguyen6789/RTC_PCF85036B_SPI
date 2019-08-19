@@ -87,7 +87,7 @@ int count=0;
 int i,j,i_point1,i_point2,found_1st_point=0,ii,jj;// loop variables to interpolate the calibration values
 static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
-float calib_value[21],calib_time[21],diff_of_offset=0;// 600/calib_stamp+1
+float calib_value[21],calib_time[21],diff_of_offset=0;// // diff_of_offset is the difference between the calibration value of this day and the day before
 int calib_bool[21];
 unsigned char old_mins,seconds,mins, hours,days,months;//,mins1, hours1,mins2, hours2;
 float current_position=0;
@@ -611,9 +611,9 @@ void main(void)
 											//calib_point1.y=calib_value[count];
 											//read from Adesto SPI NOR AT25SF041
 											if(AT25SF041_Read(Byte_Page_Program,3*(count))==1)
-												calib_point1.y=AT25SF041_Read(Byte_Page_Program,3*count+1)+ AT25SF041_Read(Byte_Page_Program,3*count+2)/100;
+												calib_point1.y=(float)AT25SF041_Read(Byte_Page_Program,3*count+1)+ (float)AT25SF041_Read(Byte_Page_Program,3*count+2)/100;
 											else if(AT25SF041_Read(Byte_Page_Program,3*(count))==0)
-												calib_point2.y=-AT25SF041_Read(Byte_Page_Program,3*count+1)+ AT25SF041_Read(Byte_Page_Program,3*count+2)/100;			
+												calib_point2.y=-(float)AT25SF041_Read(Byte_Page_Program,3*count+1)-(float)AT25SF041_Read(Byte_Page_Program,3*count+2)/100;			
 											Connect_Electronics_Load=0;
 											Connect_IV_Load=1;
 
@@ -621,9 +621,9 @@ void main(void)
 											{
 												//calib_point2.y=calib_value[count+1];// this is from previous day.
 												if(AT25SF041_Read(Byte_Page_Program,3*(count+1))==1)
-													calib_point2.y=AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)+ AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)/100+diff_of_offset;
+													calib_point2.y=(float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)+ (float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)/100+diff_of_offset; // diff_of_offset is the difference between the calibration value of this day and the day before
 												else if(AT25SF041_Read(Byte_Page_Program,3*(count+1))==0)
-													calib_point2.y=-AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)+ AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)/100+diff_of_offset;
+													calib_point2.y=-(float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)-(float) AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)/100+diff_of_offset;
 											
 												//calib_point2.y=calib_value[count+1];// this is from previous day.
 												Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
