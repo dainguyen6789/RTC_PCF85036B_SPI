@@ -422,9 +422,9 @@ void main(void)
 											if(AT25SF041_Read(Byte_Page_Program,count+63)==1)// if we have the calib value from previous day
 											{
 												if(AT25SF041_Read(Byte_Page_Program,3*i)==1)
-													diff_of_offset=calib_value[count]-AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2);
+													diff_of_offset=calib_value[count]-((float)AT25SF041_Read(Byte_Page_Program,3*i+1)+(float) AT25SF041_Read(Byte_Page_Program,3*i+2)/100);
 												else if(AT25SF041_Read(Byte_Page_Program,3*i)==0)
-													diff_of_offset=calib_value[count]+AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2);
+													diff_of_offset=calib_value[count]+ (float)AT25SF041_Read(Byte_Page_Program,3*i+1)+ (float)AT25SF041_Read(Byte_Page_Program,3*i+2)/100;
 
 
 											}
@@ -733,7 +733,7 @@ void main(void)
 						AT25SF041_WriteEnable();
 						//Wait_ms_SPINOR(50);	
 						//AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-(unsigned char)fabs(calib_value[count]))*100);	
-						AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[ii])-abs(calib_value[ii]))*100);	
+						AT25SF041_Write(Byte_Page_Program, 3*ii+2,(fabs(calib_value[ii])-abs(calib_value[ii]))*100);	
 
 						Wait_ms_SPINOR(50);	
 					}						
