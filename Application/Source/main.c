@@ -619,11 +619,15 @@ void main(void)
 
 											if(calib_bool[count]==1 && calib_bool[count+1]==1)
 											{
-												//calib_point2.y=calib_value[count+1];// this is from previous day.
+												//calib_point2.y=calib_value[count+1];
+												//====== this is from PREVIOUS DAY, next time stamp ======.
+												//====== this is from PREVIOUS DAY ======.
+												//====== this is from PREVIOUS DAY ======.
+												
 												if(AT25SF041_Read(Byte_Page_Program,3*(count+1))==1)
-													calib_point2.y=(float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+1+Block2_MEM_ADDR)+ (float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+2+Block2_MEM_ADDR)/100+diff_of_offset; // diff_of_offset is the difference between the calibration value of this day and the day before
+													calib_point2.y=(float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)+ (float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)/100+diff_of_offset; // diff_of_offset is the difference between the calibration value of this day and the day before
 												else if(AT25SF041_Read(Byte_Page_Program,3*(count+1))==0)
-													calib_point2.y=-(float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+1+Block2_MEM_ADDR)-(float) AT25SF041_Read(Byte_Page_Program,3*(count+1)+2+Block2_MEM_ADDR)/100+diff_of_offset;
+													calib_point2.y=-(float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)-(float) AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)/100+diff_of_offset;
 											
 												//calib_point2.y=calib_value[count+1];// this is from previous day.
 												Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
@@ -894,6 +898,14 @@ void main(void)
 					}					
 				}
 			}
+		}
+		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==0 && BCDtoDec1(seconds&0x7f)==0 )
+		{
+			for(i=0;i<=20;i++)
+			{
+				calib_value[i]=0;
+			}
+
 		}
 		// CLEAR SPI NOR by 99990 command from KEyPAd
 		if(SPI_NOR_ClearEnable==1)
