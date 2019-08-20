@@ -368,13 +368,13 @@ void main(void)
 		{
 			
 			//sunlight_ADC=ADC_GetResult(2);
-				Display_Line(1);	
-				Display_Pos(pwm_time);
+//				Display_Line(1);	
+//				Display_Pos(pwm_time);
 
 			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
 			{
-					if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
-					{
+							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
+							{
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
 								{
 									//calculate elevation to decide whether we will calibrate or not
@@ -544,8 +544,8 @@ void main(void)
 								}
 							}
 								//===== Update when not at Calibration time stamp =====
-								if(iUse_prevday_calib_value==0 && BCDtoDec1(mins)%calib_stamp!=0)// FIRST day of calibration, update position not at the calibration time stamp
-								{
+							if(iUse_prevday_calib_value==0 && BCDtoDec1(mins)%calib_stamp!=0)// FIRST day of calibration, update position not at the calibration time stamp
+							{
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
 								{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
@@ -594,41 +594,44 @@ void main(void)
 											SendString("W\r\n");
 											Wait_ms(200);			
 										}										
-								}
+									}
 							
-					}
+								}
 					
 								// how to update for next day and use the calib value from the previous day???
-								else if(iUse_prevday_calib_value==1 && BCDtoDec1(mins)%calib_stamp!=0)
-								{
-						
+							else if(iUse_prevday_calib_value==1 && BCDtoDec1(mins)%calib_stamp!=0)
+							{
+							
 									// calib every 30mins, from 7AM to 17PM
 									if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)								
 									{
+	
 											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-
+										
 											calib_point1.x=calib_time[count];
 											//calib_point1.y=calib_value[count];
 											//read from Adesto SPI NOR AT25SF041
-											if(AT25SF041_Read(Byte_Page_Program,3*(count))==1)
+											if(AT25SF041_Read(Byte_Page_Program,3*(count)+Block2_MEM_ADDR)==1)
 												calib_point1.y=(float)AT25SF041_Read(Byte_Page_Program,3*count+1+Block2_MEM_ADDR)+ (float)AT25SF041_Read(Byte_Page_Program,3*count+2+Block2_MEM_ADDR)/100;
-											else if(AT25SF041_Read(Byte_Page_Program,3*(count))==0)
-												calib_point2.y=-(float)AT25SF041_Read(Byte_Page_Program,3*count+1+Block2_MEM_ADDR)-(float)AT25SF041_Read(Byte_Page_Program,3*count+2+Block2_MEM_ADDR)/100;			
+											else if(AT25SF041_Read(Byte_Page_Program,3*(count)+Block2_MEM_ADDR)==0)
+												calib_point1.y=-(float)AT25SF041_Read(Byte_Page_Program,3*count+1+Block2_MEM_ADDR)-(float)AT25SF041_Read(Byte_Page_Program,3*count+2+Block2_MEM_ADDR)/100;			
 											Connect_Electronics_Load=0;
 											Connect_IV_Load=1;
-
-											if(calib_bool[count]==1 && calib_bool[count+1]==1)
+											//if(1)
+											if(calib_bool[count]==1)// && calib_bool[count+1]==1)
 											{
 												//calib_point2.y=calib_value[count+1];
 												//====== this is from PREVIOUS DAY, next time stamp ======.
 												//====== this is from PREVIOUS DAY ======.
 												//====== this is from PREVIOUS DAY ======.
-												
+												calib_point2.x=calib_time[count+1];
+
 												if(AT25SF041_Read(Byte_Page_Program,3*(count+1))==1)
 													calib_point2.y=(float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)+ (float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)/100+diff_of_offset; // diff_of_offset is the difference between the calibration value of this day and the day before
 												else if(AT25SF041_Read(Byte_Page_Program,3*(count+1))==0)
 													calib_point2.y=-(float)AT25SF041_Read(Byte_Page_Program,3*(count+1)+1)-(float) AT25SF041_Read(Byte_Page_Program,3*(count+1)+2)/100+diff_of_offset;
-											
+												Display_Line(1);	
+												Display_Pos(calib_point2.y);	
 												//calib_point2.y=calib_value[count+1];// this is from previous day.
 												Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
 											}
@@ -713,8 +716,8 @@ void main(void)
 					{
 						Wait_ms_SPINOR(50);	
 						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						// calib bool array is stored from addr 63 
+						//	Wait_ms_SPINOR(50);	
+						// 	calib bool array is stored from addr 63 
 						AT25SF041_Write(Byte_Page_Program, ii+63,calib_bool[ii]);
 						Wait_ms_SPINOR(50);	
 						AT25SF041_WriteEnable();
@@ -727,8 +730,8 @@ void main(void)
 						Wait_ms_SPINOR(50);						
 						Wait_ms_SPINOR(50);	
 						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						//AT25SF041_Write(Byte_Page_Program, 3*count+1,(unsigned char)fabs(calib_value[count]));	
+						//	Wait_ms_SPINOR(50);	
+						//	AT25SF041_Write(Byte_Page_Program, 3*count+1,(unsigned char)fabs(calib_value[count]));	
 						AT25SF041_Write(Byte_Page_Program, 3*ii+1,abs(calib_value[ii]));	
 
 						Wait_ms_SPINOR(50);	
@@ -906,6 +909,10 @@ void main(void)
 				calib_value[i]=0;
 			}
 
+		}
+		else if(BCDtoDec1(hours)>=17)
+		{
+			iUse_prevday_calib_value=1;
 		}
 		// CLEAR SPI NOR by 99990 command from KEyPAd
 		if(SPI_NOR_ClearEnable==1)
