@@ -608,17 +608,19 @@ void main(void)
 											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 
 											calib_point1.x=calib_time[count];
-											//calib_point1.y=calib_value[count];
-											//read from Adesto SPI NOR AT25SF041
-											if(AT25SF041_Read(Byte_Page_Program,3*(count))==1)
-												calib_point1.y=(float)AT25SF041_Read(Byte_Page_Program,3*count+1+Block2_MEM_ADDR)+ (float)AT25SF041_Read(Byte_Page_Program,3*count+2+Block2_MEM_ADDR)/100;
-											else if(AT25SF041_Read(Byte_Page_Program,3*(count))==0)
-												calib_point2.y=-(float)AT25SF041_Read(Byte_Page_Program,3*count+1+Block2_MEM_ADDR)-(float)AT25SF041_Read(Byte_Page_Program,3*count+2+Block2_MEM_ADDR)/100;			
-											Connect_Electronics_Load=0;
-											Connect_IV_Load=1;
+											// if we have the calibration value of this time stamp, then do interpolation using this calib value and calib value of next time stamp (previous day)
+											//if(1)
+											if(calib_bool[count]==1 )//&& calib_bool[count+1]==1)
+											{										
+												//calib_point1.y=calib_value[count];
+												//read from Adesto SPI NOR AT25SF041
+												if(AT25SF041_Read(Byte_Page_Program,3*(count)+Block2_MEM_ADDR)==1)
+													calib_point1.y=(float)AT25SF041_Read(Byte_Page_Program,3*count+1+Block2_MEM_ADDR)+ (float)AT25SF041_Read(Byte_Page_Program,3*count+2+Block2_MEM_ADDR)/100;
+												else if(AT25SF041_Read(Byte_Page_Program,3*(count))==0)
+													calib_point2.y=-(float)AT25SF041_Read(Byte_Page_Program,3*count+1+Block2_MEM_ADDR)-(float)AT25SF041_Read(Byte_Page_Program,3*count+2+Block2_MEM_ADDR)/100;			
+												Connect_Electronics_Load=0;
+												Connect_IV_Load=1;
 
-											if(calib_bool[count]==1 && calib_bool[count+1]==1)
-											{
 												//calib_point2.y=calib_value[count+1];
 												//====== this is from PREVIOUS DAY, next time stamp ======.
 												//====== this is from PREVIOUS DAY ======.
@@ -899,11 +901,15 @@ void main(void)
 				}
 			}
 		}
+		// at 5PM, reset all of calib_value and calib_bool to zero so that we can update them for next day
 		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==0 && BCDtoDec1(seconds&0x7f)==0 )
 		{
 			for(i=0;i<=20;i++)
 			{
 				calib_value[i]=0;
+				// if we don't reset calib_bool[i], we can't interpolate at the end of 2nd day
+				//calib_bool[i]=0;
+
 			}
 
 		}
