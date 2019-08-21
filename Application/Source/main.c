@@ -421,10 +421,10 @@ void main(void)
 										{
 											if(AT25SF041_Read(Read_Array,count+63)==1)// if we have the calib value from previous day
 											{
-												if(AT25SF041_Read(Read_Array,3*i)==1)
-													diff_of_offset=calib_value[count]-((float)AT25SF041_Read(Read_Array,3*i+1)+(float) AT25SF041_Read(Read_Array,3*i+2)/100);
-												else if(AT25SF041_Read(Read_Array,3*i)==0)
-													diff_of_offset=calib_value[count]+ (float)AT25SF041_Read(Read_Array,3*i+1)+ (float)AT25SF041_Read(Read_Array,3*i+2)/100;
+												if(AT25SF041_Read(Read_Array,3*count)==1)
+													diff_of_offset=calib_value[count]-((float)AT25SF041_Read(Read_Array,3*count+1)+(float) AT25SF041_Read(Read_Array,3*count+2)/100);
+												else if(AT25SF041_Read(Read_Array,3*count)==0)
+													diff_of_offset=calib_value[count]+ (float)AT25SF041_Read(Read_Array,3*count+1)+ (float)AT25SF041_Read(Read_Array,3*count+2)/100;
 
 
 											}
@@ -908,6 +908,7 @@ void main(void)
 			for(i=0;i<=20;i++)
 			{
 				calib_value[i]=0;
+				calib_bool[i]=0;
 			}
 
 		}
