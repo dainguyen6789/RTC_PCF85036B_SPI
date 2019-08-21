@@ -905,18 +905,20 @@ void main(void)
 		}
 		else if (BCDtoDec1(hours)==18  && BCDtoDec1(mins)==0 && BCDtoDec1(seconds&0x7f)==0 )
 		{
+			// // reset this variable so that we can interpolate calib value before the first calibration
+			// update iUse_prevday_calib_value variable to identify "not First day" 
+			iUse_prevday_calib_value=1;
+			found_1st_point=0;
+
 			for(i=0;i<=20;i++)
 			{
 				calib_value[i]=0;
 				calib_bool[i]=0;
+				
 			}
 
 		}
-		// update iUse_prevday_calib_value variable to identify "not First day" 
-		else if(BCDtoDec1(hours)>=18)
-		{
-			iUse_prevday_calib_value=1;
-		}
+
 		// CLEAR SPI NOR by 99990 command from KEyPAd
 		if(SPI_NOR_ClearEnable==1)
 		{
