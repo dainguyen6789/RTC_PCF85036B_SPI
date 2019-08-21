@@ -419,12 +419,12 @@ void main(void)
 										}
 										else
 										{
-											if(AT25SF041_Read(Byte_Page_Program,count+63)==1)// if we have the calib value from previous day
+											if(AT25SF041_Read(Read_Array,count+63)==1)// if we have the calib value from previous day
 											{
-												if(AT25SF041_Read(Byte_Page_Program,3*i)==1)
-													diff_of_offset=calib_value[count]-((float)AT25SF041_Read(Byte_Page_Program,3*i+1)+(float) AT25SF041_Read(Byte_Page_Program,3*i+2)/100);
-												else if(AT25SF041_Read(Byte_Page_Program,3*i)==0)
-													diff_of_offset=calib_value[count]+ (float)AT25SF041_Read(Byte_Page_Program,3*i+1)+ (float)AT25SF041_Read(Byte_Page_Program,3*i+2)/100;
+												if(AT25SF041_Read(Read_Array,3*i)==1)
+													diff_of_offset=calib_value[count]-((float)AT25SF041_Read(Read_Array,3*i+1)+(float) AT25SF041_Read(Read_Array,3*i+2)/100);
+												else if(AT25SF041_Read(Read_Array,3*i)==0)
+													diff_of_offset=calib_value[count]+ (float)AT25SF041_Read(Read_Array,3*i+1)+ (float)AT25SF041_Read(Read_Array,3*i+2)/100;
 
 
 											}
@@ -536,7 +536,7 @@ void main(void)
 
 								}
 								
-								else if (BCDtoDec1(hours)>=17)// do not calib after 17pm
+								else if (BCDtoDec1(hours)>=18)// do not calib after 18pm
 								{
 									iUse_prevday_calib_value=1;
 									//count=0;
@@ -699,7 +699,7 @@ void main(void)
 
 		}
 		// after 17PM, the interpolation will be implemented.
-		else if (BCDtoDec1(hours)==16  && BCDtoDec1(mins)==58 && BCDtoDec1(seconds&0x7f)==0 )
+		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==00 && BCDtoDec1(seconds&0x7f)==0 )
 		{
 				P55=0;
 			//Connect_Electronics_Load=0;
@@ -903,7 +903,7 @@ void main(void)
 				}
 			}
 		}
-		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==0 && BCDtoDec1(seconds&0x7f)==0 )
+		else if (BCDtoDec1(hours)==18  && BCDtoDec1(mins)==0 && BCDtoDec1(seconds&0x7f)==0 )
 		{
 			for(i=0;i<=20;i++)
 			{
@@ -911,7 +911,8 @@ void main(void)
 			}
 
 		}
-		else if(BCDtoDec1(hours)>=17)
+		// update iUse_prevday_calib_value variable to identify "not First day" 
+		else if(BCDtoDec1(hours)>=18)
 		{
 			iUse_prevday_calib_value=1;
 		}
