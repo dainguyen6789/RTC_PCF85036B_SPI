@@ -251,8 +251,15 @@ void main(void)
 	
 	Wait_ms_SPINOR(50);
 	AT25SF041_WriteEnable();
-	AT25SF041_Write(Byte_Page_Program,200,99);//addr,data
+	AT25SF041_Write(Byte_Page_Program,199,1);//addr,data
 	
+	Wait_ms_SPINOR(50);
+	AT25SF041_WriteEnable();
+	AT25SF041_Write(Byte_Page_Program,200,99);//addr,data	
+	
+	Wait_ms_SPINOR(50);
+	AT25SF041_WriteEnable();
+	AT25SF041_Write(Byte_Page_Program,201,50);//addr,data
 	//SendString("123\r\n");
 	while(1)                                      
 	{
@@ -357,8 +364,13 @@ void main(void)
 
 		//Read_time(&months,&days,&hours,&mins,&seconds);
 		//Read_time(&months,&days,&hours,&mins,&seconds);
-		//if(AT25SF041_Read(Byte_Page_Program,30)==1)
-			fTest_read_spi=AT25SF041_Read(Byte_Page_Program,200);//+ (float)AT25SF041_Read(Byte_Page_Program,32)/100+diff_of_offset; // diff_of_offset is the difference between the calibration value of this day and the day before
+		if(AT25SF041_Read(Read_Array,199)==1)
+			fTest_read_spi=(float)AT25SF041_Read(Read_Array,200)+(float)AT25SF041_Read(Read_Array,201)/100;
+		else
+			fTest_read_spi=-((float)AT25SF041_Read(Read_Array,200)+(float)AT25SF041_Read(Read_Array,201)/100);
+
+
+		//fTest_read_spi=AT25SF041_Read(Byte_Page_Program,200);//+ (float)AT25SF041_Read(Byte_Page_Program,32)/100+diff_of_offset; // diff_of_offset is the difference between the calibration value of this day and the day before
 		//else
 		//	fTest_read_spi=-(float)AT25SF041_Read(Byte_Page_Program,31)- (float)AT25SF041_Read(Byte_Page_Program,32)/100+diff_of_offset; // diff_of_offset is the difference between the calibration value of this day and the day before
 
