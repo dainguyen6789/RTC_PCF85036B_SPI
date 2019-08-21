@@ -799,10 +799,10 @@ void main(void)
 				{
 					calib_point2.x=calib_time[i];
 					
-					if(AT25SF041_Read(Byte_Page_Program,3*i)==0)
+					//if(AT25SF041_Read(Read_Array,3*i)==0)
 							//calib_point2.y=-(AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100);	
-							calib_point2.y=calib_value[i];
-					else
+					//		calib_point2.y=calib_value[i];
+					//else
 							//calib_point2.y=AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100;
 							calib_point2.y=calib_value[i];
 
@@ -816,10 +816,10 @@ void main(void)
 					
 					calib_point1.x=calib_time[i];
 					
-					if(AT25SF041_Read(Byte_Page_Program,3*i)==0)
-						calib_point1.y=calib_value[i];
+					//if(AT25SF041_Read(Byte_Page_Program,3*i)==0)
+					//	calib_point1.y=calib_value[i];
 						//calib_point1.y=-(AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100);
-					else
+					//else
 						calib_point1.y=calib_value[i];
 						//calib_point1.y=AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100;
 
