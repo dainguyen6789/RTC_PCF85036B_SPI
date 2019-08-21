@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/20/2019 17:19:38 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/21/2019 09:45:36 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
@@ -62,7 +62,7 @@ line level    source
   52   1        hi=bcd>>4;
   53   1        lo=bcd&0x0F;
   54   1        return hi*10+lo;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/20/2019 17:19:38 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/21/2019 09:45:36 PAGE 2   
 
   55   1      }
   56          // 
@@ -126,7 +126,7 @@ line level    source
  113                      float  a11, float  a12, float  a13, 
  114                      float  a21, float  a22, float  a23,
  115                      float  a31, float  a32, float  a33 )
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/20/2019 17:19:38 PAGE 3   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/21/2019 09:45:36 PAGE 3   
 
  116          {
  117              return( a11*a22*a33 + a12*a23*a31 + a13*a21*a32 -
@@ -190,7 +190,7 @@ line level    source
  175   2            {
  176   3              for (yy=0;yy<num_of_elevation_stamp;yy++)
  177   3              {
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/20/2019 17:19:38 PAGE 4   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/21/2019 09:45:36 PAGE 4   
 
  178   4                p1.x=low_date_azimuth_mapping[i];
  179   4                p2.x=low_date_azimuth_mapping[i+1];
@@ -254,7 +254,7 @@ line level    source
  237   1        declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
 *** WARNING C182 IN LINE 237 OF BipolarMotor.c: pointer to different objects
  238   1        time_offset=(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/20/2019 17:19:38 PAGE 5   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/21/2019 09:45:36 PAGE 5   
 
              -*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180))/60;
  239   1        current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//-1;//current time
@@ -318,7 +318,7 @@ line level    source
              -=sun time= clock time -1
  288   1        
  289   1        return asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/20/2019 17:19:38 PAGE 6   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      08/21/2019 09:45:36 PAGE 6   
 
  290   1                  cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180) 
              -          );
