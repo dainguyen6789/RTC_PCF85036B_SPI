@@ -102,8 +102,8 @@ void Move(float  distance, bit direction)
 {
 		unsigned int step;
 		//step= (unsigned int)(distance*337.5/3.14159);//
-		step= (unsigned int)(distance*104);
-		//step= (unsigned int)(distance*70);
+		//step= (unsigned int)(distance*104);
+		step= (unsigned int)(distance*70);
 
 		Step_move(step,direction);
 }
@@ -258,10 +258,10 @@ void Update_position(unsigned char mnths,unsigned char dys,
 		distance=desired_distance-*currnt_pos;
 		if(fabs(distance)>=0.5&& desired_distance>=-15 &&desired_distance<=210 )// move if the change is more than 0.5mm
 		{
-//			if(distance>0)
-//				Move(distance,1);
-//			else if (distance<0)
-//				Move(-distance,0);
+			if(distance>0)
+				Move(distance,1);
+			else if (distance<0)
+				Move(-distance,0);
 			//previous_move_time=BCDtoDec1(sconds&0x7f);
 			*currnt_pos=desired_distance;
 		}
