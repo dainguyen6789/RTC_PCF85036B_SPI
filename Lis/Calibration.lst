@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       08/23/2019 17:45:31 PAGE 1   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       08/26/2019 13:43:52 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE CALIBRATION
@@ -62,7 +62,7 @@ line level    source
   50   1          int voltage_at_scanned_pos[81],max_location, avg_voltage=0;
   51   1          int i,j;
   52   1          //float offset_error=0.8;
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       08/23/2019 17:45:31 PAGE 2   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       08/26/2019 13:43:52 PAGE 2   
 
   53   1          // move/scan +`
   54   1          pwm_time_min=0;
@@ -126,7 +126,7 @@ line level    source
  111   4      //            //Wait_ms_SPINOR(50); 
  112   4      //            AT25SF041_Write(Byte_Page_Program, *address_to_write,pwm_time/4);                 // SUNLIGHT         
  113   4      //            Wait_ms_SPINOR(50); 
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       08/23/2019 17:45:31 PAGE 3   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       08/26/2019 13:43:52 PAGE 3   
 
  114   4      //            ++*address_to_write;
  115   4      //            
@@ -190,7 +190,7 @@ line level    source
  170   2              SendString(sTemp);
  171   2              SendString("M\r\n");
  172   2      
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       08/23/2019 17:45:31 PAGE 4   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       08/26/2019 13:43:52 PAGE 4   
 
  173   2              Wait_ms(200);
  174   2      
@@ -228,7 +228,7 @@ line level    source
  204   2            *max_ADC_JP_value=voltage_at_scanned_pos[40];
  205   2          
  206   2            // move to the optimal position in the area of +/-10mm from JP max theorical pos
- 207   2            Move(calib_step_move*(83-max_location),0);//83-81= 2 steps is the offset error
+ 207   2            Move(calib_step_move*(84-max_location),0);//83-81= 2 steps is the offset error
  208   2      //      Command(0x08);
  209   2      //      Command(0x06);
  210   2      //      
@@ -254,7 +254,7 @@ line level    source
  229   2            SendString("AT+CIPSEND=9\r\n");
  230   2            Wait_ms(200);
  231   2            SendString(sTemp);
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       08/23/2019 17:45:31 PAGE 5   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       08/26/2019 13:43:52 PAGE 5   
 
  232   2            SendString("T\r\n");                  
  233   2            Wait_ms(200);     
@@ -318,7 +318,7 @@ line level    source
  288   2        }
  289   1        else
  290   1          return 0;
-C51 COMPILER V9.52.0.0   CALIBRATION                                                       08/23/2019 17:45:31 PAGE 6   
+C51 COMPILER V9.52.0.0   CALIBRATION                                                       08/26/2019 13:43:52 PAGE 6   
 
  291   1      }
  292          int FindClosestSamedayCalibTime(int *input_calibration_bool_array,int current_time_stamp_position)
