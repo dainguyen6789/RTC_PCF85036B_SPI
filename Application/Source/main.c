@@ -388,9 +388,9 @@ void main(void)
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
 									//============IF SUN LIGHT IS GOOD=======================
-									//if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 									//=======================================================
-									if(1) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									//if(1) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 
 									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
 									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
@@ -622,8 +622,8 @@ void main(void)
 											{
 												//calib_point2.y=calib_value[count+1];
 												//====== this is from PREVIOUS DAY, next time stamp ======.
-												//====== this is from PREVIOUS DAY ======.
-												//====== this is from PREVIOUS DAY ======.
+												//====== this is from PREVIOUS DAY 									======.
+												//====== this is from PREVIOUS DAY 									======.
 												
 												calib_point2.x=calib_time[count+1];
 												
@@ -638,6 +638,8 @@ void main(void)
 											}
 											else // was not calib prev day at this time stamp=> use the latest calib value of the same day
 											{
+												//		JP_pos=TheoricalJP_Position(azimuth,elevation);
+												//		calculate the theorical offset =JP Pos_today-JPPosprevious day
 												Update_position(months,days,hours,mins,seconds,&current_position,calib_value[FindClosestSamedayCalibTime(calib_bool,count)]);
 											}
 											
@@ -903,7 +905,7 @@ void main(void)
 				}
 			}
 		}
-		else if (BCDtoDec1(hours)==18  && BCDtoDec1(mins)==0 && BCDtoDec1(seconds&0x7f)==0 )
+		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==5 && BCDtoDec1(seconds&0x7f)==0 )
 		{
 			// // reset this variable so that we can interpolate calib value before the first calibration
 			// update iUse_prevday_calib_value variable to identify "not First day" 
