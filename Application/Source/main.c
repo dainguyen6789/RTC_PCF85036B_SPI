@@ -101,6 +101,8 @@ unsigned int timer0_count=0;
 unsigned char start_timer0_count=0;
 // definition of pwm time 
 float pwm_time=0,pwm_time_min=0,pwm_time_max=0;
+float val_to_store[21]={-8,	-8,	-8,	-8,	-8,	-8,	-8,	-8,	-8,	-8,	-8,	-9,	-9.5,	-10.5,	-10.5,	-10.5,	-10.5,	-10.5,	-10.5,	-10.5};
+
 sbit INT0 = 0xB2;
 
 void tm0_isr() interrupt 1 using 1
@@ -245,107 +247,7 @@ void main(void)
 	uart1_SendToTCPServer("123");
 
 	//SendString("123\r\n");
-	while(1)                                      
-	{
-		Key_Process();
-		//uart1_SendToTCPServer("123");
-		//Delay_ms(10);
-		//char * itoa(int n, char * buffer, int radix);
 
-
-		//SendString("123\r\n");
-		//SendUART1(0x41);
-		//count++;
-		//if (count==20)
-		{
-			//Write_PI4IOE5V96248(&dat);
-			//Display_Pos(current_position);
-			//move cursor to line 1, pos 6
-			Command(0x08);
-			Command(0x06);
-			
-			WriteData(0x50);//display "P"
-			//WriteData(0x4F);//display ""
-			WriteData(0x53);//display "S"	
-			WriteData(0x3A);//display ":"	
-			//LCD_clear();
-			//Display_Pos(pwm_time);
-			Display_Pos(current_position);
-			//Display_Pos(pwm_time);
-			WriteData(0x6D);//m
-			WriteData(0x6D);//m
-			//==============================================================
-			Display_Line(2);
-			DisplayLCD(hours);
-			WriteData(0x3A);//display ":"
-			DisplayLCD(mins);
-			WriteData(0x3A);//display ":"
-			DisplayLCD(seconds&0x7f);
-			WriteData(0x3B);//display ";"
-			DisplayLCD(months);
-			//WriteData(0x2D);//display "-"
-			DisplayLCD(days);	
-			WriteData(0x3B);//display ";"
-			if(auto_mode)
-			{
-				WriteData(0x41);//display "A"
-			}
-			else if (!auto_mode)
-			{
-				WriteData(0x4D);//display "M"
-			}			
-			//count=0;
-			//prox_data=Read_VCNL4035(PS1_Data_L);
-			//Display_Prox(prox_data);// this is RAW data from the Prox Sensor
-			// 	y = 12.051x2 - 546.97x + 7153.8;   	 	x in [1015:2880] 	=> 	distance: 	10-20mm
-			// 	y = 2.4242x2 - 174.89x + 3545.5;			x in [473:941] 		=> 	distance:		20-30mm
-			// 	y = 0.5038x2 - 54.417x + 1651.1; 		  x in [277:455] 		=> 	distance:		30-40mm
-			//	y = 0.303x2 - 37.642x + 1302.4; 		  x in [177:269]	 	=> 	distance:		40-50mm
-		
-		
-			//Delay_ms(1);
-			//WriteData(Read_VCNL4035(PS3_Data_L));
-			if (move && !auto_mode)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
-			{
-				Step_move(PointFour_mm_steps, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
-				if (direction==1)
-				{
-					current_position=current_position+0.4;
-				}
-				else
-				{
-					current_position=current_position-0.4;
-				}
-				prox_flag=0;
-			}
-			if (small_move && !auto_mode)
-			{
-				
-				//auto_mode=0;
-				Step_move(PointFour_mm_steps, direction);// 1.8* step angle, 200 steps ~ 1 round, 107 steps ~ 1mm movement, l(mm)=step*pi/337.5, L=R1*R3/R2*pi*n/(100*27), R1 is the pulley attached to the motor, R2 is the pulley attached to the long shaft with timing belt, R3 is the long pulley 
-				if (direction==1)
-				{
-					current_position=current_position+0.4;
-				}
-				else
-				{
-					current_position=current_position-0.4;
-				}
-				prox_flag=0;		
-				small_move=0;				
-			}
-			
-		if (P23 && prox_flag==0 && current_position<=0)// prox_data<2880 <=> distance to the sensor >10mm, please view "Test The accuracy and resolution of VCNl4035X01_ILED_20mA.xlxs" file
-			{
-				current_position=0;
-				prox_flag=1;
-				move=0;
-				small_move=0;
-				direction=1;
-			}			
-			LCD_return_home();
-			
-		}
 		//hours2=hours1;
 		//hours1=hours;
 		//mins2=mins1;
@@ -361,348 +263,39 @@ void main(void)
 			Delay_ms(300);
 
 		}
-
-		//Read_time(&months,&days,&hours,&mins,&seconds);
-		//Read_time(&months,&days,&hours,&mins,&seconds);
-		if(auto_mode)
+		AT25SF041_WriteEnable();
+		//Wait_ms_SPINOR(50);
+		AT25SF041_ChipErase();
+		Wait_ms_SPINOR(5);
+		
+		for(j=0;j<=20;j++)
 		{
-			
-			//sunlight_ADC=ADC_GetResult(2);
-				Display_Line(1);	
-				Display_Pos(pwm_time);
+			Wait_ms_SPINOR(50);	
+			AT25SF041_WriteEnable();
+			//Wait_ms_SPINOR(50);	
+			if(val_to_store[j]>0)
+				AT25SF041_Write(Byte_Page_Program, 3*j,1);	
+			else
+				AT25SF041_Write(Byte_Page_Program, 3*j,0);	
+				
+			Wait_ms_SPINOR(50);						
+			Wait_ms_SPINOR(50);	
+			AT25SF041_WriteEnable();
+			//Wait_ms_SPINOR(50);	
+			AT25SF041_Write(Byte_Page_Program, 3*j+1,abs(val_to_store[j]));	
+			Wait_ms_SPINOR(50);	
+				
+			Wait_ms_SPINOR(50);	
+			AT25SF041_WriteEnable();
+			//Wait_ms_SPINOR(50);	
+			AT25SF041_Write(Byte_Page_Program, 3*j+2,(fabs(val_to_store[j])-abs(val_to_store[j]   ))   *100);	
+			Wait_ms_SPINOR(50);	
+		}
 
-			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
-			{
-							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
-							{
-								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
-								{
-									//calculate elevation to decide whether we will calibrate or not
-									elevation=elevation_calculation(months,days,hours,mins,seconds);
-									sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60);
-									SendString("AT+CIPSEND=9\r\n");
-									Delay_ms(10);
-									SendString(sTempString);
-									SendString("T\r\n");
-									Delay_ms(10);									
-									//10log10(photoR)=-0.4424*10log10(lux)+41.311
-									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
-									//============IF SUN LIGHT IS GOOD=======================
-									if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
-									//=======================================================
-									//if(1) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
-
-									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
-									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
-									//GHI>=para
-									//GHI=pwm_time
-									{
-										
-										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-										calib_bool[count]=1;
-										Connect_Electronics_Load=1;
-										Connect_IV_Load=0;
-
-										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
-										
-
-										
-										// if light is not stable
-										if(pwm_time_max>1.2*pwm_time_min)
-										{
-											// go back to JP pos if the sun light is unstable
-											Update_position(months,days,hours,mins,seconds,&current_position,0);
-											calib_value[count]=0;
-											calib_bool[count]=0;
-											diff_of_offset=0;
-
-										}
-										else
-										{
-											if(AT25SF041_Read(Read_Array,count+63)==1)// if we have the calib value from previous day
-											{
-												if(AT25SF041_Read(Read_Array,3*count)==1)
-													diff_of_offset=calib_value[count]-((float)AT25SF041_Read(Read_Array,3*count+1)+(float) AT25SF041_Read(Read_Array,3*count+2)/100);
-												else if(AT25SF041_Read(Read_Array,3*count)==0)
-													diff_of_offset=calib_value[count]+ (float)AT25SF041_Read(Read_Array,3*count+1)+ (float)AT25SF041_Read(Read_Array,3*count+2)/100;
-
-
-											}
-
-											Wait_ms_SPINOR(50);	
-											AT25SF041_WriteEnable();
-											//Wait_ms_SPINOR(50);	
-											// calib bool array is stored from addr 63 
-											AT25SF041_Write(Byte_Page_Program, count+63,calib_bool[count]);
-											Wait_ms_SPINOR(50);	
-											AT25SF041_WriteEnable();
-											//Wait_ms_SPINOR(50);	
-											if(calib_value[count]>0)
-												AT25SF041_Write(Byte_Page_Program, 3*count+iUse_prevday_calib_value*Block2_MEM_ADDR,1);	
-											else
-												AT25SF041_Write(Byte_Page_Program, 3*count+iUse_prevday_calib_value*Block2_MEM_ADDR,0);	
-
-											Wait_ms_SPINOR(50);						
-											Wait_ms_SPINOR(50);	
-											AT25SF041_WriteEnable();
-											//Wait_ms_SPINOR(50);	
-											//AT25SF041_Write(Byte_Page_Program, 3*count+1,(unsigned char)fabs(calib_value[count]));	
-											AT25SF041_Write(Byte_Page_Program, 3*count+1+iUse_prevday_calib_value*Block2_MEM_ADDR,abs(calib_value[count]));	
-
-											Wait_ms_SPINOR(50);	
-
-											Wait_ms_SPINOR(50);	
-											AT25SF041_WriteEnable();
-											//Wait_ms_SPINOR(50);	
-											//AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-(unsigned char)fabs(calib_value[count]))*100);	
-											AT25SF041_Write(Byte_Page_Program, 3*count+2+iUse_prevday_calib_value*Block2_MEM_ADDR,(fabs(calib_value[count])-abs(calib_value[count]))*100);	
-
-											Wait_ms_SPINOR(50);	
-										}
-
-									}
-									else // Store the data even in low light condition
-									{
-											// store  120 bytes of "0" value when calibration does not work  in order to synchronize the pattern.
-											for(count=0;count<=323;count++)
-											{
-												AT25SF041_WriteEnable();
-												AT25SF041_Write(Byte_Page_Program, SPI_NOR_INTERNAL_FLASH_ADDR,DATA_WITHOUT_RUNNING_CALIBRATION);	
-												Wait_ms_SPINOR(50);	
-												SPI_NOR_INTERNAL_FLASH_ADDR++;
-											}		
-											//use count variable to identify the position of calib_value[count]
-											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-											calib_bool[count]=0;
-
-											Connect_Electronics_Load=0;
-											Connect_IV_Load=1;
-											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
-											theorical_JP_max_pos=current_position-calib_value[count];								
-											max_ADC_Val = ADC_GetResult(0);// read from channel 0
-											max_ADC_Val_JP = max_ADC_Val;										
-									}
-
-									dat_to_store.month=months;
-									dat_to_store.date=days;
-									dat_to_store.hour=hours;
-									dat_to_store.min=mins;
-									
-									dat_to_store.calib_max_voltage_ADC=max_ADC_Val/4;
-									dat_to_store.calib_max_pos_floor=(unsigned char)current_position;
-									dat_to_store.calib_max_pos_float=(current_position-dat_to_store.calib_max_pos_floor)*100;// consider only 2 digit after.
-									dat_to_store.light_ADC=(unsigned char)(pwm_time/4);//
-									
-									dat_to_store.Voltage_at_LUT_pos=max_ADC_Val_JP/4;// Scale the ADC value into the range [0:255]
-									dat_to_store.LUT_max_pos_floor=(unsigned char)theorical_JP_max_pos;
-									dat_to_store.LUT_max_pos_float=(theorical_JP_max_pos-dat_to_store.LUT_max_pos_floor)*100;								
-									Wait_ms_SPINOR(50);
-									//TOTAL: 120bytes for calib + 11 Bytes for  dat_to_store= 131 BYTES
-									SPI_NOR_Write_Data(dat_to_store,&SPI_NOR_INTERNAL_FLASH_ADDR);//0 is the starting address of SPI NOR
-									// Voltage from current sensor is used to calaculate POWER.
-										//====================================================					
-									sprintf(sTempString, "%.4f", theorical_JP_max_pos);
-									//		itoa((int)current_position,sCurrent_position,10);
-									SendString("AT+CIPSEND=9\r\n");
-									Wait_ms(200);
-									SendString(sTempString);
-									SendString("J\r\n");
-									Wait_ms(400);	
-									//====================================================					
-									sprintf(sTempString, "%.4f", (float)max_ADC_Val/1024*5);
-									//		itoa((int)current_position,sCurrent_position,10);
-									SendString("AT+CIPSEND=9\r\n");
-									Wait_ms(200);
-									SendString(sTempString);
-									SendString("W\r\n");
-									Wait_ms(400);
-									
-									sprintf(sTempString, "%.4f", current_position);
-									//		itoa((int)current_position,sCurrent_position,10);
-									SendString("AT+CIPSEND=9\r\n");
-									Wait_ms(200);
-									SendString(sTempString);
-									SendString("M\r\n");
-									Wait_ms(400);
-
-									sprintf(sTempString, "%.4f", pwm_time);
-									//		itoa((int)current_position,sCurrent_position,10);
-									SendString("AT+CIPSEND=9\r\n");
-									Wait_ms(200);
-									SendString(sTempString);
-									Wait_ms(200);
-									SendString("L\r\n");
-									Wait_ms(200);
-
-								}
-								
-								else if (BCDtoDec1(hours)>=18)// do not calib after 18pm
-								{
-									iUse_prevday_calib_value=1;
-									//count=0;
-
-								}
-							}
-								//===== Update when not at Calibration time stamp =====
-							if(iUse_prevday_calib_value==0 && BCDtoDec1(mins)%calib_stamp!=0)// FIRST day of calibration, update position not at the calibration time stamp
-							{
-								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
-								{
-										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-										Connect_Electronics_Load=0;
-										Connect_IV_Load=1;
-									
-										Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
-									
-										//=====================================================================================
-										if(old_mins!=mins)
-										{
-											sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60+(float)BCDtoDec1(seconds&0x7F)/3600);
-											SendString("AT+CIPSEND=9\r\n");
-											Delay_ms(200);
-											SendString(sTempString);
-											SendString("T\r\n");									
-											Wait_ms(200);
-											//=====================================================================================
-										
-											sprintf(sTempString, "%.4f", current_position);
-											//		itoa((int)current_position,sCurrent_position,10);
-											SendString("AT+CIPSEND=9\r\n");
-											Wait_ms(200);
-											SendString(sTempString);
-											SendString("M\r\n");
-										
-											//=====================================================================================
-											
-											Wait_ms(200);
-
-											sprintf(sTempString, "%.4f", pwm_time);
-											//		itoa((int)current_position,sCurrent_position,10);
-											SendString("AT+CIPSEND=9\r\n");
-											Wait_ms(200);
-											SendString(sTempString);
-											Wait_ms(200);
-											SendString("L\r\n");
-											Wait_ms(200);
-
-											//====================================================					
-											sprintf(sTempString, "%.4f", (float)ADC_GetResult(0)/1024*5);
-											//		itoa((int)current_position,sCurrent_position,10);
-											SendString("AT+CIPSEND=9\r\n");
-											Wait_ms(200);
-											SendString(sTempString);
-											SendString("W\r\n");
-											Wait_ms(200);			
-										}										
-									}
-							
-								}
-					
-								// how to update for next day and use the calib value from the previous day???
-							else if(iUse_prevday_calib_value==1 && BCDtoDec1(mins)%calib_stamp!=0)
-							{
-							
-									// calib every 30mins, from 7AM to 17PM
-									if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)								
-									{
-	
-											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
-										
-											calib_point1.x=calib_time[count];
-											calib_point1.y=calib_value[count];
-											//read from Adesto SPI NOR AT25SF041
-//											if(AT25SF041_Read(Byte_Page_Program,3*(count)+Block2_MEM_ADDR)==1)
-//												calib_point1.y=(float)AT25SF041_Read(Byte_Page_Program,3*count+1+Block2_MEM_ADDR)+ (float)AT25SF041_Read(Byte_Page_Program,3*count+2+Block2_MEM_ADDR)/100;
-//											else if(AT25SF041_Read(Byte_Page_Program,3*(count)+Block2_MEM_ADDR)==0)
-//												calib_point1.y=-(float)AT25SF041_Read(Byte_Page_Program,3*count+1+Block2_MEM_ADDR)-(float)AT25SF041_Read(Byte_Page_Program,3*count+2+Block2_MEM_ADDR)/100;			
-											Connect_Electronics_Load=0;
-											Connect_IV_Load=1;
-											//if(1)
-											if(calib_bool[count]==1)// && calib_bool[count+1]==1)
-											{
-												//calib_point2.y=calib_value[count+1];
-												//====== this is from PREVIOUS DAY, next time stamp ======.
-												//====== this is from PREVIOUS DAY 									======.
-												//====== this is from PREVIOUS DAY 									======.
-												
-												calib_point2.x=calib_time[count+1];
-												
-												if(AT25SF041_Read(Read_Array,3*(count+1))==1)
-													calib_point2.y=(float)AT25SF041_Read(Read_Array,3*(count+1)+1)+ (float)AT25SF041_Read(Read_Array,3*(count+1)+2)/100+diff_of_offset; // diff_of_offset is the difference between the calibration value of this day and the day before
-												else 
-													calib_point2.y=-(     (float)AT25SF041_Read(Read_Array,3*(count+1)+1)+(float) AT25SF041_Read(Read_Array,3*(count+1)+2)/100      )+diff_of_offset;
-//												Display_Line(1);	
-//												Display_Pos(calib_point2.y);	
-												//calib_point2.y=calib_value[count+1];// this is from previous day.
-												Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
-											}
-											else // was not calib prev day at this time stamp=> use the latest calib value of the same day
-											{
-												//		JP_pos=TheoricalJP_Position(azimuth,elevation);
-												//		calculate the theorical offset =JP Pos_today-JPPosprevious day
-												Update_position(months,days,hours,mins,seconds,&current_position,calib_value[FindClosestSamedayCalibTime(calib_bool,count)]);
-											}
-											
-											// in the UPDATE function, we only update the motor position when the distance >0.5mm
-											if(old_mins!=mins)
-											{
-												sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60+(float)BCDtoDec1(seconds&0x7F)/3600);
-												SendString("AT+CIPSEND=9\r\n");
-												Delay_ms(200);
-												SendString(sTempString);
-												SendString("T\r\n");									
-												Wait_ms(200);
-												//=====================================================================================
-											
-												sprintf(sTempString, "%.4f", current_position);
-												//		itoa((int)current_position,sCurrent_position,10);
-												SendString("AT+CIPSEND=9\r\n");
-												Wait_ms(200);
-												SendString(sTempString);
-												SendString("M\r\n");
-											
-												//=====================================================================================
-											
-												Wait_ms(200);
-
-												sprintf(sTempString, "%.4f", pwm_time);
-												//		itoa((int)current_position,sCurrent_position,10);
-												SendString("AT+CIPSEND=9\r\n");
-												Wait_ms(200);
-												SendString(sTempString);
-												Wait_ms(200);
-
-												SendString("L\r\n");
-												Wait_ms(200);
-
-												//====================================================					
-												sprintf(sTempString, "%.4f", (float)ADC_GetResult(0)/1024*5);
-												//		itoa((int)current_position,sCurrent_position,10);
-												SendString("AT+CIPSEND=9\r\n");
-												Wait_ms(200);
-												SendString(sTempString);
-												SendString("W\r\n");
-												Wait_ms(200);			
-											}
-
-									}
-							
-					}
-				}
-
-		}	
 				
 		// Code for the PUMP, enable PUMP from 7AM to 5PM
 		// Update the Calibation value by interpolation if there are uncalibrated value (decide by calib_bool variable)
-		if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
-		{		
-			P55=1;
-			//Connect_Electronics_Load=1;
 
-		}
-		// after 17PM, the interpolation will be implemented.
-		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==00 && BCDtoDec1(seconds&0x7f)==0 )
-		{
 				P55=0;
 			//Connect_Electronics_Load=0;
 			if(iUse_prevday_calib_value==1)// 2nd day
@@ -753,160 +346,7 @@ void main(void)
 
 			//===========================================
 			// interpolate and justify calibration value
-			for(i=0;i<=20;i++)
-			{
-				//===========================================				
-				// update new calibration value from interpolation.
-				if(found_1st_point==1)
-				{
-					for(j=i_point1+1;j<i_point2;j++)
-					{
-						calib_value[j]=linear_interpolate(calib_point1,calib_point2,calib_time[j]);
-						// Save new calib value in the flash memory
-						Wait_ms_SPINOR(50);	
-						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						if(calib_value[j]>0)
-							AT25SF041_Write(Byte_Page_Program, 3*j,1);	
-						else
-							AT25SF041_Write(Byte_Page_Program, 3*j,0);	
-							
-						Wait_ms_SPINOR(50);						
-						Wait_ms_SPINOR(50);	
-						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, 3*j+1,abs(calib_value[j]));	
-						Wait_ms_SPINOR(50);	
-							
-						Wait_ms_SPINOR(50);	
-						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, 3*j+2,(fabs(calib_value[j])-abs(calib_value[j]))*100);	
-						Wait_ms_SPINOR(50);		
 
-						Wait_ms_SPINOR(50);	
-						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						AT25SF041_Write(Byte_Page_Program, j+63,1);	
-						Wait_ms_SPINOR(50);							
-					}
-				
-					// now point 2 will be the 1st point for next interpolation
-					calib_point1.x=calib_point2.x;
-					calib_point1.y=calib_point2.y;
-					i_point1=i_point2;// update the position in the array, total 21 points from 7Am to 17PM
-				}
-				
-				if(calib_bool[i]==1 && found_1st_point==1)
-				{
-					calib_point2.x=calib_time[i];
-					
-					//if(AT25SF041_Read(Read_Array,3*i)==0)
-							//calib_point2.y=-(AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100);	
-					//		calib_point2.y=calib_value[i];
-					//else
-							//calib_point2.y=AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100;
-							calib_point2.y=calib_value[i];
-
-
-					i_point2=i;
-				}
-		
-				//===========================================
-				else if(calib_bool[i]==1 && found_1st_point==0)
-				{
-					
-					calib_point1.x=calib_time[i];
-					
-					//if(AT25SF041_Read(Byte_Page_Program,3*i)==0)
-					//	calib_point1.y=calib_value[i];
-						//calib_point1.y=-(AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100);
-					//else
-						calib_point1.y=calib_value[i];
-						//calib_point1.y=AT25SF041_Read(Byte_Page_Program,3*i+1)+ AT25SF041_Read(Byte_Page_Program,3*i+2)/100;
-
-					i_point1=i;
-					i_point2=i_point1;
-					calib_point2.x=calib_point1.x;
-					calib_point2.y=calib_point1.y;	
-					found_1st_point=1;
-					if(calib_bool[0]==0)
-					{
-							for(ii=0;ii<i;ii++)
-							{
-								calib_value[ii]=calib_value[i];
-								Wait_ms_SPINOR(50);	
-								AT25SF041_WriteEnable();
-								//Wait_ms_SPINOR(50);	
-								// calib bool array is stored from addr 42 
-								AT25SF041_Write(Byte_Page_Program, ii+63,1);
-
-								Wait_ms_SPINOR(50);	
-								AT25SF041_WriteEnable();
-								//Wait_ms_SPINOR(50);	
-								if(calib_value[ii]>=0)
-									AT25SF041_Write(Byte_Page_Program, 3*ii,1);// positive value	
-								else
-									AT25SF041_Write(Byte_Page_Program, 3*ii,0);// negative value	
-
-								Wait_ms_SPINOR(50);	
-								
-								Wait_ms_SPINOR(50);	
-								AT25SF041_WriteEnable();
-								//Wait_ms_SPINOR(50);	
-								AT25SF041_Write(Byte_Page_Program, 3*ii+1,abs(calib_value[ii]));	
-								Wait_ms_SPINOR(50);	
-								
-								Wait_ms_SPINOR(50);	
-								AT25SF041_WriteEnable();
-								//Wait_ms_SPINOR(50);	
-								AT25SF041_Write(Byte_Page_Program, 3*ii+2,(fabs(calib_value[ii])-abs(calib_value[ii]))    *100);	
-								Wait_ms_SPINOR(50);								
-							}
-						}
-				}
-
-
-			
-			}
-			if(calib_bool[20]==0)
-			{
-				for(j=i_point2;j<=20;j++)
-				{
-					calib_value[j]=calib_value[i_point2];
-					{
-					Wait_ms_SPINOR(50);	
-					AT25SF041_WriteEnable();
-					//Wait_ms_SPINOR(50);	
-					if(calib_value[j]>0)
-						AT25SF041_Write(Byte_Page_Program, 3*j,1);	
-					else
-						AT25SF041_Write(Byte_Page_Program, 3*j,0);	
-						
-					Wait_ms_SPINOR(50);						
-					Wait_ms_SPINOR(50);	
-					AT25SF041_WriteEnable();
-					//Wait_ms_SPINOR(50);	
-					AT25SF041_Write(Byte_Page_Program, 3*j+1,abs(calib_value[j]));	
-					Wait_ms_SPINOR(50);	
-						
-					Wait_ms_SPINOR(50);	
-					AT25SF041_WriteEnable();
-					//Wait_ms_SPINOR(50);	
-					AT25SF041_Write(Byte_Page_Program, 3*j+2,(fabs(calib_value[j])-abs(calib_value[j]   ))   *100);	
-					Wait_ms_SPINOR(50);	
-					
-					Wait_ms_SPINOR(50);	
-					AT25SF041_WriteEnable();
-					//Wait_ms_SPINOR(50);	
-					AT25SF041_Write(Byte_Page_Program, j+63,1);	
-					Wait_ms_SPINOR(50);	
-					}					
-				}
-			}
-		}
-		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==5 && BCDtoDec1(seconds&0x7f)==0 )
-		{
 			// // reset this variable so that we can interpolate calib value before the first calibration
 			// update iUse_prevday_calib_value variable to identify "not First day" 
 			iUse_prevday_calib_value=1;
@@ -922,53 +362,16 @@ void main(void)
 		}
 
 		// CLEAR SPI NOR by 99990 command from KEyPAd
-		if(SPI_NOR_ClearEnable==1)
-		{
-			LCD_clear();
-			Display_Line(1);
-			WriteData(0x43);//display "C"
-			WriteData(0x4C);//display "L"
-			WriteData(0x45);//display "E"	
-			WriteData(0x41);//display "A"	
-			WriteData(0x52);//display "R"	
-		//	WriteData(0x2E);//display "."	
-		//	WriteData(0x2E);//display "."	
-		//	WriteData(0x46);//display "F"	
-		//	WriteData(0x4C);//display "L"	
-		//	WriteData(0x41);//display "A"	
-		//	WriteData(0x53);//display "S"	
-		//	WriteData(0x48);//display "H"	
-
-			//==================================
-			AT25SF041_WriteEnable();
-			//Wait_ms_SPINOR(50);
-			AT25SF041_ChipErase();
-			Wait_ms_SPINOR(5);
-			SPI_NOR_INTERNAL_FLASH_ADDR=200;
-			SPI_NOR_ClearEnable=0;
-			//===================================
-			LCD_clear();
-			//Command(0x08);
-			//Command(0x00);			
-			//WriteData(0x68);//display "h"
-			//WriteData(0x68);//display "h"
-			//WriteData(0x6D);//display "m"
-			//WriteData(0x6D);//display "m"
-			//WriteData(0x23);//display "#" SETTIME_KEY		
-			
-		}
-	}
-
-		
-
-
-
-		
-}
+		//if(SPI_NOR_ClearEnable==1)
 	
- 
+	
 
 
+		
+
+
+
+		
 
 
 void Uart() interrupt 4 using 1
