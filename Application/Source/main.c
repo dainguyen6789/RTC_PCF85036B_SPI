@@ -74,6 +74,10 @@ float calib_interpolate(float hours, float mins);
 float  linear_interpolate(struct point p1,struct point p2, float  x);
 float elevation_calculation(unsigned char mnths,unsigned char dys,
 										 unsigned char hurs,unsigned char mns,unsigned char sconds);
+float azimuth_calculation(unsigned char mnths,unsigned char dys,
+										 unsigned char hurs,unsigned char mns,unsigned char sconds,float elevation)		;	
+float TheoricalJP_Position(float azimuth,float elevation);
+										 
 //void uart1_InitTCPConn();
 
 //void uart1_SendToTCPServer(char *str);
@@ -163,7 +167,7 @@ void main(void)
 	struct data_to_store dat_to_store;
 	//	unsigned char KeyNum;
 	int calib_day=0, calib_count;
-	float theorical_JP_max_pos=0,elevation;
+	float theorical_JP_max_pos=0,elevation,azimuth;
 	//	char numStr[5];
 	
 	//	float current_position=0;
@@ -379,6 +383,7 @@ void main(void)
 								{
 									//calculate elevation to decide whether we will calibrate or not
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
+									azimuth=azimuth_calculation(months,days,hours,mins,seconds,elevation);
 									sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60);
 									SendString("AT+CIPSEND=9\r\n");
 									Delay_ms(10);
@@ -618,8 +623,7 @@ void main(void)
 											Connect_Electronics_Load=0;
 											Connect_IV_Load=1;
 											//if(1)
-											if(calib_bool[count]==1)// && calib_bool[count+1]==1)
-											{
+
 												//calib_point2.y=calib_value[count+1];
 												//====== this is from PREVIOUS DAY, next time stamp ======.
 												//====== this is from PREVIOUS DAY 									======.
@@ -634,13 +638,25 @@ void main(void)
 //												Display_Line(1);	
 //												Display_Pos(calib_point2.y);	
 												//calib_point2.y=calib_value[count+1];// this is from previous day.
+											if(calib_bool[count]==1)// && calib_bool[count+1]==1)
+											{												
 												Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
 											}
 											else // was not calib prev day at this time stamp=> use the latest calib value of the same day
 											{
-												//		JP_pos=TheoricalJP_Position(azimuth,elevation);
+												if(AT25SF041_Read(Read_Array,3*(count))==1)
+													calib_point1.y=(float)AT25SF041_Read(Read_Array,3*(count)+1)+ (float)AT25SF041_Read(Read_Array,3*(count)+2)/100; // diff_of_offset is the difference between the calibration value of this day and the day before
+												else 
+													calib_point1.y=-(     (float)AT25SF041_Read(Read_Array,3*(count)+1)+(float) AT25SF041_Read(Read_Array,3*(count)+2)/100      );
+//												Display_Line(1);	
+												//JP_pos=TheoricalJP_Position(azimuth,elevation);
 												//		calculate the theorical offset =JP Pos_today-JPPosprevious day
-												Update_position(months,days,hours,mins,seconds,&current_position,calib_value[FindClosestSamedayCalibTime(calib_bool,count)]);
+												Update_position(months,days,hours,mins,seconds,&current_position,
+												linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60)
+												+TheoricalJP_Position(azimuth,elevation)
+												-TheoricalJP_Position(elevation_calculation(months,days-1,hours,mins,seconds),azimuth_calculation(months,days-1,hours,mins,seconds,elevation)
+												));
+
 											}
 											
 											// in the UPDATE function, we only update the motor position when the distance >0.5mm
