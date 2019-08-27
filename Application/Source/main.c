@@ -648,8 +648,6 @@ void main(void)
 													calib_point1.y=(float)AT25SF041_Read(Read_Array,3*(count)+1)+ (float)AT25SF041_Read(Read_Array,3*(count)+2)/100; // diff_of_offset is the difference between the calibration value of this day and the day before
 												else 
 													calib_point1.y=-(     (float)AT25SF041_Read(Read_Array,3*(count)+1)+(float) AT25SF041_Read(Read_Array,3*(count)+2)/100      );
-//												Display_Line(1);	
-												//JP_pos=TheoricalJP_Position(azimuth,elevation);
 												//		calculate the theorical offset =JP Pos_today-JPPosprevious day
 												Update_position(months,days,hours,mins,seconds,&current_position,
 												linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60)
