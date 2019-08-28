@@ -291,9 +291,9 @@ float elevation_calculation(unsigned char mnths,unsigned char dys,
 }
 
 float azimuth_calculation(unsigned char mnths,unsigned char dys,
-										 unsigned char hurs,unsigned char mns,unsigned char sconds,float elevation)
+										 unsigned char hurs,unsigned char mns,unsigned char sconds)
 {
-	//float eleva
+	float elevation;
 	time.iYear=2019;
 	time.iMonth=BCDtoDec1(mnths);
 	time.iDay=BCDtoDec1(dys);
@@ -306,6 +306,8 @@ float azimuth_calculation(unsigned char mnths,unsigned char dys,
 	declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
 	time_offset=(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53*cos((360*(time.iDay-81)/365)*pi/180)    -   1.5*sin((360*(time.iDay-81)/365)*pi/180))/60;
 	current_local_sun_time=(float) (BCDtoDec1(hurs))+(float)BCDtoDec1(mns)/60+time_offset;//-1;//current time=sun time= clock time -1
+	elevation=(180/pi)*asin(             sin(location.dLatitude*pi/180)*sin(declination*pi/180)+
+						cos(location.dLatitude*pi/180)*cos(declination*pi/180)*cos((15*(current_local_sun_time-12))*pi/180)           );
 	
 	return 180+(180/pi)*asin(       sin((15*(current_local_sun_time-12))*pi/180)*cos(declination*pi/180)/sin((90-elevation)*pi/180)          );
 }
