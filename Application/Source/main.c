@@ -100,7 +100,7 @@ char sTempString[9];
 //calib_value=malloc(24);
 //calib_time=malloc(24);
 unsigned char calib_stamp =30;// calib every 30 mins 
-unsigned long int SPI_NOR_INTERNAL_FLASH_ADDR=0;
+unsigned long int SPI_NOR_INTERNAL_FLASH_ADDR=200;
 unsigned int timer0_count=0;
 unsigned char start_timer0_count=0;
 // definition of pwm time 
@@ -167,7 +167,7 @@ void main(void)
 	struct data_to_store dat_to_store;
 	//	unsigned char KeyNum;
 	int calib_day=0, calib_count;
-	float theorical_JP_max_pos=0,elevation,azimuth,prev_elevation=0,prev_azimuth=0,JP_Pos;
+	float theorical_JP_max_pos=0,elevation,azimuth,prev_elevation=0,prev_azimuth=0,JP_Pos_Offset;
 	//	char numStr[5];
 	
 	//	float current_position=0;
@@ -385,9 +385,9 @@ void main(void)
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
 									azimuth=azimuth_calculation(months,days,hours,mins,seconds);
 									
-									prev_elevation=elevation_calculation(months,days-1,hours,mins,seconds);
-									prev_azimuth=azimuth_calculation(months,days-1,hours,mins,seconds);	
-									JP_Pos=TheoricalJP_Position(azimuth,elevation)-TheoricalJP_Position(prev_azimuth,prev_elevation);
+									prev_elevation=elevation_calculation(months,0x25,hours,mins,seconds);
+									prev_azimuth=azimuth_calculation(months,0x25,hours,mins,seconds);	
+									JP_Pos_Offset=TheoricalJP_Position(azimuth,elevation)-TheoricalJP_Position(prev_azimuth,prev_elevation);
 									
 									sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60);
 									SendString("AT+CIPSEND=9\r\n");
@@ -663,6 +663,7 @@ void main(void)
 												
 												Update_position(months,days,hours,mins,seconds,&current_position,
 																				linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60)
+																				+JP_Pos_Offset
 																				//+TheoricalJP_Position(azimuth,elevation)
 																				//-TheoricalJP_Position(prev_azimuth,prev_elevation)
 																				);
