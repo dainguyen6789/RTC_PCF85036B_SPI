@@ -372,8 +372,8 @@ void main(void)
 		{
 			
 			//sunlight_ADC=ADC_GetResult(2);
-				Display_Line(1);	
-				Display_Pos(pwm_time);
+//				Display_Line(1);	
+//				Display_Pos(pwm_time);
 
 			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
 			{
@@ -642,7 +642,7 @@ void main(void)
 											{												
 												Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
 											}
-											else // was not calib prev day at this time stamp=> use the latest calib value of the same day
+											else // was not calib prev day at this time stamp=> use the offset value from previous day (stored in SPI NOR FLASH)
 											{
 												if(AT25SF041_Read(Read_Array,3*(count))==1)
 													calib_point1.y=(float)AT25SF041_Read(Read_Array,3*(count)+1)+ (float)AT25SF041_Read(Read_Array,3*(count)+2)/100; // diff_of_offset is the difference between the calibration value of this day and the day before
@@ -650,11 +650,12 @@ void main(void)
 													calib_point1.y=-(     (float)AT25SF041_Read(Read_Array,3*(count)+1)+(float) AT25SF041_Read(Read_Array,3*(count)+2)/100      );
 												//		calculate the theorical offset =JP Pos_today-JPPosprevious day
 												Update_position(months,days,hours,mins,seconds,&current_position,
-												linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60)
-												+TheoricalJP_Position(azimuth,elevation)
-												-TheoricalJP_Position(elevation_calculation(months,days-1,hours,mins,seconds),azimuth_calculation(months,days-1,hours,mins,seconds,elevation)
-												));
-
+																				linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60)
+												//+TheoricalJP_Position(azimuth,elevation)
+												//-TheoricalJP_Position(elevation_calculation(months,days-1,hours,mins,seconds),azimuth_calculation(months,days-1,hours,mins,seconds,elevation_calculation(months,days-1,hours,mins,seconds)))
+												);
+												Display_Line(1);	
+												Display_Pos(calib_point1.y);
 											}
 											
 											// in the UPDATE function, we only update the motor position when the distance >0.5mm

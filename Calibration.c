@@ -238,6 +238,9 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 				if(new_voltage_at_scanned_pos<=old_voltage_at_scanned_pos)
 				{
 					*current_position=*current_position-0.5; // try to compensate the mechanical error
+					old_voltage_at_scanned_pos=0;			
+					new_voltage_at_scanned_pos=0;			
+
 
 					break;
 				}
