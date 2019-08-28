@@ -47,7 +47,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 		float calib_step_move=0.5,JPPos;
 		char sTemp[9];
 		//float offset_error=0.8;
-		int voltage_at_scanned_pos[81],max_location, avg_voltage=0;
+		int voltage_at_scanned_pos[81],max_location, avg_voltage=0,new_voltage_at_scanned_pos=0,old_voltage_at_scanned_pos=0;
 		int i,j;
 		//float offset_error=0.8;
 		// move/scan +`
@@ -204,7 +204,7 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 			*max_ADC_JP_value=voltage_at_scanned_pos[40];
 		
 			// move to the optimal position in the area of +/-10mm from JP max theorical pos
-			Move(calib_step_move*(84-max_location),0);//83-81= 2 steps is the offset error
+			Move(calib_step_move*(81-max_location),0);//83-81= 2 steps is the offset error
 //			Command(0x08);
 //			Command(0x06);
 //			
@@ -215,7 +215,37 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 //			//LCD_clear();
 //			Display_Pos(83-max_location);
 
-			*current_position=*current_position-(calib_step_move*(83-max_location));
+			*current_position=*current_position-(calib_step_move*(81-max_location));
+			// Use extra fucntion to correct the mechanical changing position error.
+			// go back some more steps and find the max point by reading new power value 
+			//==================================================
+			for(i=0;i<=10;i++)
+			{
+				Move(calib_step_move,0);//
+				Wait_ms(500);
+				//avg_voltage=0;
+				for(j=0;j<5;j++)
+				{
+					if(j==0)
+					{
+						avg_voltage=0;
+					}
+					avg_voltage+=ADC_GetResult(ch);
+					Wait_ms(2);
+
+				}
+				new_voltage_at_scanned_pos=avg_voltage/5;			
+				if(new_voltage_at_scanned_pos<=old_voltage_at_scanned_pos)
+				{
+					*current_position=*current_position-0.5; // try to compensate the mechanical error
+
+					break;
+				}
+				old_voltage_at_scanned_pos=new_voltage_at_scanned_pos;			
+
+			}
+			
+			//==================================================
 			sprintf(sTemp, "%.4f", *current_position);
 			//		itoa((int)current_position,sCurrent_position,10);
 			SendString("AT+CIPSEND=9\r\n");
