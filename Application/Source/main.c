@@ -388,9 +388,9 @@ void main(void)
 									prev_elevation=elevation_calculation(months,days-4,hours,mins,seconds);
 									prev_azimuth=azimuth_calculation(months,days-4,hours,mins,seconds);	
 									JP_Pos_Offset=TheoricalJP_Position(azimuth,elevation*(180/pi))-TheoricalJP_Position(prev_azimuth,prev_elevation*(180/pi));
-									Display_Line(1);	
+									//Display_Line(1);	
 									//Display_Pos(calib_point1.y);
-									Display_Pos(JP_Pos_Offset);									
+									//Display_Pos(JP_Pos_Offset);									
 									sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60);
 									SendString("AT+CIPSEND=9\r\n");
 									Delay_ms(10);
@@ -669,8 +669,8 @@ void main(void)
 																				//+TheoricalJP_Position(azimuth,elevation)
 																				//-TheoricalJP_Position(prev_azimuth,prev_elevation)
 																				);
-												//Display_Line(1);	
-												//Display_Pos(calib_point1.y);
+												Display_Line(1);	
+												Display_Pos(calib_point1.y);
 												//Display_Pos(JP_Pos_Offset);
 											}
 											
