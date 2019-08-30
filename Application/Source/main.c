@@ -87,7 +87,7 @@ bit busy;
 //unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
 //int RX_Data_Uart_Cnt=0;
 //int st_time=0;
-int count=0,day_offset=0;
+int count=0,day_offset=0,Enable_UpdateSPINOR=0;
 int i,j,i_point1,i_point2,found_1st_point=0,ii,jj;// loop variables to interpolate the calibration values
 static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
@@ -394,7 +394,9 @@ void main(void)
 									prev_azimuth=azimuth_calculation(months,
 																									 days+day_offset
 																									 ,hours,mins,seconds);	
-									JP_Pos_Offset=TheoricalJP_Position(azimuth,elevation*(180/pi))-TheoricalJP_Position(prev_azimuth,prev_elevation*(180/pi));
+									JP_Pos_Offset=TheoricalJP_Position(azimuth,elevation*(180/pi))
+																											-
+																											TheoricalJP_Position(prev_azimuth,prev_elevation*(180/pi));
 									//Display_Line(1);	
 									//Display_Pos(calib_point1.y);
 									//Display_Pos(JP_Pos_Offset);									
@@ -426,7 +428,7 @@ void main(void)
 										
 
 										
-										// if light is not stable
+										// if light is not stable, calib value is garbage
 										if(pwm_time_max>1.2*pwm_time_min)
 										{
 											// go back to JP pos if the sun light is unstable
@@ -436,6 +438,7 @@ void main(void)
 											diff_of_offset=0;
 
 										}
+										// calib value is acceptable with at least one value, then we can interpolate the offset at then end of the day
 										else
 										{
 											if(AT25SF041_Read(Read_Array,count+63)==1)// if we have the calib value from previous day
@@ -444,10 +447,11 @@ void main(void)
 													diff_of_offset=calib_value[count]-((float)AT25SF041_Read(Read_Array,3*count+1)+(float) AT25SF041_Read(Read_Array,3*count+2)/100);
 												else if(AT25SF041_Read(Read_Array,3*count)==0)
 													diff_of_offset=calib_value[count]+ (float)AT25SF041_Read(Read_Array,3*count+1)+ (float)AT25SF041_Read(Read_Array,3*count+2)/100;
-
+												
+												
 
 											}
-
+											Enable_UpdateSPINOR=1;
 											Wait_ms_SPINOR(50);	
 											AT25SF041_WriteEnable();
 											//Wait_ms_SPINOR(50);	
@@ -739,10 +743,28 @@ void main(void)
 
 		}
 		// after 17PM, the interpolation will be implemented.
-		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==00 && BCDtoDec1(seconds&0x7f)==0 )
+		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==00 && BCDtoDec1(seconds&0x7f)==0 && Enable_UpdateSPINOR==1)
 		{
 				P55=0;
 			//Connect_Electronics_Load=0;
+			//==============================================================================================
+			// Store month and date of the calibration offset value
+			//==============================================================================================
+			{
+				Wait_ms_SPINOR(50);	
+				AT25SF041_WriteEnable();
+				//Wait_ms_SPINOR(50);	
+				//AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-(unsigned char)fabs(calib_value[count]))*100);	
+				AT25SF041_Write(Byte_Page_Program, 98,months);	
+
+				Wait_ms_SPINOR(50);	
+				
+				Wait_ms_SPINOR(50);	
+				AT25SF041_WriteEnable();
+				//Wait_ms_SPINOR(50);	
+				//AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-(unsigned char)fabs(calib_value[count]))*100);	
+				AT25SF041_Write(Byte_Page_Program, 99,days);	
+			}	
 			if(iUse_prevday_calib_value==1)// 2nd day
 			{
 				// clear SPI NOR FLASH
@@ -785,22 +807,7 @@ void main(void)
 
 						Wait_ms_SPINOR(50);	
 						
-						//==============================================================================================
-						// Store month and date of the calibration offset value
-						//==============================================================================================
-						Wait_ms_SPINOR(50);	
-						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						//AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-(unsigned char)fabs(calib_value[count]))*100);	
-						AT25SF041_Write(Byte_Page_Program, 98,months);	
-
-						Wait_ms_SPINOR(50);	
 						
-						Wait_ms_SPINOR(50);	
-						AT25SF041_WriteEnable();
-						//Wait_ms_SPINOR(50);	
-						//AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-(unsigned char)fabs(calib_value[count]))*100);	
-						AT25SF041_Write(Byte_Page_Program, 99,days);							
 					}						
 				}				
 				
@@ -960,13 +967,14 @@ void main(void)
 				}
 			}
 		}
-		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==5 && BCDtoDec1(seconds&0x7f)==0 )
+		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==5 && BCDtoDec1(seconds&0x7f)==0 && Enable_UpdateSPINOR==1)// also, if we have calibration values for first day 
 		{
 			// // reset this variable so that we can interpolate calib value before the first calibration
 			// update iUse_prevday_calib_value variable to identify "not First day" 
+			// at the end of the day , reset Enable_UpdateSPINOR variable for the next day
 			iUse_prevday_calib_value=1;
 			found_1st_point=0;
-
+			Enable_UpdateSPINOR=0;
 			for(i=0;i<=20;i++)
 			{
 				calib_value[i]=0;
