@@ -94,7 +94,7 @@ static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 float calib_value[21],calib_time[21],diff_of_offset=0;// // diff_of_offset is the difference between the calibration value of this day and the day before
 int calib_bool[21];
 unsigned char old_mins,seconds,mins, hours,days,months;//,mins1, hours1,mins2, hours2;
-float current_position=100;
+float current_position=0;
 char sTempString[9];
 //int lcd=0;
 //calib_value=malloc(24);
@@ -167,7 +167,7 @@ void main(void)
 	struct data_to_store dat_to_store;
 	//	unsigned char KeyNum;
 	int calib_day=0, calib_count;
-	float theorical_JP_max_pos=0,elevation,azimuth,prev_elevation=0,prev_azimuth=0,JP_Pos_Offset=0;
+	float theorical_JP_max_pos=0,elevation=0,azimuth=0,prev_elevation=0,prev_azimuth=0,JP_Pos_Offset=0;
 	//	char numStr[5];
 	
 	//	float current_position=0;
@@ -385,9 +385,9 @@ void main(void)
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
 									azimuth=azimuth_calculation(months,days,hours,mins,seconds);
 									
-									//prev_elevation=elevation_calculation(months,days-4,hours,mins,seconds);
-									//prev_azimuth=azimuth_calculation(months,days-4,hours,mins,seconds);	
-									JP_Pos_Offset=TheoricalJP_Position(azimuth,elevation);//-TheoricalJP_Position(prev_azimuth,prev_elevation);
+									prev_elevation=elevation_calculation(months,days-4,hours,mins,seconds);
+									prev_azimuth=azimuth_calculation(months,days-4,hours,mins,seconds);	
+									JP_Pos_Offset=TheoricalJP_Position(azimuth,elevation*(180/pi))-TheoricalJP_Position(prev_azimuth,prev_elevation*(180/pi));
 									Display_Line(1);	
 									//Display_Pos(calib_point1.y);
 									Display_Pos(JP_Pos_Offset);									
@@ -665,7 +665,7 @@ void main(void)
 												
 												Update_position(months,days,hours,mins,seconds,&current_position,
 																				linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60)
-																				//+JP_Pos_Offset
+																				+JP_Pos_Offset
 																				//+TheoricalJP_Position(azimuth,elevation)
 																				//-TheoricalJP_Position(prev_azimuth,prev_elevation)
 																				);
