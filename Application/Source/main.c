@@ -291,7 +291,17 @@ void main(void)
 			AT25SF041_Write(Byte_Page_Program, 3*j+2,(fabs(val_to_store[j])-abs(val_to_store[j]   ))   *100);	
 			Wait_ms_SPINOR(50);	
 		}
-
+			Wait_ms_SPINOR(50);	
+			AT25SF041_WriteEnable();
+			//Wait_ms_SPINOR(50);	
+			AT25SF041_Write(Byte_Page_Program, 98,0x08);	
+			Wait_ms_SPINOR(50);	
+		
+			Wait_ms_SPINOR(50);	
+			AT25SF041_WriteEnable();
+			//Wait_ms_SPINOR(50);	
+			AT25SF041_Write(Byte_Page_Program, 99,0x25);	
+			Wait_ms_SPINOR(50);	
 				
 		// Code for the PUMP, enable PUMP from 7AM to 5PM
 		// Update the Calibation value by interpolation if there are uncalibrated value (decide by calib_bool variable)
