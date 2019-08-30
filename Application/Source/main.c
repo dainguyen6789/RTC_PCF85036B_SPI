@@ -87,7 +87,7 @@ bit busy;
 //unsigned char Rec_data_hour[]="hh",Rec_data_min[]="mm",hour_count,min_count;
 //int RX_Data_Uart_Cnt=0;
 //int st_time=0;
-int count=0;
+int count=0,day_offset=0;
 int i,j,i_point1,i_point2,found_1st_point=0,ii,jj;// loop variables to interpolate the calibration values
 static int KeyCount=0;
 static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
@@ -385,8 +385,15 @@ void main(void)
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
 									azimuth=azimuth_calculation(months,days,hours,mins,seconds);
 									
-									prev_elevation=elevation_calculation(months,days-4,hours,mins,seconds);
-									prev_azimuth=azimuth_calculation(months,days-4,hours,mins,seconds);	
+									// day_offset is used to identify the diff between current date and the date of previous calibration date in the SPI NOR FLASH
+									day_offset=	Day_Of_Year(AT25SF041_Read(Read_Array,98),AT25SF041_Read(Read_Array,99))-Day_Of_Year(months,days);
+									day_offset=day_offset<=7? day_offset:0;
+									prev_elevation=elevation_calculation(months,
+																											 days+day_offset
+																											 ,hours,mins,seconds);
+									prev_azimuth=azimuth_calculation(months,
+																									 days+day_offset
+																									 ,hours,mins,seconds);	
 									JP_Pos_Offset=TheoricalJP_Position(azimuth,elevation*(180/pi))-TheoricalJP_Position(prev_azimuth,prev_elevation*(180/pi));
 									//Display_Line(1);	
 									//Display_Pos(calib_point1.y);
@@ -777,6 +784,23 @@ void main(void)
 						AT25SF041_Write(Byte_Page_Program, 3*ii+2,(fabs(calib_value[ii])-abs(calib_value[ii]))*100);	
 
 						Wait_ms_SPINOR(50);	
+						
+						//==============================================================================================
+						// Store month and date of the calibration offset value
+						//==============================================================================================
+						Wait_ms_SPINOR(50);	
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
+						//AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-(unsigned char)fabs(calib_value[count]))*100);	
+						AT25SF041_Write(Byte_Page_Program, 98,months);	
+
+						Wait_ms_SPINOR(50);	
+						
+						Wait_ms_SPINOR(50);	
+						AT25SF041_WriteEnable();
+						//Wait_ms_SPINOR(50);	
+						//AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-(unsigned char)fabs(calib_value[count]))*100);	
+						AT25SF041_Write(Byte_Page_Program, 99,days);							
 					}						
 				}				
 				
