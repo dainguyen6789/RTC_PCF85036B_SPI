@@ -46,3 +46,9 @@ struct point
 extern struct cLocation location;
 
 int FindClosestSamedayCalibTime(int *input_calibration_bool_array,int current_time_stamp_position);
+
+float elevation_calculation(unsigned char mnths,unsigned char dys,
+										 unsigned char hurs,unsigned char mns,unsigned char sconds);
+float azimuth_calculation(unsigned char mnths,unsigned char dys,
+										 unsigned char hurs,unsigned char mns,unsigned char sconds)		;	
+float TheoricalJP_Position(float azimuth,float elevation);

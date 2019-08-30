@@ -219,10 +219,10 @@ void  Find_Real_Max(float  *current_position, unsigned int *calib_max_ADC_Value,
 			// Use extra fucntion to correct the mechanical changing position error.
 			// go back some more steps and find the max point by reading new power value 
 			//==================================================
-			for(i=0;i<=10;i++)
+			for(i=0;i<=20;i++)
 			{
 				Move(calib_step_move,0);//
-				Wait_ms(500);
+				Wait_ms(1000);
 				//avg_voltage=0;
 				for(j=0;j<5;j++)
 				{
@@ -332,4 +332,5 @@ int FindClosestSamedayCalibTime(int *input_calibration_bool_array,int current_ti
 		else 
 			return 0;
 	}
+	return 0;
 }

@@ -94,7 +94,7 @@ static unsigned char KeyNum_Old,KeyNum,PressedKey[4]="hhmm";
 float calib_value[21],calib_time[21],diff_of_offset=0;// // diff_of_offset is the difference between the calibration value of this day and the day before
 int calib_bool[21];
 unsigned char old_mins,seconds,mins, hours,days,months;//,mins1, hours1,mins2, hours2;
-float current_position=0;
+float current_position=100;
 char sTempString[9];
 //int lcd=0;
 //calib_value=malloc(24);
@@ -167,7 +167,7 @@ void main(void)
 	struct data_to_store dat_to_store;
 	//	unsigned char KeyNum;
 	int calib_day=0, calib_count;
-	float theorical_JP_max_pos=0,elevation,azimuth,prev_elevation=0,prev_azimuth=0,JP_Pos_Offset;
+	float theorical_JP_max_pos=0,elevation,azimuth,prev_elevation=0,prev_azimuth=0,JP_Pos_Offset=0;
 	//	char numStr[5];
 	
 	//	float current_position=0;
@@ -385,10 +385,12 @@ void main(void)
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
 									azimuth=azimuth_calculation(months,days,hours,mins,seconds);
 									
-									prev_elevation=elevation_calculation(months,0x25,hours,mins,seconds);
-									prev_azimuth=azimuth_calculation(months,0x25,hours,mins,seconds);	
-									JP_Pos_Offset=TheoricalJP_Position(azimuth,elevation)-TheoricalJP_Position(prev_azimuth,prev_elevation);
-									
+									//prev_elevation=elevation_calculation(months,days-4,hours,mins,seconds);
+									//prev_azimuth=azimuth_calculation(months,days-4,hours,mins,seconds);	
+									JP_Pos_Offset=TheoricalJP_Position(azimuth,elevation);//-TheoricalJP_Position(prev_azimuth,prev_elevation);
+									Display_Line(1);	
+									//Display_Pos(calib_point1.y);
+									Display_Pos(JP_Pos_Offset);									
 									sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60);
 									SendString("AT+CIPSEND=9\r\n");
 									Delay_ms(10);
@@ -421,7 +423,7 @@ void main(void)
 										if(pwm_time_max>1.2*pwm_time_min)
 										{
 											// go back to JP pos if the sun light is unstable
-											Update_position(months,days,hours,mins,seconds,&current_position,0);
+											//Update_position(months,days,hours,mins,seconds,&current_position,0);
 											calib_value[count]=0;
 											calib_bool[count]=0;
 											diff_of_offset=0;
@@ -487,7 +489,7 @@ void main(void)
 
 											Connect_Electronics_Load=0;
 											Connect_IV_Load=1;
-											Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
+											//Update_position(months,days,hours,mins,seconds,&current_position,calib_value[count]);
 											theorical_JP_max_pos=current_position-calib_value[count];								
 											max_ADC_Val = ADC_GetResult(0);// read from channel 0
 											max_ADC_Val_JP = max_ADC_Val;		
@@ -663,13 +665,13 @@ void main(void)
 												
 												Update_position(months,days,hours,mins,seconds,&current_position,
 																				linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60)
-																				+JP_Pos_Offset
+																				//+JP_Pos_Offset
 																				//+TheoricalJP_Position(azimuth,elevation)
 																				//-TheoricalJP_Position(prev_azimuth,prev_elevation)
 																				);
-												Display_Line(1);	
-												Display_Pos(calib_point1.y);
-												//Display_Pos(JP_Pos);
+												//Display_Line(1);	
+												//Display_Pos(calib_point1.y);
+												//Display_Pos(JP_Pos_Offset);
 											}
 											
 											// in the UPDATE function, we only update the motor position when the distance >0.5mm
