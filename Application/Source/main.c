@@ -394,7 +394,7 @@ void main(void)
 									prev_azimuth=azimuth_calculation(months,
 																									 days+day_offset
 																									 ,hours,mins,seconds);	
-									JP_Pos_Offset=TheoricalJP_Position(azimuth,elevation*(180/pi))
+									JP_Pos_Offset=TheoricalJP_Position(	azimuth,elevation*(180/pi))
 																											-
 																											TheoricalJP_Position(prev_azimuth,prev_elevation*(180/pi));
 									//Display_Line(1);	
@@ -479,7 +479,7 @@ void main(void)
 											//Wait_ms_SPINOR(50);	
 											//AT25SF041_Write(Byte_Page_Program, 3*count+2,(fabs(calib_value[count])-(unsigned char)fabs(calib_value[count]))*100);	
 											AT25SF041_Write(Byte_Page_Program, 3*count+2+iUse_prevday_calib_value*Block2_MEM_ADDR,(fabs(calib_value[count])-abs(calib_value[count]))*100);	
-
+											
 											Wait_ms_SPINOR(50);	
 										}
 
@@ -569,7 +569,7 @@ void main(void)
 
 								}
 							}
-								//===== Update when not at Calibration time stamp =====
+							//===== Update when not at Calibration time stamp =====
 							if(iUse_prevday_calib_value==0 && BCDtoDec1(mins)%calib_stamp!=0)// FIRST day of calibration, update position not at the calibration time stamp
 							{
 								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
@@ -589,7 +589,7 @@ void main(void)
 											SendString(sTempString);
 											SendString("T\r\n");									
 											Wait_ms(200);
-											//=====================================================================================
+											//=====================================================
 										
 											sprintf(sTempString, "%.4f", current_position);
 											//		itoa((int)current_position,sCurrent_position,10);
@@ -598,7 +598,7 @@ void main(void)
 											SendString(sTempString);
 											SendString("M\r\n");
 										
-											//=====================================================================================
+											//=====================================================
 											
 											Wait_ms(200);
 
@@ -694,7 +694,7 @@ void main(void)
 												SendString(sTempString);
 												SendString("T\r\n");									
 												Wait_ms(200);
-												//=====================================================================================
+												//=====================================================
 											
 												sprintf(sTempString, "%.4f", current_position);
 												//		itoa((int)current_position,sCurrent_position,10);
@@ -703,7 +703,7 @@ void main(void)
 												SendString(sTempString);
 												SendString("M\r\n");
 											
-												//=====================================================================================
+												//=====================================================
 											
 												Wait_ms(200);
 
@@ -969,7 +969,7 @@ void main(void)
 		}
 		else if (BCDtoDec1(hours)==17  && BCDtoDec1(mins)==5 && BCDtoDec1(seconds&0x7f)==0 && Enable_UpdateSPINOR==1)// also, if we have calibration values for first day 
 		{
-			// // reset this variable so that we can interpolate calib value before the first calibration
+			// reset this variable so that we can interpolate calib value before the first calibration
 			// update iUse_prevday_calib_value variable to identify "not First day" 
 			// at the end of the day , reset Enable_UpdateSPINOR variable for the next day
 			iUse_prevday_calib_value=1;
