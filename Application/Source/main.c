@@ -387,19 +387,25 @@ void main(void)
 									
 									// day_offset is used to identify the diff between current date and the date of previous calibration date in the SPI NOR FLASH
 									day_offset=	Day_Of_Year(AT25SF041_Read(Read_Array,98),AT25SF041_Read(Read_Array,99))-Day_Of_Year(months,days);
+									
+									//months_wave=Month_of_Year(Day_Of_Year(months,days)+day_offset);
+									
+									//days_wave=Day_of_Month(Day_Of_Year(months,days)+day_offset);
+									
 									//day_offset=day_offset<=7? day_offset:0;
-									prev_elevation=elevation_calculation(months,
-																											 days+day_offset
+									prev_elevation=elevation_calculation(AT25SF041_Read(Read_Array,98),
+																											 AT25SF041_Read(Read_Array,99)
 																											 ,hours,mins,seconds);
-									prev_azimuth=azimuth_calculation(months,
-																									 days+day_offset
+									prev_azimuth=azimuth_calculation(AT25SF041_Read(Read_Array,98),
+																									 AT25SF041_Read(Read_Array,99)
 																									 ,hours,mins,seconds);	
 									JP_Pos_Offset=TheoricalJP_Position(	azimuth,elevation*(180/pi))
 																											-
 																											TheoricalJP_Position(prev_azimuth,prev_elevation*(180/pi));
-									//Display_Line(1);	
+									Display_Line(1);	
+									
 									//Display_Pos(calib_point1.y);
-									//Display_Pos(JP_Pos_Offset);									
+									Display_Pos(day_offset);									
 									sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60);
 									SendString("AT+CIPSEND=9\r\n");
 									Delay_ms(10);
@@ -565,6 +571,7 @@ void main(void)
 								
 								// do not calib after 18pm and set iUse_prevday_calib_value variable for nextday update only if we have data in the SPI NOR 
 								// check SPI NOR data at address 0, if we have offset calib data, that value should be 0 or 1
+								
 								else if (BCDtoDec1(hours)>=18 && (   AT25SF041_Read(Read_Array,0)==0 || AT25SF041_Read(Read_Array,0)==1    ) )
 								{
 									iUse_prevday_calib_value=1;
@@ -676,7 +683,7 @@ void main(void)
 												
 												//		calculate the theorical offset =JP Pos_today-JPPosprevious day
 												
-
+												
 												
 												Update_position(months,days,hours,mins,seconds,&current_position,
 																				linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60)
@@ -685,8 +692,8 @@ void main(void)
 																				//-TheoricalJP_Position(prev_azimuth,prev_elevation)
 																				);
 												Display_Line(1);	
-												Display_Pos(calib_point1.y);
-												//Display_Pos(JP_Pos_Offset);
+												//Display_Pos(calib_point1.y);
+												Display_Pos(JP_Pos_Offset);
 											}
 											
 											// in the UPDATE function, we only update the motor position when the distance >0.5mm
