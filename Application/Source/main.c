@@ -387,7 +387,7 @@ void main(void)
 									
 									// day_offset is used to identify the diff between current date and the date of previous calibration date in the SPI NOR FLASH
 									day_offset=	Day_Of_Year(AT25SF041_Read(Read_Array,98),AT25SF041_Read(Read_Array,99))-Day_Of_Year(months,days);
-									day_offset=day_offset<=7? day_offset:0;
+									//day_offset=day_offset<=7? day_offset:0;
 									prev_elevation=elevation_calculation(months,
 																											 days+day_offset
 																											 ,hours,mins,seconds);
@@ -424,7 +424,8 @@ void main(void)
 										Connect_Electronics_Load=1;
 										Connect_IV_Load=0;
 
-										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,&theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
+										calib_value[count]=calibration(months,days,hours,mins,seconds,&current_position,&max_ADC_Val,
+																									 &theorical_JP_max_pos,&max_ADC_Val_JP,&SPI_NOR_INTERNAL_FLASH_ADDR);// find the real max value within JP max +/- 10mm
 										
 
 										
@@ -562,9 +563,12 @@ void main(void)
 
 								}
 								
-								else if (BCDtoDec1(hours)>=18)// do not calib after 18pm
+								// do not calib after 18pm and set iUse_prevday_calib_value variable for nextday update only if we have data in the SPI NOR 
+								// check SPI NOR data at address 0, if we have offset calib data, that value should be 0 or 1
+								else if (BCDtoDec1(hours)>=18 && (   AT25SF041_Read(Read_Array,0)==0 || AT25SF041_Read(Read_Array,0)==1    ) )
 								{
 									iUse_prevday_calib_value=1;
+									
 									//count=0;
 
 								}
