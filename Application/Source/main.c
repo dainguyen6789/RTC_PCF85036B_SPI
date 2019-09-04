@@ -669,7 +669,7 @@ void main(void)
 													calib_point2.y=-(     (float)AT25SF041_Read(Read_Array,3*(count+1)+1)+(float) AT25SF041_Read(Read_Array,3*(count+1)+2)/100      )+diff_of_offset;
 //												Display_Line(1);	
 //												Display_Pos(calib_point2.y);	
-												//calib_point2.y=calib_value[count+1];// this is from previous day.
+//												calib_point2.y=calib_value[count+1];// this is from previous day.
 											if(calib_bool[count]==1)// && calib_bool[count+1]==1)
 											{												
 												Update_position(months,days,hours,mins,seconds,&current_position,linear_interpolate(calib_point1,calib_point2,(float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60));
@@ -706,18 +706,18 @@ void main(void)
 												SendString("T\r\n");									
 												Wait_ms(200);
 												//=====================================================
-											
+												
 												sprintf(sTempString, "%.4f", current_position);
 												//		itoa((int)current_position,sCurrent_position,10);
 												SendString("AT+CIPSEND=9\r\n");
 												Wait_ms(200);
 												SendString(sTempString);
 												SendString("M\r\n");
-											
+												
 												//=====================================================
-											
+												
 												Wait_ms(200);
-
+												
 												sprintf(sTempString, "%.4f", pwm_time);
 												//		itoa((int)current_position,sCurrent_position,10);
 												SendString("AT+CIPSEND=9\r\n");
