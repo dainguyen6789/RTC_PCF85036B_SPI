@@ -252,6 +252,13 @@ void main(void)
 	while(1)                                      
 	{
 		Key_Process();
+		if(BCDtoDec1(hours)==0x32)
+		{
+				SPI_WriteTime(0x11,Hours);		// data , register address
+				Delay_ms(100);
+				SPI_WriteTime(0x59,Minutes);
+				Delay_ms(100);
+		}
 		//uart1_SendToTCPServer("123");
 		//Delay_ms(10);
 		//char * itoa(int n, char * buffer, int radix);
@@ -356,7 +363,7 @@ void main(void)
 		//mins1=mins;
 		old_mins=mins;
 		Read_time(&months,&days,&hours,&mins,&seconds);
-		if(BCDtoDec1(mins)%50==0 &&  BCDtoDec1(seconds&0x7f)==0 )
+		if(BCDtoDec1(mins)%15==0 &&  BCDtoDec1(seconds&0x7f)==0 )
 		{		
 			//uart1_inittcpconn();
 			SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");	
@@ -405,7 +412,7 @@ void main(void)
 									Display_Line(1);	
 									
 									//Display_Pos(calib_point1.y);
-									Display_Pos(day_offset);									
+									Display_Pos(pwm_time);									
 									sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60);
 									SendString("AT+CIPSEND=9\r\n");
 									Delay_ms(10);
