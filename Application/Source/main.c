@@ -366,7 +366,7 @@ void main(void)
 		if(BCDtoDec1(mins)%15==0 &&  BCDtoDec1(seconds&0x7f)==0 )
 		{		
 			//uart1_inittcpconn();
-			SendString("AT+CIPSTART=\"TCP\",\"10.51.91.127\",8080\r\n");	
+			SendString("AT+CIPSTART=\"TCP\",\"192.168.2.101\",8080\r\n");	
 			Delay_ms(300);
 			uart1_SendToTCPServer("123");
 			Delay_ms(300);
@@ -544,35 +544,35 @@ void main(void)
 									sprintf(sTempString, "%.4f", theorical_JP_max_pos);
 									//		itoa((int)current_position,sCurrent_position,10);
 									SendString("AT+CIPSEND=9\r\n");
-									Wait_ms(200);
+									Wait_ms(400);
 									SendString(sTempString);
 									SendString("J\r\n");
-									Wait_ms(400);	
+									Wait_ms(800);	
 									//====================================================					
 									sprintf(sTempString, "%.4f", (float)max_ADC_Val/1024*5);
 									//		itoa((int)current_position,sCurrent_position,10);
 									SendString("AT+CIPSEND=9\r\n");
-									Wait_ms(200);
+									Wait_ms(400);
 									SendString(sTempString);
 									SendString("W\r\n");
-									Wait_ms(400);
+									Wait_ms(800);
 									
 									sprintf(sTempString, "%.4f", current_position);
 									//		itoa((int)current_position,sCurrent_position,10);
 									SendString("AT+CIPSEND=9\r\n");
-									Wait_ms(200);
+									Wait_ms(400);
 									SendString(sTempString);
 									SendString("M\r\n");
-									Wait_ms(400);
+									Wait_ms(800);
 
 									sprintf(sTempString, "%.4f", pwm_time);
 									//		itoa((int)current_position,sCurrent_position,10);
 									SendString("AT+CIPSEND=9\r\n");
-									Wait_ms(200);
+									Wait_ms(400);
 									SendString(sTempString);
-									Wait_ms(200);
+									Wait_ms(800);
 									SendString("L\r\n");
-									Wait_ms(200);
+									Wait_ms(800);
 
 								}
 								
@@ -603,40 +603,40 @@ void main(void)
 										{
 											sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60+(float)BCDtoDec1(seconds&0x7F)/3600);
 											SendString("AT+CIPSEND=9\r\n");
-											Delay_ms(200);
+											Delay_ms(400);
 											SendString(sTempString);
 											SendString("T\r\n");									
-											Wait_ms(200);
+											Wait_ms(400);
 											//=====================================================
 										
 											sprintf(sTempString, "%.4f", current_position);
 											//		itoa((int)current_position,sCurrent_position,10);
 											SendString("AT+CIPSEND=9\r\n");
-											Wait_ms(200);
+											Wait_ms(400);
 											SendString(sTempString);
 											SendString("M\r\n");
 										
 											//=====================================================
 											
-											Wait_ms(200);
+											Wait_ms(400);
 
 											sprintf(sTempString, "%.4f", pwm_time);
 											//		itoa((int)current_position,sCurrent_position,10);
 											SendString("AT+CIPSEND=9\r\n");
-											Wait_ms(200);
+											Wait_ms(400);
 											SendString(sTempString);
-											Wait_ms(200);
+											Wait_ms(400);
 											SendString("L\r\n");
-											Wait_ms(200);
+											Wait_ms(400);
 
 											//====================================================					
 											sprintf(sTempString, "%.4f", (float)ADC_GetResult(0)/1024*5);
 											//		itoa((int)current_position,sCurrent_position,10);
 											SendString("AT+CIPSEND=9\r\n");
-											Wait_ms(200);
+											Wait_ms(400);
 											SendString(sTempString);
 											SendString("W\r\n");
-											Wait_ms(200);			
+											Wait_ms(400);			
 										}										
 									}
 							
@@ -708,41 +708,41 @@ void main(void)
 											{
 												sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60+(float)BCDtoDec1(seconds&0x7F)/3600);
 												SendString("AT+CIPSEND=9\r\n");
-												Delay_ms(200);
+												Delay_ms(400);
 												SendString(sTempString);
 												SendString("T\r\n");									
-												Wait_ms(200);
+												Wait_ms(400);
 												//=====================================================
 												
 												sprintf(sTempString, "%.4f", current_position);
 												//		itoa((int)current_position,sCurrent_position,10);
 												SendString("AT+CIPSEND=9\r\n");
-												Wait_ms(200);
+												Wait_ms(400);
 												SendString(sTempString);
 												SendString("M\r\n");
 												
 												//=====================================================
 												
-												Wait_ms(200);
+												Wait_ms(400);
 												
 												sprintf(sTempString, "%.4f", pwm_time);
 												//		itoa((int)current_position,sCurrent_position,10);
 												SendString("AT+CIPSEND=9\r\n");
-												Wait_ms(200);
+												Wait_ms(400);
 												SendString(sTempString);
-												Wait_ms(200);
+												Wait_ms(400);
 
 												SendString("L\r\n");
-												Wait_ms(200);
+												Wait_ms(400);
 
 												//====================================================					
 												sprintf(sTempString, "%.4f", (float)ADC_GetResult(0)/1024*5);
 												//		itoa((int)current_position,sCurrent_position,10);
 												SendString("AT+CIPSEND=9\r\n");
-												Wait_ms(200);
+												Wait_ms(400);
 												SendString(sTempString);
 												SendString("W\r\n");
-												Wait_ms(200);			
+												Wait_ms(400);			
 											}
 
 									}
