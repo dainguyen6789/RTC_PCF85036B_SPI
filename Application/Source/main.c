@@ -35,8 +35,8 @@ sbit Connect_IV_Load = P1^2;
 //#define PointOne_mm_steps 10
 
 //#define PointTwo_mm_steps 21 //
-#define PointFour_mm_steps 28  //
-//#define PointFour_mm_steps 42  //
+//#define PointFour_mm_steps 28  //
+#define PointFour_mm_steps 42  //
 
 #define DATA_WITHOUT_RUNNING_CALIBRATION 0
 
@@ -202,6 +202,7 @@ void main(void)
 	//=========================================
 	// code to initialize the Light Sensor
 	SI1120_CONFIG_MODE_VIRH();
+	//SI1120_CONFIG_MODE_VIRH();
 	Enable_EXTINT0();
 	//=========================================
 	vSetLocation();// set location longtitude and lattitude
@@ -366,7 +367,7 @@ void main(void)
 		if(BCDtoDec1(mins)%15==0 &&  BCDtoDec1(seconds&0x7f)==0 )
 		{		
 			//uart1_inittcpconn();
-			SendString("AT+CIPSTART=\"TCP\",\"192.168.2.101\",8080\r\n");	
+			SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");	
 			Delay_ms(300);
 			uart1_SendToTCPServer("123");
 			Delay_ms(300);
@@ -379,8 +380,8 @@ void main(void)
 		{
 			
 			//sunlight_ADC=ADC_GetResult(2);
-//				Display_Line(1);	
-//				Display_Pos(pwm_time);
+				Display_Line(1);	
+				Display_Pos(pwm_time);
 
 			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
 			{
@@ -422,9 +423,9 @@ void main(void)
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
 									//============IF SUN LIGHT IS GOOD=======================
-									//if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 									//=======================================================
-									if(1) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									//if(1) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 
 									//light GHI(W/m2) = 1.5648xPWM_time - 53.194 
 									//DNI=0.85*GHI/cos(elevation)>750W/m2 then calibrate
@@ -568,11 +569,11 @@ void main(void)
 									sprintf(sTempString, "%.4f", pwm_time);
 									//		itoa((int)current_position,sCurrent_position,10);
 									SendString("AT+CIPSEND=9\r\n");
-									Wait_ms(400);
+									Wait_ms(40);
 									SendString(sTempString);
-									Wait_ms(800);
+									Wait_ms(400);
 									SendString("L\r\n");
-									Wait_ms(800);
+									Wait_ms(900);
 
 								}
 								
@@ -606,7 +607,7 @@ void main(void)
 											Delay_ms(400);
 											SendString(sTempString);
 											SendString("T\r\n");									
-											Wait_ms(400);
+											Wait_ms(800);
 											//=====================================================
 										
 											sprintf(sTempString, "%.4f", current_position);
@@ -618,25 +619,25 @@ void main(void)
 										
 											//=====================================================
 											
-											Wait_ms(400);
+											Wait_ms(900);
 
 											sprintf(sTempString, "%.4f", pwm_time);
 											//		itoa((int)current_position,sCurrent_position,10);
 											SendString("AT+CIPSEND=9\r\n");
-											Wait_ms(400);
+											Wait_ms(600);
 											SendString(sTempString);
-											Wait_ms(400);
+											//Wait_ms(1000);
 											SendString("L\r\n");
-											Wait_ms(400);
+											Wait_ms(800);
 
 											//====================================================					
 											sprintf(sTempString, "%.4f", (float)ADC_GetResult(0)/1024*5);
 											//		itoa((int)current_position,sCurrent_position,10);
 											SendString("AT+CIPSEND=9\r\n");
-											Wait_ms(400);
+											Wait_ms(800);
 											SendString(sTempString);
 											SendString("W\r\n");
-											Wait_ms(400);			
+											Wait_ms(800);			
 										}										
 									}
 							
@@ -708,41 +709,41 @@ void main(void)
 											{
 												sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60+(float)BCDtoDec1(seconds&0x7F)/3600);
 												SendString("AT+CIPSEND=9\r\n");
-												Delay_ms(400);
+												Delay_ms(800);
 												SendString(sTempString);
 												SendString("T\r\n");									
-												Wait_ms(400);
+												Wait_ms(800);
 												//=====================================================
 												
 												sprintf(sTempString, "%.4f", current_position);
 												//		itoa((int)current_position,sCurrent_position,10);
 												SendString("AT+CIPSEND=9\r\n");
-												Wait_ms(400);
+												Wait_ms(800);
 												SendString(sTempString);
 												SendString("M\r\n");
 												
 												//=====================================================
 												
-												Wait_ms(400);
+												Wait_ms(800);
 												
 												sprintf(sTempString, "%.4f", pwm_time);
 												//		itoa((int)current_position,sCurrent_position,10);
 												SendString("AT+CIPSEND=9\r\n");
-												Wait_ms(400);
+												Wait_ms(800);
 												SendString(sTempString);
-												Wait_ms(400);
+												Wait_ms(800);
 
 												SendString("L\r\n");
-												Wait_ms(400);
+												Wait_ms(800);
 
 												//====================================================					
 												sprintf(sTempString, "%.4f", (float)ADC_GetResult(0)/1024*5);
 												//		itoa((int)current_position,sCurrent_position,10);
 												SendString("AT+CIPSEND=9\r\n");
-												Wait_ms(400);
+												Wait_ms(800);
 												SendString(sTempString);
 												SendString("W\r\n");
-												Wait_ms(400);			
+												Wait_ms(800);			
 											}
 
 									}
