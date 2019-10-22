@@ -367,8 +367,8 @@ void main(void)
 		if(BCDtoDec1(mins)%15==0 &&  BCDtoDec1(seconds&0x7f)==0 )
 		{		
 			//uart1_inittcpconn();
-			//SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");	
-			SendString("AT+CIPSTART=\"TCP\",\"10.51.91.127\",8080\r\n");	
+			SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");	
+			//SendString("AT+CIPSTART=\"TCP\",\"10.51.91.127\",8080\r\n");	
 
 			Delay_ms(300);
 			uart1_SendToTCPServer("123");
@@ -383,7 +383,8 @@ void main(void)
 			
 			//sunlight_ADC=ADC_GetResult(2);
 				Display_Line(1);	
-				Display_Pos(elevation);
+				//Display_Pos(elevation);
+				Display_Pos(pwm_time);	
 
 			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
 			{
@@ -424,7 +425,11 @@ void main(void)
 									//10log10(photoR)=-0.4424*10log10(lux)+41.311
 									//if(sunlight_ADC>=sunlight_ADC_Threshold*sin(elevation))
 									//============IF SUN LIGHT IS GOOD=======================
-									if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									// DNI>=750
+									//if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+									//DNI>=500
+									if(pwm_time>=(375.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
+
 									//=======================================================
 									//if(1) //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 
