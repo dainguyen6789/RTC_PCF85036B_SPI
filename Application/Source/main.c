@@ -274,7 +274,7 @@ void main(void)
 			//Display_Pos(current_position);
 			//move cursor to line 1, pos 6
 			Command(0x08);
-			Command(0x06);
+			Command(0x07);
 			
 			WriteData(0x50);//display "P"
 			//WriteData(0x4F);//display ""
@@ -367,7 +367,9 @@ void main(void)
 		if(BCDtoDec1(mins)%15==0 &&  BCDtoDec1(seconds&0x7f)==0 )
 		{		
 			//uart1_inittcpconn();
-			SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");	
+			//SendString("AT+CIPSTART=\"TCP\",\"192.168.11.203\",8080\r\n");	
+			SendString("AT+CIPSTART=\"TCP\",\"10.51.91.127\",8080\r\n");	
+
 			Delay_ms(300);
 			uart1_SendToTCPServer("123");
 			Delay_ms(300);
@@ -381,13 +383,13 @@ void main(void)
 			
 			//sunlight_ADC=ADC_GetResult(2);
 				Display_Line(1);	
-				Display_Pos(pwm_time);
+				Display_Pos(elevation);
 
 			//if (mins1==mins2 && mins2==mins && hours1==hours && hours2==hours1)// prevent the noise of I2C on the demo board
 			{
 							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
 							{
-								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7 )
+								if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=8 )
 								{
 									//calculate elevation to decide whether we will calibrate or not
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
@@ -410,8 +412,7 @@ void main(void)
 									JP_Pos_Offset=TheoricalJP_Position(	azimuth,elevation*(180/pi))
 																											-
 																											TheoricalJP_Position(prev_azimuth,prev_elevation*(180/pi));
-									Display_Line(1);	
-									
+									Display_Line(1);										
 									//Display_Pos(calib_point1.y);
 									Display_Pos(pwm_time);									
 									sprintf(sTempString, "%.4f",(float) BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60);
@@ -443,7 +444,7 @@ void main(void)
 										
 
 										
-										// if light is not stable, calib value is garbage
+										// if light is NOT STABLE, calib value is garbage
 										if(pwm_time_max>1.2*pwm_time_min)
 										{
 											// go back to JP pos if the sun light is unstable
@@ -591,7 +592,7 @@ void main(void)
 							//===== Update when not at Calibration time stamp =====
 							if(iUse_prevday_calib_value==0 && BCDtoDec1(mins)%calib_stamp!=0)// FIRST day of calibration, update position not at the calibration time stamp
 							{
-								if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)
+								if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=8)
 								{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										Connect_Electronics_Load=0;
@@ -648,7 +649,7 @@ void main(void)
 							{
 							
 									// calib every 30mins, from 7AM to 17PM
-									if(BCDtoDec1(hours)<=16  && BCDtoDec1(hours)>=7)								
+									if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=8)								
 									{
 	
 											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
@@ -664,10 +665,10 @@ void main(void)
 											Connect_IV_Load=1;
 											//if(1)
 
-												//calib_point2.y=calib_value[count+1];
-												//====== this is from PREVIOUS DAY, next time stamp ======.
-												//====== this is from PREVIOUS DAY 									======.
-												//====== this is from PREVIOUS DAY 									======.
+											//calib_point2.y=calib_value[count+1];
+											//====== this is from PREVIOUS DAY, next time stamp ======.
+											//====== this is from PREVIOUS DAY 									======.
+											//====== this is from PREVIOUS DAY 									======.
 												
 												calib_point2.x=calib_time[count+1];
 												
@@ -792,6 +793,7 @@ void main(void)
 				AT25SF041_ChipErase();
 				Wait_ms_SPINOR(5);				
 				// Write calib value of this/2nd day to Memory Block 1 (addr from 0 to 100)
+				// no interpolation for this "FOR" loop
 				for(ii=0;ii<=20;ii++)
 				{
 					if(calib_bool[ii]==1)
