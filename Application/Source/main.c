@@ -373,6 +373,9 @@ void main(void)
 			Delay_ms(300);
 			uart1_SendToTCPServer("123");
 			Delay_ms(300);
+			//SI1120_CONFIG_MODE_VIRH();
+			//Enable_EXTINT0();
+
 
 		}
 
@@ -390,7 +393,7 @@ void main(void)
 			{
 							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
 							{
-								if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=8 )
+								if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=7 )
 								{
 									//calculate elevation to decide whether we will calibrate or not
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
@@ -428,6 +431,7 @@ void main(void)
 									// DNI>=750
 									//if(pwm_time>=(563.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 									//DNI>=500
+									//if(1)
 									if(pwm_time>=(375.91*cos(elevation)+33.99+10.5)) // 10.5 is the sensor offset value //experiment linear function: pwm_time(us)=0.623*light(w/m2)+55.581 05may2019 @Fullum
 
 									//=======================================================
@@ -597,7 +601,7 @@ void main(void)
 							//===== Update when not at Calibration time stamp =====
 							if(iUse_prevday_calib_value==0 && BCDtoDec1(mins)%calib_stamp!=0)// FIRST day of calibration, update position not at the calibration time stamp
 							{
-								if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=8)
+								if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=7)
 								{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										Connect_Electronics_Load=0;
@@ -654,7 +658,7 @@ void main(void)
 							{
 							
 									// calib every 30mins, from 7AM to 17PM
-									if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=8)								
+									if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=7)								
 									{
 	
 											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
