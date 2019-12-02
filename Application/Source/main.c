@@ -393,7 +393,7 @@ void main(void)
 			{
 							if(BCDtoDec1(mins)%calib_stamp==0 &&  BCDtoDec1(seconds&0x7f)==0 )
 							{
-								if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=7 )
+								if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=8 )
 								{
 									//calculate elevation to decide whether we will calibrate or not
 									elevation=elevation_calculation(months,days,hours,mins,seconds);
@@ -601,7 +601,7 @@ void main(void)
 							//===== Update when not at Calibration time stamp =====
 							if(iUse_prevday_calib_value==0 && BCDtoDec1(mins)%calib_stamp!=0)// FIRST day of calibration, update position not at the calibration time stamp
 							{
-								if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=7)
+								if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=8)
 								{
 										count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;
 										Connect_Electronics_Load=0;
@@ -658,7 +658,7 @@ void main(void)
 							{
 							
 									// calib every 30mins, from 7AM to 17PM
-									if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=7)								
+									if(BCDtoDec1(hours)<=15  && BCDtoDec1(hours)>=8)								
 									{
 	
 											count=((float)BCDtoDec1(hours)+(float)BCDtoDec1(mins)/60-7)*60/calib_stamp;

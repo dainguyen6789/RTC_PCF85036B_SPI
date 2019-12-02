@@ -150,10 +150,14 @@ float  linear_interpolate(struct point p1,struct point p2, float  x)
 
 float TheoricalJP_Position(float azimuth,float elevation)
 {
-		double  pos_interpolate_azimuth[num_of_elevation_stamp];
+		//	#define num_of_elevation_stamp 15
+		//	#define num_of_azimuth_stamp 	10
+		float  pos_interpolate_azimuth[num_of_elevation_stamp];
 		float  JP_pos=0;
 		int i,yy;
-		struct point p1,p2;
+		struct point p1,p2,p3,p4;
+	//while(verified==0)
+	{
 		for (i=0;i<num_of_azimuth_stamp;i++)
 		{
 			if ((azimuth<=date_azimuth_mapping[i+1]) && (azimuth>=date_azimuth_mapping[i]))
@@ -168,7 +172,7 @@ float TheoricalJP_Position(float azimuth,float elevation)
 					
 					pos_interpolate_azimuth[yy]=linear_interpolate(p1,p2,azimuth);
 				}
-				//break;
+				break;
 			}
 			
 			else if ((azimuth>=low_date_azimuth_mapping[i+1]) && (azimuth<=low_date_azimuth_mapping[i]))
@@ -183,7 +187,7 @@ float TheoricalJP_Position(float azimuth,float elevation)
 					
 					pos_interpolate_azimuth[yy]=linear_interpolate(p2,p1,azimuth);
 				}
-				//break;
+				break;
 			}
 		}
 
@@ -192,18 +196,18 @@ float TheoricalJP_Position(float azimuth,float elevation)
 		{
 			if((elevation>=elevation_stamp[i])&&(elevation<=elevation_stamp[i+1]))
 			{
-				p1.x=elevation_stamp[i];
-				p2.x=elevation_stamp[i+1];
+				p3.x=elevation_stamp[i];
+				p4.x=elevation_stamp[i+1];
 				
-				p1.y=pos_interpolate_azimuth[i];
-				p2.y=pos_interpolate_azimuth[i+1];
+				p3.y=pos_interpolate_azimuth[i];
+				p4.y=pos_interpolate_azimuth[i+1];
 				
-				JP_pos=linear_interpolate(p1,p2,elevation);
-				//break;
-				
+				JP_pos=linear_interpolate(p3,p4,elevation);
+				break;
 			}
 			
 		}
+	}
 		return JP_pos;
 		
 	}
@@ -216,7 +220,7 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	unsigned int date,i=0,yy=0;
 	//char num_of_elevation_stamp=15;
 	float  desired_distance=0,distance=0,JP_pos=0,elevation;
-	double azimuth;//,time_offset,UTC_time=-5;
+	float azimuth;//,time_offset,UTC_time=-5;
 	//hurs=hurs-1;// change to sun time
 	//dys=dys+4;
 	//location.dLongitude=-73.59;
@@ -248,16 +252,18 @@ void Update_position(unsigned char mnths,unsigned char dys,
 	
 	//if (current_local_sun_time>12)
 	//	azimuth=360-azimuth;
-	
-	if(BCDtoDec1(sconds&0x7f)%2==0 && elevation >=2.2 && elevation <=68)
+
+	if(BCDtoDec1(sconds&0x7f)%60==0 && elevation >=2.2 && elevation <=68 && azimuth>=90 && azimuth<=270)
 	{
-		
 		JP_pos=TheoricalJP_Position(azimuth,elevation);
+
+		//JP_pos=TheoricalJP_Position(azimuth,elevation);
 		desired_distance=JP_pos+150+offset_calib;
-		//desired_distance=azimuth;
+		//desired_distance=elevation;
 		//desired_distance=(563.91*cos(elevation*pi/180)+33.99);
 		distance=desired_distance-*currnt_pos;
-		if(fabs(distance)>=0.5&& desired_distance>=-15 &&desired_distance<=230 )// move if the change is more than 0.5mm
+		if(fabs(distance)>=0.5&& desired_distance>=-15 &&desired_distance<=230  && (float)BCDtoDec1(hurs)<=15 && (float)BCDtoDec1(hurs)>=8
+			)// move if the change is more than 0.5mm
 		{
 			if(distance>0)
 				Move(distance,1);
