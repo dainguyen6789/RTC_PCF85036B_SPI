@@ -12,6 +12,9 @@ void ADC_Init(void)
 	P26=0;
 	P1M1 |=( 1<<0);  
 	P1M0 &=~( 1<<0); 
+	
+		P1M1 |=( 1<<2);  
+	P1M0 &=~( 1<<2); 
 	CLK_DIV=0x00;//set ADRJ=0
 	P1ASF |=P1_0_ADC_FUNCTION;//|P1_2_ADC_FUNCTION;  
 
@@ -40,3 +43,5 @@ unsigned int ADC_GetResult(unsigned char ch)
 	ADC_Value=(ADC_Value_H<<2)|(ADC_Value_L&0x03);//RES[7:0], RESL[1:0]
   return ADC_Value;               	  
 }
+
+
