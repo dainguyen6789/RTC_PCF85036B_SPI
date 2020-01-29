@@ -179,15 +179,15 @@ void main(void)
 //				
 
 //				// IIR Butterworth Low pass Filter
-				for(n=1;n<=2;n++)
-					filted_gas_sensor_ADC[0]+=a[n]*gas_sensor_ADC[n]-b[n]*filted_gas_sensor_ADC[n];
-				
-				
-				gas_sensor_ADC[1]=gas_sensor_ADC[0];
-				gas_sensor_ADC[2]=gas_sensor_ADC[1];
+//				for(n=1;n<=2;n++)
+//					filted_gas_sensor_ADC[0]+=a[n]*gas_sensor_ADC[n]-b[n]*filted_gas_sensor_ADC[n];
+//				
+//				
+//				gas_sensor_ADC[1]=gas_sensor_ADC[0];
+//				gas_sensor_ADC[2]=gas_sensor_ADC[1];
 
-				filted_gas_sensor_ADC[1]=filted_gas_sensor_ADC[0];
-				filted_gas_sensor_ADC[2]=filted_gas_sensor_ADC[1];
+//				filted_gas_sensor_ADC[1]=filted_gas_sensor_ADC[0];
+//				filted_gas_sensor_ADC[2]=filted_gas_sensor_ADC[1];
 				// Send data to UART. filted_gas_sensor_voltage[0];
 				// convert to string with 4 digit after dot.
 				
