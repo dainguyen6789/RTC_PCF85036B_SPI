@@ -92,8 +92,8 @@ unsigned int gas_sensor_ADC[3],seneca_sense_gas_sensor_ADC[3];
 float filted_gas_sensor_ADC[3],seneca_sense_filted_gas_sensor_ADC[3];
 //float a[3]={1,-0.9034,0.31973};
 //float b[3]={0.1040,0.2081,0.10407};
-float a[3]={1,1.143,0.413};
-float b[3]={0.639,1.278,0.639};
+float a[3]={1,-1.77,0.8};
+float b[3]={0.006,0.011,0.006};
 float gas_sensor_voltage=0;
 int flag_500ms=0,n;
 char cRead_adc=0;
@@ -167,8 +167,9 @@ void main(void)
 	while(1) 
 	{
 		// sample frequency is 1ms ~ 1000Hz
-		// cut frequency :    "omega_c=2pi*fc/fs"
+		// cut frequency :    "omega_c=2*fc/fs"
 		// https://dsp.stackexchange.com/questions/46903/what-is-the-difference-between-the-sampling-frequency-of-signal-and-sampling-fre
+		//	fc=25Hz
 			if(cRead_adc==1)
 			{
 				P24=0;
