@@ -88,10 +88,17 @@ unsigned char calib_stamp =30;// calib every 30 mins
 unsigned long int SPI_NOR_INTERNAL_FLASH_ADDR=200;
 unsigned int timer0_count=0;
 unsigned char start_timer0_count=0;
-unsigned int gas_sensor_ADC[3],seneca_sense_gas_sensor_ADC[3];
-float filted_gas_sensor_ADC[3],seneca_sense_filted_gas_sensor_ADC[3];
-//float a[3]={1,-0.9034,0.31973};
-//float b[3]={0.1040,0.2081,0.10407};
+unsigned int gas_sensor1_ADC[3],
+						 gas_sensor2_ADC[3],
+						 gas_sensor3_ADC[3],
+						 gas_sensor4_ADC[3];
+						 
+float filted_gas_sensor1_ADC[3],
+			filted_gas_sensor2_ADC[3],
+			filted_gas_sensor3_ADC[3],
+			filted_gas_sensor4_ADC[3];
+			
+
 float a[3]={1,-1.77,0.8};
 float b[3]={0.006,0.011,0.006};
 float gas_sensor_voltage=0;
@@ -121,7 +128,7 @@ void tm1_isr() interrupt 3 using 1
 	TL1=T1MS;
 	TH1=T1MS>>8;
 	cRead_adc=1;
-	if(flag_500ms!=500)
+	if(flag_500ms!=1000)
 		flag_500ms++;
 	//if(flag_500ms==500)
 	//	flag_500ms=0;
@@ -155,28 +162,28 @@ void main(void)
 
 
 	initUART1();
-	 for(n=0;n<3;n++)
-	 {
-			gas_sensor_ADC[n]=0;
-			filted_gas_sensor_ADC[n]=0;
-		 
-		 	seneca_sense_gas_sensor_ADC[n]=0;
-			seneca_sense_filted_gas_sensor_ADC[n]=0;
-	 }
+//	 for(n=0;n<3;n++)
+//	 {
+//			gas_sensor_ADC[n]=0;
+//			filted_gas_sensor_ADC[n]=0;
+//		 
+//		 	seneca_sense_gas_sensor_ADC[n]=0;
+//			seneca_sense_filted_gas_sensor_ADC[n]=0;
+//	 }
 	 
 	while(1) 
 	{
 		// sample frequency is 1ms ~ 1000Hz
 		// cut frequency :    "omega_c=2*fc/fs"
 		// https://dsp.stackexchange.com/questions/46903/what-is-the-difference-between-the-sampling-frequency-of-signal-and-sampling-fre
-		//	fc=25Hz
+		// fc=25Hz
 			if(cRead_adc==1)
 			{
-				P24=0;
-				P25=0;
-				P26=0;
-				filted_gas_sensor_ADC[0]=ADC_GetResult(0);// New sample
-//				
+//				P24=0;
+//				P25=0;
+//				P26=0;
+				filted_gas_sensor1_ADC[2]=ADC_GetResult(2);// New sample
+				//Wait_ms(1000);
 
 //				// IIR Butterworth Low pass Filter
 //				for(n=1;n<=2;n++)
@@ -193,12 +200,19 @@ void main(void)
 				
 				
 								//mux to Y1
-				P24=1;
-				P25=0;
-				P26=0;
+//				P24=1;
+//				P25=0;
+//				P26=0;
 				//seneca_sense_filted_gas_sensor_ADC[0]=a[0]*ADC_GetResult(0);// New sample
-				seneca_sense_filted_gas_sensor_ADC[0]=ADC_GetResult(2);// New sample
-				
+				filted_gas_sensor2_ADC[2]=ADC_GetResult(3);// New sample
+								//Wait_ms(1000);
+
+				filted_gas_sensor3_ADC[2]=ADC_GetResult(4);// New sample
+								//Wait_ms(1000);
+
+				filted_gas_sensor4_ADC[2]=ADC_GetResult(5);// New sample
+								//Wait_ms(1000);
+
 
 //				// IIR Butterworth Low pass Filter
 //				for(n=1;n<=2;n++)
@@ -213,18 +227,33 @@ void main(void)
 				
 				cRead_adc=0;
 			}
-			if(flag_500ms==500)
+			if(flag_500ms==1000)
 			{
-				sprintf(sTempString, "%.4f",filted_gas_sensor_ADC[0]/1024*5);
-				SendString("S");
+				sprintf(sTempString, "%.4f",filted_gas_sensor1_ADC[2]/1024*5);
+				SendString("1");
 				SendString(sTempString);
 				SendString("\r\n");
+				Wait_ms(100);
+				sprintf(sTempString, "%.4f",filted_gas_sensor2_ADC[2]/1024*5);
+				SendString("2");
+				SendString(sTempString);
+				SendString("\r\n");
+				Wait_ms(100);
+
 				
-				sprintf(sTempString, "%.4f",seneca_sense_filted_gas_sensor_ADC[0]/1024*5);
-				SendString("R");//R: Resistant
+				sprintf(sTempString, "%.4f",filted_gas_sensor3_ADC[2]/1024*5);
+				SendString("3");
 				SendString(sTempString);
 				SendString("\r\n");
-				flag_500ms=0;
+				Wait_ms(100);
+
+				sprintf(sTempString, "%.4f",filted_gas_sensor4_ADC[2]/1024*5);
+				SendString("4");
+				SendString(sTempString);
+				SendString("\r\n");
+				Wait_ms(100);
+
+				
 			}
 
 	}		
