@@ -1,10 +1,10 @@
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/30/2019 17:05:43 PAGE 1   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/29/2020 17:24:49 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BIPOLARMOTOR
 OBJECT MODULE PLACED IN .\Obj\BipolarMotor.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE BipolarMotor.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXT
-                    -END PRINT(.\Lis\BipolarMotor.lst) TABS(2) OBJECT(.\Obj\BipolarMotor.obj)
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE BipolarMotor.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXTEND
+                    - PRINT(.\Lis\BipolarMotor.lst) TABS(2) OBJECT(.\Obj\BipolarMotor.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   52   1        hi=bcd>>4;
   53   1        lo=bcd&0x0F;
   54   1        return hi*10+lo;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/30/2019 17:05:43 PAGE 2   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/29/2020 17:24:49 PAGE 2   
 
   55   1      }
   56          // 
@@ -126,7 +126,7 @@ line level    source
  113                      float  a11, float  a12, float  a13, 
  114                      float  a21, float  a22, float  a23,
  115                      float  a31, float  a32, float  a33 )
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/30/2019 17:05:43 PAGE 3   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/29/2020 17:24:49 PAGE 3   
 
  116          {
  117              return( a11*a22*a33 + a12*a23*a31 + a13*a21*a32 -
@@ -190,7 +190,7 @@ line level    source
  175   4              break;
  176   4            }
  177   3            
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/30/2019 17:05:43 PAGE 4   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/29/2020 17:24:49 PAGE 4   
 
  178   3            else if ((azimuth>=low_date_azimuth_mapping[i+1]) && (azimuth<=low_date_azimuth_mapping[i]))
  179   3            {
@@ -254,7 +254,7 @@ line level    source
  237   1        desired_distance=*currnt_pos;
  238   1        
  239   1        //date=Day_Of_Year(mnths,dys)+4;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/30/2019 17:05:43 PAGE 5   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/29/2020 17:24:49 PAGE 5   
 
  240   1        //date=237;
  241   1        declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
@@ -318,7 +318,7 @@ line level    source
  290   1        //location.dLatitude=45.51; 
  291   1        
  292   1        declination=sunpos(time,location,&sunCoord)*180/pi;//+declination_offset;
-C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      10/30/2019 17:05:43 PAGE 6   
+C51 COMPILER V9.52.0.0   BIPOLARMOTOR                                                      05/29/2020 17:24:49 PAGE 6   
 
 *** WARNING C182 IN LINE 292 OF BipolarMotor.c: pointer to different objects
  293   1        time_offset=(4*(location.dLongitude-15*UTC_time)+9.87*sin(2*(360*(time.iDay-81)/365)*pi/180)    -    7.53
@@ -364,7 +364,7 @@ line level    source
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =   5417    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =    664     176
+   XDATA SIZE       =    796     188
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
