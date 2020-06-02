@@ -15,8 +15,8 @@
 #define  	READ_Command											0x01
 
 
-sbit 			I2C_SDA	=	P4^4;
-sbit 			I2C_SCK	=	P4^3;	   
+sbit 			I2C_SDA	=	P1^2;
+sbit 			I2C_SCK	=	P1^3;	   
 //#define I2C_SDA P47
 //#define I2C_SCL P54
 #define		I2C_SCK_Clr()		{I2C_SCK=0;} 
