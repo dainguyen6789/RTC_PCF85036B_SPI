@@ -1,0 +1,235 @@
+C51 COMPILER V9.52.0.0   MCP4725                                                           06/02/2020 14:50:02 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE MCP4725
+OBJECT MODULE PLACED IN .\Obj\MCP4725.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE MCP4725.c LARGE BROWSE INCDIR(.\Application\Header) DEBUG OBJECTEXTEND PRIN
+                    -T(.\Lis\MCP4725.lst) TABS(2) OBJECT(.\Obj\MCP4725.obj)
+
+line level    source
+
+   1          #include "stc15f2k60s2.h"
+   2          #include "MCP4725.h"
+   3          #include <stdlib.h>
+   4          #include <string.h>
+   5          
+   6          
+   7          //unsigned int Read_PI4IOE5V96248(unsigned int command_code);
+   8          
+   9          //void Write_PI4IOE5V96248(struct DATA_FOR_IO_6PORTS *dat);
+  10          
+  11          void Wait_ms_i2c(int ms)
+  12          {
+  13   1        unsigned int De_Cnt;
+  14   1        while( (ms--) != 0)
+  15   1        {
+  16   2          for(De_Cnt = 0; De_Cnt < 9; De_Cnt++); 
+  17   2        }   
+  18   1      }
+  19          
+  20          void nop()
+  21          {
+  22   1        return;
+  23   1      }
+  24          void I2C_Start()
+  25          {
+  26   1      
+  27   1        I2C_SCK=1;
+  28   1        I2C_SDA=1;
+  29   1        Wait_ms_i2c(2);
+  30   1        I2C_SDA=0;
+  31   1        Wait_ms_i2c(2);
+  32   1        I2C_SCK=0;
+  33   1        //Wait_ms_i2c(1);
+  34   1        //Wait_ms_i2c(1);
+  35   1      }
+  36          
+  37          void I2C_Stop()
+  38          {
+  39   1        I2C_SCK=0;
+  40   1        I2C_SDA=0;
+  41   1        Wait_ms_i2c(2);
+  42   1        I2C_SCK=1;
+  43   1        I2C_SDA=0;
+  44   1        Wait_ms_i2c(4);
+  45   1        I2C_SDA=1;
+  46   1        //Wait_ms_i2c(2);
+  47   1      
+  48   1      }
+  49          
+  50          unsigned char I2C_ACK(void)
+  51          {
+  52   1        unsigned char i;
+  53   1        unsigned char dat = 0;
+  54   1      
+C51 COMPILER V9.52.0.0   MCP4725                                                           06/02/2020 14:50:02 PAGE 2   
+
+  55   1        //I2C_SDA_Set();          //
+  56   1        //for (i=0; i<1; i++)         //
+  57   1        {
+  58   2          dat <<= 1;                //
+  59   2          I2C_SCK_Clr(); 
+  60   2          Wait_ms_i2c(2);   //
+  61   2          //nop();        
+  62   2          if (I2C_SDA)        //If  PCF85063BTL_SDO is HIGH, dat will be 1(one) 
+  63   2          {
+  64   3            dat |= 0x01;            //
+  65   3          }
+  66   2          
+  67   2      
+  68   2          I2C_SCK_Set();       //
+  69   2          Wait_ms_i2c(2);           //  
+  70   2        }
+  71   1        return dat;
+  72   1      }
+*** WARNING C280 IN LINE 52 OF MCP4725.c: 'i': unreferenced local variable
+  73          void uC_ACK()
+  74          {
+  75   1      
+  76   1        unsigned char i;
+  77   1        
+  78   1        //for (i=0; i<1; i++)            //
+  79   1        {
+  80   2          //I2C_SCK_Clr(); 
+  81   2          //Wait_ms_i2c(1);//   
+  82   2          //if( (dat&0x80)==0x80 )       //
+  83   2          {
+  84   3              //I2C_SDA_Clr();
+  85   3          }
+  86   2      
+  87   2          Wait_ms_i2c(2);           //
+  88   2          I2C_SCK_Set();          //
+  89   2                  //
+  90   2          //dat <<= 1;                   //
+  91   2          Wait_ms_i2c(2); 
+  92   2          I2C_SCK_Clr();    
+  93   2        }
+  94   1      
+  95   1      
+  96   1        
+  97   1      }
+*** WARNING C280 IN LINE 76 OF MCP4725.c: 'i': unreferenced local variable
+  98          
+  99          void uC_NACK()
+ 100          {
+ 101   1      
+ 102   1        unsigned char i;
+ 103   1        
+ 104   1        //for (i=0; i<1; i++)            //
+ 105   1        {
+ 106   2          I2C_SCK_Clr(); 
+ 107   2          //Wait_ms_i2c(1);//   
+ 108   2          //if( (dat&0x80)==0x80 )       //
+ 109   2          {
+ 110   3              I2C_SDA_Set();
+ 111   3          }
+ 112   2      
+ 113   2          Wait_ms_i2c(2);           //
+ 114   2          I2C_SCK_Set();          //
+C51 COMPILER V9.52.0.0   MCP4725                                                           06/02/2020 14:50:02 PAGE 3   
+
+ 115   2                  
+ 116   2          //dat <<= 1;                   //
+ 117   2          Wait_ms_i2c(2); 
+ 118   2          I2C_SCK_Clr();
+ 119   2          Wait_ms_i2c(2);
+ 120   2          I2C_SDA_Clr();    
+ 121   2        }
+ 122   1      
+ 123   1      
+ 124   1        
+ 125   1      }
+*** WARNING C280 IN LINE 102 OF MCP4725.c: 'i': unreferenced local variable
+ 126          
+ 127          
+ 128          
+ 129          void I2C_SendByte(unsigned char dat)// Send dat to I2C device/Slave
+ 130          {
+ 131   1        unsigned char i;
+ 132   1        
+ 133   1        for (i=0; i<8; i++)            //
+ 134   1        {
+ 135   2          I2C_SCK_Clr(); 
+ 136   2          //Wait_ms_i2c(1);//   
+ 137   2          if( (dat&0x80)==0x80 )       //
+ 138   2          {
+ 139   3              I2C_SDA_Set();
+ 140   3          }
+ 141   2          else
+ 142   2          {
+ 143   3              I2C_SDA_Clr();
+ 144   3          }
+ 145   2          Wait_ms_i2c(2);           //
+ 146   2          I2C_SCK_Set();          //
+ 147   2                  //
+ 148   2          dat <<= 1;                   //
+ 149   2          Wait_ms_i2c(2);      
+ 150   2        }
+ 151   1      }
+ 152          void Write_MCP4725(int dat)
+ 153          {
+ 154   1        unsigned char msb,lsb;
+ 155   1        int temp;
+ 156   1        
+ 157   1        temp=dat>>8;//msb
+ 158   1        
+ 159   1        msb=temp;
+ 160   1        
+ 161   1        lsb=dat&0x00ff;
+ 162   1        
+ 163   1        I2C_Start();
+ 164   1        Wait_ms_i2c(1);
+ 165   1        // 1st byte (Device Addressing)
+ 166   1        I2C_SendByte(MCP4725_ADDR);
+ 167   1        if(I2C_ACK()==0)
+ 168   1        {
+ 169   2          //2nd byte
+ 170   2          I2C_SendByte(Write_DAC_Register);
+ 171   2        }
+ 172   1        
+ 173   1        if(I2C_ACK()==0)
+ 174   1        {
+ 175   2          // DAC D11 D10 D9 D8 D7 D6 D5 D4
+C51 COMPILER V9.52.0.0   MCP4725                                                           06/02/2020 14:50:02 PAGE 4   
+
+ 176   2          I2C_SendByte(msb);
+ 177   2        }
+ 178   1        if(I2C_ACK()==0)
+ 179   1        {
+ 180   2          // D3 D3 D1 D0 X X X X 
+ 181   2          I2C_SendByte(lsb);
+ 182   2        }
+ 183   1        
+ 184   1        if(I2C_ACK()==0)  
+ 185   1          I2C_Stop();
+ 186   1      }
+ 187          
+ 188          
+ 189          
+ 190          
+ 191          //V_OUT=V_REF × Dn/4096
+ 192          //------------------------------
+ 193          //Where:
+ 194          //VREF = VDD
+ 195          //D
+ 196          //n = Input code
+ 197          void WriteVoltage(float voltage)
+ 198          {
+ 199   1        float vref=5;
+ 200   1        int Dn=voltage*4096/vref;
+ 201   1        Write_MCP4725(Dn);
+ 202   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    302    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      13
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  3 WARNING(S),  0 ERROR(S)

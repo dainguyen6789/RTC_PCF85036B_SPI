@@ -1,4 +1,4 @@
-extern bit busy;
+//extern bit busy;
 void SendUART1(unsigned char dat);
 
 void uart1_InitTCPConn();
