@@ -96,7 +96,9 @@ unsigned int gas_sensor1_ADC[3],
 float filted_gas_sensor1_ADC[3],
 			filted_gas_sensor2_ADC[3],
 			filted_gas_sensor3_ADC[3],
-			filted_gas_sensor4_ADC[3];
+			filted_gas_sensor4_ADC[3],
+			filted_gas_sensor5_ADC[3],
+			filted_gas_sensor6_ADC[3];
 			
 
 float a[3]={1,-1.77,0.8};
@@ -179,10 +181,12 @@ void main(void)
 		// fc=25Hz
 			if(cRead_adc==1)
 			{
+					filted_gas_sensor6_ADC[2]=ADC_GetResult(7);// New sample
+
 //				P24=0;
 //				P25=0;
 //				P26=0;
-				filted_gas_sensor1_ADC[2]=ADC_GetResult(2);// New sample
+					filted_gas_sensor1_ADC[2]=ADC_GetResult(2);// New sample
 				//Wait_ms(1000);
 
 //				// IIR Butterworth Low pass Filter
@@ -213,6 +217,7 @@ void main(void)
 				filted_gas_sensor4_ADC[2]=ADC_GetResult(5);// New sample
 								//Wait_ms(1000);
 
+				filted_gas_sensor5_ADC[2]=ADC_GetResult(6);// New sample
 
 //				// IIR Butterworth Low pass Filter
 //				for(n=1;n<=2;n++)
@@ -252,6 +257,18 @@ void main(void)
 				SendString(sTempString);
 				SendString("\r\n");
 				Wait_ms(100);
+				
+				sprintf(sTempString, "%.4f",filted_gas_sensor5_ADC[2]/1024*5);
+				SendString("5");
+				SendString(sTempString);
+				SendString("\r\n");
+				Wait_ms(100);
+				
+				sprintf(sTempString, "%.4f",filted_gas_sensor6_ADC[2]/1024*5);
+				SendString("6");
+				SendString(sTempString);
+				SendString("\r\n");
+				Wait_ms(100);				
 
 				
 			}
