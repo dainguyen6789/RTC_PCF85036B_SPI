@@ -126,29 +126,18 @@ void main(void)
 	//========================================
 	EA=1; 			// each interrupt source will be enable or disable by setting its interrupt bit	   
 
-	//==============================================================
-	// LCD DISPLAY time format hhmm# to set time on the 1st LCD line
-	//==============================================================
-	Display_Line(1);	
-	WriteData(0x68);//display "h"
-	WriteData(0x68);//display "h"
-	WriteData(0x6D);//display "m"
-	WriteData(0x6D);//display "m"
-	WriteData(0x23);//display "#" SETTIME_KEY*/
 
-	Write_MCP4725(0xffff);
-	
-//	fosc=10MHz/N*10k/Rset *(1-Vcontrol/1.13)
-//	VCONTROL
-//	0V TO 1.13V
-	voltage=1.13-1.13*fosc/10;
-//	WriteVoltage(3.3);
-		Write_MCP4725(0xffff);	
-	// sweep the frequency range 8.2+/-0.5MHz at interval of 0.05MHz;
-	
-//	for(i=0;i<200;i++)
-//	{
-//			WriteVoltage(voltage+i*delta_f);
-//			Wait_ms_i2c(5);
-//	}
+		while(1)
+			
+		{
+			P55=0;
+			P16=1;
+			Wait_ms(1);
+			
+			
+			P55=1;
+			P16=0;
+			Wait_ms(1);
+			
+		}
 }
